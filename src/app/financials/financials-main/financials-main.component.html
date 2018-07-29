@@ -1,0 +1,10 @@
+<div *ngIf="!currentChild; else ready">
+  <app-progress-spinner></app-progress-spinner>
+</div>
+
+<ng-template #ready>
+  Financials for {{currentChild.fname}} {{currentChild.lname}} | Surname on Record: {{currentSurname}} | Email: {{currentEmail}} 
+  <hr>
+  <button *ngFor = "let cat of categories | mapToIterable" (click)="setCategory(cat.key)">{{cat.val}}</button>
+  <app-entry></app-entry>
+</ng-template>

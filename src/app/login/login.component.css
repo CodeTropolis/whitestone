@@ -1,0 +1,29 @@
+
+button {
+    display: block;
+    margin: auto;
+}
+
+form {
+    margin: 0 auto;
+    width: 90%;
+}
+
+.login-icon {
+    font-size: 100px;
+    color: var(--ws-light-grey);
+    margin: 0 auto;
+    width: 100px;
+    display: block;
+    padding-bottom: 0.5em;
+}
+
+mat-form-field {display: block;}
+
+p.brand {
+    color: var(--ws-blue);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 40px;
+    text-align: center;
+    text-transform: uppercase;
+}

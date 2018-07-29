@@ -1,0 +1,16 @@
+<h5>Fianancial Entry</h5>
+
+<!-- Build out form only if category is truthy -->
+<mat-card *ngIf="category">
+    <h3>{{category}}</h3>
+    <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
+        
+        <mat-form-field>
+            <input *ngIf="!costExists; else altInput" matInput placeholder="{{category}} Cost" formControlName="{{costKey}}">
+            <ng-template #altInput> 
+                <input matInput placeholder="Payment" formControlName="{{paymentKey}}">
+            </ng-template>
+        </mat-form-field>
+        <button [disabled]="!formGroup.valid" type="submit">Submit</button>
+    </form>
+</mat-card>

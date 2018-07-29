@@ -1,0 +1,29 @@
+<mat-card>
+	
+	<p class="brand">WhiteStone</p>
+	
+	<div *ngIf="loading | async; else logo">
+		<app-progress-spinner></app-progress-spinner>
+	</div>
+	<ng-template #logo>
+		<i class="material-icons login-icon">supervised_user_circle</i>
+	</ng-template>
+
+    <!-- <button mat-raised-button color="primary" (click)="logIn()">Login Using Google</button> -->
+    <!-- <form [formGroup]="emailLoginForm" #formDirective="ngForm" (ngSubmit)="emailLogin(formDirective)"> -->
+	<form [formGroup]="emailLoginForm" (ngSubmit)="emailLogin()">
+		<mat-form-field>
+			<input matInput placeholder="Email" formControlName="email">
+		</mat-form-field>
+		<mat-form-field>
+			<input type="password" matInput placeholder="Password" formControlName="password">
+		</mat-form-field>
+		<div class="button-group">
+            <button type="submit" mat-flat-button color="primary">Login</button>
+            <br>
+            <!-- Don't have an account?<a [routerLink]="" (click)="signUp()">  Sign Up</a>   -->
+			<!-- <button type="button" mat-button color="basic" (click)="signUp()"> Sign Up</button> -->
+		</div>
+	</form>
+	<p class="legal">Rev.217 &copy; 2018 CodeTropolis</p>
+</mat-card>

@@ -1,0 +1,60 @@
+<div class="mat-elevation-z8">
+	<mat-card>
+		<h3>Available Records</h3>
+		<mat-form-field>
+			<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+		</mat-form-field>
+
+		<mat-table [dataSource]="ds" matSort>
+
+			<ng-container matColumnDef="surname">
+				<mat-header-cell *matHeaderCellDef mat-sort-header> Surname </mat-header-cell>
+				<mat-cell *matCellDef="let row"> {{row.surname}} </mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="email">
+				<mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
+				<mat-cell *matCellDef="let row"> {{row.email}}</mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="district">
+				<mat-header-cell *matHeaderCellDef mat-sort-header> School District </mat-header-cell>
+				<mat-cell *matCellDef="let row"> {{row.district}} </mat-cell>
+			</ng-container>
+
+			<ng-container matColumnDef="catholic">
+				<mat-header-cell *matHeaderCellDef mat-sort-header> Is Catholic </mat-header-cell>
+				<mat-cell *matCellDef="let row"> {{row.catholic}} </mat-cell>
+			</ng-container>
+
+	
+			<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+
+			<ng-container *matRowDef="let row; columns: displayedColumns;">
+				<div [class.expanded]="showChildren[row.realId]">
+					<mat-row (click)="onRowClicked(row)"></mat-row>
+					<app-child-table *ngIf="showChildren[row.realId]" [record]="row"></app-child-table>
+
+					<div *ngIf="showChildren[row.realId]" class="actions">
+						<button [disabled]="isUpdating" mat-flat-button color="primary" (click)="prepFormToUpdate(row)">Update</button>
+
+						<div class="delete-buttons">
+
+							<button *ngIf="!isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="warn" (click)="aboutToDelete(row)">
+								<i class="material-icons">delete_forever</i>
+							</button>
+
+							<button *ngIf="isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="warn" (click)="deleteRecord(row)">
+								<i class="material-icons">delete_forever</i>
+								Delete Permanently</button>
+
+							<button *ngIf="isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="primary" (click)="aboutToDelete(row)">
+								Cancel Deletion</button>
+						</div>
+					</div>
+				</div>
+			</ng-container>
+		</mat-table>
+		<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+	</mat-card>
+</div>

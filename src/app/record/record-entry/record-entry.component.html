@@ -1,0 +1,132 @@
+<mat-toolbar class="login" color="primary">
+	<span>Record Administration</span>
+	<span class="fill-space"></span>
+	<span class="info">
+		<div *ngIf="currentUser$ | async as user">{{user.email}} |
+			<a [routerLink]="" (click)="logOut()">Logout</a>
+		</div>
+	</span>
+</mat-toolbar>
+
+<mat-card class="form">
+	<h3>Enter Family Record</h3>
+	<form [formGroup]="myForm" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
+		<table>
+			<tr>
+				<mat-form-field>
+					<input matInput placeholder="Surname" formControlName="surname">
+					<mat-error *ngIf="f.surname.invalid && (f.surname.dirty || f.surname.touched)">
+						<div *ngIf="f.surname.errors.required">
+							Name is required.
+						</div>
+					</mat-error>
+				</mat-form-field>
+
+				<mat-form-field class="email">
+					<input matInput placeholder="Email" formControlName="email">
+					<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
+						<div *ngIf="f.email.errors.required"> Email address is required.</div>
+						<div *ngIf="f.email.errors.email">Email must be a valid email address</div>
+					</mat-error>
+				</mat-form-field>
+			</tr> 
+			<tr>
+				<mat-form-field>
+					<input matInput placeholder="School District" formControlName="district">
+					<mat-error *ngIf="f.district.invalid && (f.district.dirty || f.district.touched)">
+						<div *ngIf="f.district.errors.required"> School District is required.</div>
+					</mat-error>
+				</mat-form-field>
+				<mat-form-field>
+					<mat-select placeholder="Is Catholic" formControlName="catholic">
+						<mat-option *ngFor="let choice of catholic" [value]="choice.value">
+							{{ choice.display }}
+						</mat-option>
+					</mat-select>
+					<mat-error *ngIf="f.catholic.invalid && (f.catholic.dirty || f.catholic.touched)">
+						<div *ngIf="f.catholic.errors.required">
+							Yes/No Required
+						</div>
+					</mat-error>
+				</mat-form-field>
+			</tr>
+
+			<div formArrayName="children">
+
+				<h4>Children:
+					<button type="button" mat-raised-button color="basic" (click)="addChild()">
+						<i class="material-icons">add_circle</i> Add
+					</button>
+				</h4>
+				<div *ngFor="let child of childrenForms.controls; let i=index" [formGroupName]="i">
+					<tr>
+						<mat-form-field>
+							<input matInput placeholder="First name" formControlName="fname">
+							<mat-error *ngIf="child.controls.fname.invalid && (child.controls.fname.dirty || child.controls.fname.touched)">
+								<div *ngIf="child.controls.fname.errors.required">
+									First name is required.
+								</div>
+							</mat-error>
+						</mat-form-field>
+						<mat-form-field>
+							<input matInput placeholder="Last name" formControlName="lname">
+							<mat-error *ngIf="child.controls.lname.invalid && (child.controls.lname.dirty || child.controls.lname.touched)">
+								<div *ngIf="child.controls.lname.errors.required">
+									Last name is required.
+								</div>
+							</mat-error>
+						</mat-form-field>
+						<mat-form-field>
+							<input matInput placeholder="Grade" formControlName="grade">
+							<mat-error *ngIf="child.controls.grade.invalid && (child.controls.grade.dirty || child.controls.grade.touched)">
+								<div *ngIf="child.controls.grade.errors.required">
+									Grade is required.
+								</div>
+							</mat-error>
+						</mat-form-field>
+					</tr>
+					<tr>
+						<mat-form-field>
+							<mat-select placeholder="Gender" formControlName="gender">
+								<mat-option *ngFor="let g of gender" [value]="g.value">
+									{{ g.display }}
+								</mat-option>
+							</mat-select>
+							<mat-error *ngIf="child.controls.gender.invalid && (child.controls.gender.dirty || child.controls.gender.touched)">
+								<div *ngIf="child.controls.gender.errors.required">
+									Gender is required.
+								</div>
+							</mat-error>
+						</mat-form-field>
+
+						<mat-form-field>
+							<mat-select placeholder="Ethnicity" formControlName="race">
+								<mat-option *ngFor="let race of races" [value]="race.value">
+									{{ race.display }}
+								</mat-option>
+							</mat-select>
+							<mat-error *ngIf="child.controls.race.invalid && (child.controls.race.dirty || child.controls.race.touched)">
+								<div *ngIf="child.controls.race.errors.required">
+									Ethnicity is required.
+								</div>
+							</mat-error>
+						</mat-form-field>
+						<button type="button" mat-raised-button color="basic" (click)="deleteChild(i)"> Remove Child</button>
+					</tr>
+				</div>
+			</div>
+
+		</table>
+
+		<div class="button-group">
+			<button *ngIf="!isUpdating" type="submit" mat-raised-button color="primary" [disabled]="!myForm.valid">Submit</button>
+			<div *ngIf="isUpdating">
+				<button type="submit" mat-raised-button color="primary">Update</button>
+				<button type="button" mat-raised-button color="primary" (click)="cancel(formDirective)">Cancel</button>
+			</div>
+		</div>
+		<!-- <pre>{{ myForm.value | json}}</pre> -->
+	</form>
+</mat-card>
+
+<app-record-list></app-record-list>

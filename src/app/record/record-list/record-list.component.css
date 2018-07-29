@@ -1,0 +1,20 @@
+.expanded {
+    background: #f7f7f7;
+    border: 1px solid #cdd0d2;
+    margin-bottom: 2em;
+    }
+  
+  mat-table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  ng-container.admin {margin-bottom: 5em;}
+  
+  /* button[color=warn] {float:right;} */
+  .delete-buttons {float:right;}
+  .delete-buttons button {margin-left: 1em;}

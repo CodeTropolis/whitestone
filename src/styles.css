@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300');
+
+:root {
+    --ws-blue:          #45b6e9;
+    --ws-green:         #88e90a;
+    --ws-light-grey:    #e4e7e9;
+    --ws-smoke:         whitesmoke;
+    --ws-error:         #e27562;
+}
+
+a {
+    text-decoration: none;
+    color: var(--ws-smoke);
+}
+
+app-login {
+    display: block;
+    margin: 7em auto;
+    width: 500px;
+}
+
+body {background: #f6f6f6;}
+
+button[color=basic] {background: #eff1f1;} 
+
+.container {
+    margin: 0 auto;
+    max-width: 1000px;
+    min-width: 500px;
+}
+
+.legal {
+    color: var(--ws-light-grey);
+    text-align: center;
+    font-size: 0.75em;
+}
+
+/* Chrome - change the pale yellow autocomplete to any color */
+/* https://stackoverflow.com/a/14205976 */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset;
+}
