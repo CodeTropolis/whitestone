@@ -23,6 +23,7 @@ export class EntryComponent implements OnInit {
   public formGroup: FormGroup;
   // public costExists: boolean[] = [];
   public costExists: boolean;
+  public cost: number;
   public showView:boolean;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
@@ -51,7 +52,9 @@ export class EntryComponent implements OnInit {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
         if (snapshot.data()[costKey]) {
+          this.cost = snapshot.data()[costKey];
           this.costExists = true;
+         // console.log(snapshot.data()[costKey]);
         } else {
           this.costExists = false;
         }

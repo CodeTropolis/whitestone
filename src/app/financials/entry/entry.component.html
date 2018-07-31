@@ -1,18 +1,18 @@
 <div *ngIf="category && showView">
     <mat-card>
-       
+
         <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
 
-             <div *ngIf="!costExists; else altInput">
-                    <h4>Please enter a starting cost for {{category.val}}.</h4>
-    
+            <div *ngIf="!costExists; else altInput">
+                <h4>Please enter a starting cost for {{category.val}}.</h4>
                 <mat-form-field>
                     <input matInput placeholder="{{category.val}} Cost" formControlName="{{costKey}}">
                 </mat-form-field>
-             </div>
+            </div>
 
 
             <ng-template #altInput>
+                    <h4>Starting cost for {{category.val}}: {{cost | currency}}.</h4>
                 <mat-form-field>
                     <input matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
                 </mat-form-field>
