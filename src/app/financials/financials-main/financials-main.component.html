@@ -5,6 +5,6 @@
 <ng-template #ready>
   Financials for {{currentChild.fname}} {{currentChild.lname}} | Surname on Record: {{currentSurname}} | Email: {{currentEmail}} 
   <hr>
-  <button *ngFor = "let cat of categories | mapToIterable" (click)="setCategory(cat.key)">{{cat.val}}</button>
+  <button *ngFor = "let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
   <app-entry></app-entry>
 </ng-template>

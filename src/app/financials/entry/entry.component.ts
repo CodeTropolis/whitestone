@@ -19,10 +19,11 @@ export class EntryComponent implements OnInit {
   public balanceKey: string;
 
   public currentFinancialDoc: any;
-  public category: string;
+  public category: any;
   public formGroup: FormGroup;
   // public costExists: boolean[] = [];
   public costExists: boolean;
+  public showView:boolean;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -32,15 +33,14 @@ export class EntryComponent implements OnInit {
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
+        this.showView = false;
         this.category = x;
         // Set up object keys (based on current category) to send to DB.
         if (this.category) {
-         // console.log(`category: ${this.category}`);
-          this.costKey = this.category + 'Cost';
-          this.paymentKey = this.category + 'Payment';
-          this.deductionKey = this.category + 'Deduction'
-          this.balanceKey = this.category + 'Balance';
-
+          this.costKey = this.category.key + 'Cost';
+          this.paymentKey = this.category.key + 'Payment';
+          this.deductionKey = this.category.key + 'Deduction'
+          this.balanceKey = this.category.key + 'Balance';
           this.checkForCost(this.costKey);
         }
 
@@ -48,52 +48,40 @@ export class EntryComponent implements OnInit {
   }
 
   private checkForCost(costKey) {
-    //console.log(`in checkForCost - costKey: ${costKey}`);
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
         if (snapshot.data()[costKey]) {
-          //console.log(`Cost for ${costKey}: ${snapshot.data()[costKey]}`);
           this.costExists = true;
-          //console.log(`costExists: ${this.costExists[this.category]}`);
         } else {
-          //console.log(`Cost for ${costKey} does not exist`);
           this.costExists = false;
-          // console.log(`costExists: ${this.costExists[this.category]}`);
         }
         this.setupFormGroup(this.category); // Do this only after cost state determined.
       }
     );
   }
 
-  private setupFormGroup(cat: string) {
-
-    if (!this.costExists) { // Cost for category does not exist so form provides cost control based on category.
-      //console.log(`In setupFormGroup - costExist: ${this.costExists}`)
+  private setupFormGroup(category: any) {
+    console.log(`category.key == ${category.key}`)
+    if (!this.costExists) { // Cost for category does not exist so setup form to provide cost control tied to category.
       this.formGroup = this.fb.group({
         [this.costKey]: ['', Validators.required],
       });
-    }else{
-      console.log('setup payment and deduction form controls');
+      this.showView = true;
+    } else { // Cost exist at this point. Set up form for a payment field if category = tuition or payment and deduction fields for other categories.
+      if (category.value === 'Tuition') {
+        this.formGroup = this.fb.group({
+          [this.paymentKey]: ['', Validators.required]
+        });
+        this.showView = true;
+      } else {
+        console.log(`setup payment/deductions controls`);
+        this.formGroup = this.fb.group({
+          [this.paymentKey]: [''], 
+          [this.deductionKey]: ['']
+        });
+        this.showView = true;
+      }
     }
-
-    // if (!this.costExists) { // Cost for category does not exist so form provides cost control based on category.
-    //   //console.log(`In setupFormGroup - costExist: ${this.costExists}`)
-    //   this.formGroup = this.fb.group({
-    //     [this.costKey]: ['', Validators.required],
-    //   });
-    // } else { // Cost exist at this point. Now set up form for a payment field for tuition and payment and deduction fields for other categories.
-    //   if (cat === 'tuition') {
-    //     this.formGroup = this.fb.group({
-    //      [this.paymentKey]: ['', Validators.required], // For tuition, payments deduct from starting cost/balance
-    //     });
-    //   } else {
-    //     this.formGroup = this.fb.group({
-    //       [this.paymentKey]: [''], // For all other categories, payment will add to starting amount
-    //       [this.deductionKey]: ['']
-    //     });
-    //   }
-    // }
-
   }
 
   async submitHandler(formDirective) {
@@ -102,8 +90,9 @@ export class EntryComponent implements OnInit {
       // if only use formValue instead of formValue[this.cost], then object will be submitted to DB
       await this.currentFinancialDoc.set({ [this.costKey]: formValue[this.costKey] }, { merge: true })
         .then(() => {
-          this.costExists = true;
+          this.costExists = true; // Will remove section that shows cost form for current category
           this.resetForm(formDirective);
+          this.setupFormGroup(this.category);
         });
     } catch (err) {
       console.log(err);

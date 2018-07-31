@@ -1,17 +1,30 @@
-<h5>Fianancial Entry</h5>
+<div *ngIf="category && showView">
+    <mat-card>
+       
+        <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
 
-<!-- Build out form only if category is truthy -->
-<mat-card *ngIf="category">
-    <h3>{{category}}</h3>
-    <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-        <mat-form-field  *ngIf="!costExists">
-            <input matInput placeholder="{{category}} Cost" formControlName="{{costKey}}">
-            <!-- <input *ngIf="!costExists[category]; else altInput" matInput placeholder="{{category}} Cost" formControlName="{{costKey}}"> -->
-            <!-- <ng-template #altInput> 
-                <input matInput placeholder="{{category}} Payment" formControlName="{{paymentKey}}">
-            </ng-template> -->
-        </mat-form-field>
-        <button [disabled]="!formGroup.valid" type="submit">Submit</button>
-    </form>
-</mat-card>
-<pre>Category: {{category}} | Cost key: {{costKey}} | costExists: {{costExists}}</pre>
+             <div *ngIf="!costExists; else altInput">
+                    <h4>Please enter a starting cost for {{category.val}}.</h4>
+    
+                <mat-form-field>
+                    <input matInput placeholder="{{category.val}} Cost" formControlName="{{costKey}}">
+                </mat-form-field>
+             </div>
+
+
+            <ng-template #altInput>
+                <mat-form-field>
+                    <input matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
+                </mat-form-field>
+
+                <mat-form-field *ngIf="category.val !== 'Tuition'">
+                    <input matInput placeholder="{{category.val}} Deduction" formControlName="{{deductionKey}}">
+                </mat-form-field>
+            </ng-template>
+
+
+            <button [disabled]="!formGroup.valid" type="submit">Submit</button>
+        </form>
+    </mat-card>
+    <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{costExists}}</pre>
+</div>
