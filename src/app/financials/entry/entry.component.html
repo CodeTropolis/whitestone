@@ -12,7 +12,7 @@
 
 
             <ng-template #altInput>
-                    <h4>Starting cost for {{category.val}}: {{cost | currency}}.</h4>
+                    <h4>Starting cost for {{category.val}}: {{cost | currency}}</h4>
                 <mat-form-field>
                     <input matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
                 </mat-form-field>
@@ -26,5 +26,5 @@
             <button [disabled]="!formGroup.valid" type="submit">Submit</button>
         </form>
     </mat-card>
-    <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{costExists}}</pre>
+    <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{cost}}</pre>
 </div>
