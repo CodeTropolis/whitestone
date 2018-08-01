@@ -60,13 +60,13 @@ export class FirebaseService {
 
     this.financialsCollection = this.db.collection<any[]>('financials');
     this.financials$ = this.financialsCollection.snapshotChanges()
-    // .pipe(
-    //   map(actions => actions.map(a => {
-    //     const data = a.payload.doc.data() as any;
-    //     const realId = a.payload.doc.id;
-    //     return { realId, ...data };
-    //   }))
-    // );
+    .pipe(
+      map(actions => actions.map(a => {
+        const data = a.payload.doc.data() as any;
+        const realId = a.payload.doc.id;
+        return { realId, ...data };
+      }))
+    );
   }
 
 }

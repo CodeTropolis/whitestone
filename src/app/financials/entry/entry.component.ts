@@ -102,14 +102,15 @@ export class EntryComponent implements OnInit {
             this.resetForm(formDirective);
             // this.setupFormGroup(this.category);
           });
-      }else{
+      } else {
         // Payments and deductions will have thier own collection.
-        // Create the subcollection based on the current category i.e. extraCare -> payments<deductions>
-        if(this.paymentKey !== null){
-          await this.currentFinancialDoc.set({ [this.paymentKey]: formValue[this.paymentKey] }, { merge: true })
+        // Under the current financial doc, create a subcollection based on the current category.
+        const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key);
+        if (this.paymentKey !== null) {
+          await currentCategorySubcollection.add({ [this.paymentKey]: formValue[this.paymentKey] }, { merge: true })
         }
-        if(this.deductionKey !== null){
-          await this.currentFinancialDoc.set({ [this.deductionKey]: formValue[this.deductionKey] }, { merge: true })
+        if (this.deductionKey !== null) {
+          //await this.currentFinancialDoc.set({ [this.deductionKey]: formValue[this.deductionKey] }, { merge: true })
         }
       } // end(!this.costExists)
 

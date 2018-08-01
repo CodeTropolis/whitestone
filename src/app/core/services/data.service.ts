@@ -12,14 +12,16 @@ export class DataService {
 
   constructor(private fs: FirebaseService) { }
 
+  
   public createFinancialRecord(child) {
     this.currentFinancialDoc = this.fs.financialsCollection.doc(child.id);
-    this.currentChild = child;
     this.currentFinancialDoc.ref.get().then((snapshot) => {
       if (!snapshot.exists) {
         this.currentFinancialDoc.set({ dateCreated: new Date });
       }
     });
+
+    this.currentChild = child;
   }
 
   public convertMapToArray(map: {}) {
