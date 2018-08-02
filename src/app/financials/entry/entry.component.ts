@@ -24,6 +24,7 @@ export class EntryComponent implements OnInit {
   public costExists: boolean;
   public cost: number;
   public showView: boolean;
+  public formValue: any;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -81,14 +82,15 @@ export class EntryComponent implements OnInit {
   }
 
   async submitHandler(formDirective) {
-    const formValue = this.formGroup.value;
+    this.formValue = this.formGroup.value;
+    console.log(this.formValue);
 
     try {
 
       // Data submitted - if cost doesn't exist, submit cost else submit other values
       if (!this.costExists) {
         // if only use formValue instead of formValue[this.cost], then object will be submitted to DB
-        await this.currentFinancialDoc.set({ [this.costKey]: formValue[this.costKey] }, { merge: true })
+        await this.currentFinancialDoc.set({ [this.costKey]: this.formValue[this.costKey] }, { merge: true })
           .then(() => {
             // Will remove section that shows cost form for current category
             this.costExists = true;
@@ -100,17 +102,22 @@ export class EntryComponent implements OnInit {
                 }
               })
             this.resetForm(formDirective);
-            // this.setupFormGroup(this.category);
           });
       } else {
-        // Payments and deductions will have thier own collection.
-        // Under the current financial doc, create a subcollection based on the current category.
-        const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key);
-        if (this.paymentKey !== null) {
-          await currentCategorySubcollection.add({ [this.paymentKey]: formValue[this.paymentKey] }, { merge: true })
+        let date = new Date();
+        // Payments and deductions will be subcollections i.e. tuitonPayments, tuitionDeductions.  
+        // Under the current financial doc, create a payments subcollection based on the current category.
+        if (this.formValue[this.paymentKey] !== "") {
+          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments'); // creates the subcollection
+          // await currentCategorySubcollection.add({ [this.paymentKey]: formValue[this.paymentKey], date: new Date }, { merge: true })
+          await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], date: new Date })
+          .then(this.resetForm(formDirective));
         }
-        if (this.deductionKey !== null) {
+        if (this.formValue[this.deductionKey] !== "") {
+          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions'); // creates the subcollection
           //await this.currentFinancialDoc.set({ [this.deductionKey]: formValue[this.deductionKey] }, { merge: true })
+          await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], date: new Date })
+          .then(this.resetForm(formDirective));
         }
       } // end(!this.costExists)
 
