@@ -22,10 +22,11 @@ export class EntryComponent implements OnInit {
   public category: any;
   public formGroup: FormGroup;
   public costExists: boolean;
-  public cost: number;
   public showView: boolean;
   public formValue: any;
+
   public balance: number;
+  public cost: number;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -54,7 +55,6 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[costKey]) {
           this.cost = snapshot.data()[costKey];
-          console.log(`this.cost: ${this.cost}`);
           this.costExists = true;
         }
         this.setupFormGroup(this.category); // Do this only after cost state determined.
@@ -63,28 +63,27 @@ export class EntryComponent implements OnInit {
   }
 
   private processBalance(key) {
-    console.log(`key: ${key}`);
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
         if (snapshot.data()[key]) {
           this.balance = snapshot.data()[key];
+          console.log(`balance in if statment: ${this.balance}`)
         }
-        console.log(`current balance: ${this.balance}`);
+        console.log(`${this.category.val} current balance: ${this.balance}`);
         if (key.includes('tuition')) {
-          this.balance -= this.formValue[this.paymentKey];
+          this.balance -= this.formValue[this.paymentKey]; 
+          console.log(`Tuition balance after payment: ${this.balance}`);
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
           if (this.formValue[this.paymentKey] !== "") {
             this.balance += this.formValue[this.paymentKey];
-            console.log(`balance after payment: ${this.balance}`)
-           // this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+            console.log(`${this.category.val} balance after payment: ${this.balance}`);
           }
           if (this.formValue[this.deductionKey] !== "") {
             this.balance -= this.formValue[this.deductionKey];
-            console.log(`balance after deduction: ${this.balance}`)
-           // this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+            console.log(`${this.category.val} balance after deduction: ${this.balance}`);
           }
         }
-        // this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true });
       }
     );
   }
@@ -108,7 +107,6 @@ export class EntryComponent implements OnInit {
 
   async submitHandler(formDirective) {
     this.formValue = this.formGroup.value;
-    console.log(this.formValue);
     try {
       if (!this.costExists) {
         await this.currentFinancialDoc.set({ [this.costKey]: this.formValue[this.costKey] }, { merge: true })
@@ -119,18 +117,16 @@ export class EntryComponent implements OnInit {
             this.cost = this.formValue[this.costKey];
             // Initially, balance will equal cost.
             this.balance = this.cost;
-            // Write the balance to the database.
+            // Write the initial balance to the database.
             this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
             this.resetForm(formDirective);
           });
       } else {
         let date = new Date();
         // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
-        // Under the current financial doc, create a payments subcollection based on the current category.
         if (this.formValue[this.paymentKey] !== "") {
           console.log('submitting payment...');
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments'); // creates the subcollection
-          // await currentCategorySubcollection.add({ [this.paymentKey]: formValue[this.paymentKey], date: new Date }, { merge: true })
           await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
@@ -140,8 +136,7 @@ export class EntryComponent implements OnInit {
         }
         if (this.formValue[this.deductionKey] !== "") {
           console.log('submitting deduction...');
-          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions'); // creates the subcollection
-          //await this.currentFinancialDoc.set({ [this.deductionKey]: formValue[this.deductionKey] }, { merge: true })
+          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions');
           await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);

@@ -22,10 +22,8 @@
                 </mat-form-field>
             </ng-template>
 
-
             <button [disabled]="!formGroup.valid" type="submit">Submit</button>
         </form>
     </mat-card>
-    <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{cost}}</pre>
+    <!-- <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{cost}}</pre> -->
 </div>
-<pre *ngIf="formValue">{{formValue[deductionKey]}}</pre>
