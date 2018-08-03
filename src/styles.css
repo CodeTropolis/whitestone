@@ -35,6 +35,11 @@ button[color=basic] {background: #eff1f1;}
     font-size: 0.75em;
 }
 
+.mat-financial {
+    background-color: #2fd08d !important;
+    box-shadow: none !important;
+}
+
 /* Chrome - change the pale yellow autocomplete to any color */
 /* https://stackoverflow.com/a/14205976 */
 input:-webkit-autofill {

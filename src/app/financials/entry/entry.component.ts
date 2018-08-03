@@ -25,6 +25,7 @@ export class EntryComponent implements OnInit {
   public cost: number;
   public showView: boolean;
   public formValue: any;
+  public balance: number;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -54,9 +55,59 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[costKey]) {
           this.cost = snapshot.data()[costKey];
+          console.log (`this.cost: ${this.cost}`);
           this.costExists = true;
         }
         this.setupFormGroup(this.category); // Do this only after cost state determined.
+      }
+    );
+  }
+
+  private processBalance(key) {
+    console.log(`key: ${key}`);
+   
+    this.currentFinancialDoc.ref.get().then(
+      snapshot => {
+
+        if (snapshot.data()[key]) {
+          this.balance = snapshot.data()[key];
+        }
+
+        if (!this.balance) {
+
+          
+
+          // if (key.includes('tuition')) {
+          //   this.balance = this.cost;
+          //   console.log(`this.balance: ${this.balance}`);
+          // }else{ // Then the category is either Lunch, Ext.Care, or Misc.
+          //   this.balance = this.cost; 
+
+          //   // if (this.formValue[this.paymentKey] !== ""){ // Doing a payment or a deduction?
+          //   //   this.balance = this.cost + this.formValue[this.paymentKey];
+          //   // }
+          //   // if (this.formValue[this.deductionKey] !== ""){
+          //   //   this.balance = this.cost - this.formValue[this.deductionKey];
+          //   // }
+
+          // }
+
+        } else { // a balance exists
+
+          if (key.includes('tuition')) {
+            this.balance -= this.formValue[this.paymentKey];
+          }else{ // Its not tution so process balance by adding payments and subtracting deductions to existing balance
+            if (this.formValue[this.paymentKey] !== ""){
+              this.balance += this.formValue[this.paymentKey];
+            }
+            if (this.formValue[this.deductionKey] !== ""){
+              this.balance -= this.formValue[this.deductionKey];
+            }
+          }
+
+
+        }
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
       }
     );
   }
@@ -105,21 +156,30 @@ export class EntryComponent implements OnInit {
           });
       } else {
         let date = new Date();
-        // Payments and deductions will be subcollections i.e. tuitonPayments, tuitionDeductions.  
+        // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
         // Under the current financial doc, create a payments subcollection based on the current category.
         if (this.formValue[this.paymentKey] !== "") {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments'); // creates the subcollection
           // await currentCategorySubcollection.add({ [this.paymentKey]: formValue[this.paymentKey], date: new Date }, { merge: true })
           await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], date: new Date })
-          .then(this.resetForm(formDirective));
+            .then(_ => {
+                this.processBalance(this.balanceKey);
+                this.resetForm(formDirective);
+              }
+            );
         }
         if (this.formValue[this.deductionKey] !== "") {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions'); // creates the subcollection
           //await this.currentFinancialDoc.set({ [this.deductionKey]: formValue[this.deductionKey] }, { merge: true })
           await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], date: new Date })
-          .then(this.resetForm(formDirective));
+          .then(_ => {
+            this.processBalance(this.balanceKey);
+            this.resetForm(formDirective);
+          }
+        );
         }
-      } // end(!this.costExists)
+
+      }
 
     } catch (err) {
       console.log(err);
