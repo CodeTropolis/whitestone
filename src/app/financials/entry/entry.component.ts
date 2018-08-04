@@ -55,6 +55,11 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[costKey]) {
           this.cost = snapshot.data()[costKey];
+          if(snapshot.data()[this.balanceKey]){
+            this.balance = snapshot.data()[this.balanceKey];
+          }else{
+            this.balance = this.cost;
+          }
           this.costExists = true;
         }
         this.setupFormGroup(this.category); // Do this only after cost state determined.
@@ -67,7 +72,7 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[key]) {
           this.balance = snapshot.data()[key];
-          console.log(`balance in if statment: ${this.balance}`)
+          console.log(`balance in if statment: ${this.balance}`);
         }
         console.log(`${this.category.val} current balance: ${this.balance}`);
         if (key.includes('tuition')) {
@@ -75,7 +80,7 @@ export class EntryComponent implements OnInit {
           console.log(`Tuition balance after payment: ${this.balance}`);
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
           if (this.formValue[this.paymentKey] !== "") {
-            this.balance += this.formValue[this.paymentKey];
+            this.balance = (this.balance + this.formValue[this.paymentKey]); // NOTE: Wrap formula in () and set input to type number or else += concats. 
             console.log(`${this.category.val} balance after payment: ${this.balance}`);
           }
           if (this.formValue[this.deductionKey] !== "") {
