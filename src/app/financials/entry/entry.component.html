@@ -31,18 +31,13 @@
         <div *ngIf="showHistory">
 
             <ul *ngFor="let p of payments">
-                <li>Payment: {{p.payment | currency}} | Date: {{p.date}}</li>
+                <li>Payment: {{p.payment | currency}} | {{p.date | date:"medium"}}</li>
             </ul>
 
             <ul *ngFor="let d of deductions">
-                <li>Deduction: {{d.deduction | currency}} | Date: {{d.date}}</li>
+                <li>Deduction: {{d.deduction | currency}} | {{d.date | date:"medium"}}</li>
             </ul>
 
-
-            <!-- <ul *ngFor = "let t of transactions">
-               <li *ngIf="t.payment">Payment: {{t.payment | currency}} | Date: {{t.date}}</li>
-                <li *ngIf="t.deduction">Deduction: {{t.deduction | currency}} | Date: {{t.date}}</li> 
-            </ul> -->
         </div>
 
     </mat-card>

@@ -52,8 +52,6 @@ export class EntryComponent implements OnInit {
           this.deductionKey = this.category.key + 'Deduction'
           this.balanceKey = this.category.key + 'Balance';
           this.checkForCost(this.costKey);
-          this.payments = []; // clear out transaction array upon change of category.
-          this.deductions = []
           this.history(this.category);
           this.showHistory = false;
         }
@@ -176,6 +174,7 @@ export class EntryComponent implements OnInit {
     // Clear out array else view will aggregate - will repeat array for each entry.
     this.payments = [];
     this.deductions = [];
+    
     this.currentFinancialDoc.collection(cat.key + 'Payments').ref.get()
       .then(snapshot => {
         snapshot.forEach(
