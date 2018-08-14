@@ -12,25 +12,38 @@
 
 
             <ng-template #altInput>
-                    <h4> {{category.val}} Balance: {{balance | currency}} <button (click) ="history(category)">History</button></h4>
+                <h4> {{category.val}} Balance: {{balance | currency}}
+                    <button (click)="toggleHistory()">History</button>
+                </h4>
                 <mat-form-field>
                     <input *ngIf="category.val === 'Tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
                     <input *ngIf="category.val !== 'Tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Credit" formControlName="{{paymentKey}}">
                 </mat-form-field>
 
                 <mat-form-field *ngIf="category.val !== 'Tuition'">
-                    <input type =number step=0.01 matInput placeholder="{{category.val}} Deduction" formControlName="{{deductionKey}}">
+                    <input type=number step=0.01 matInput placeholder="{{category.val}} Deduction" formControlName="{{deductionKey}}">
                 </mat-form-field>
             </ng-template>
 
             <button [disabled]="!formGroup.valid" type="submit">Submit</button>
         </form>
 
-       <div *ngIf="hasHistory">
-            <ul *ngFor = "let payment of payments">
-                <li>{{payment.payment | currency}} | Date: {{payment.date}}</li>
+        <div *ngIf="showHistory">
+
+            <ul *ngFor="let p of payments">
+                <li>Payment: {{p.payment | currency}} | Date: {{p.date}}</li>
             </ul>
-       </div>
+
+            <ul *ngFor="let d of deductions">
+                <li>Deduction: {{d.deduction | currency}} | Date: {{d.date}}</li>
+            </ul>
+
+
+            <!-- <ul *ngFor = "let t of transactions">
+               <li *ngIf="t.payment">Payment: {{t.payment | currency}} | Date: {{t.date}}</li>
+                <li *ngIf="t.deduction">Deduction: {{t.deduction | currency}} | Date: {{t.date}}</li> 
+            </ul> -->
+        </div>
 
     </mat-card>
     <!-- <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{cost}}</pre> -->

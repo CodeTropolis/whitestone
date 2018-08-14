@@ -22,7 +22,7 @@ export class EntryComponent implements OnInit {
   public category: any;
   public formGroup: FormGroup;
   public costExists: boolean;
-  public hasHistory: boolean;
+  public showHistory: boolean;
   public showView: boolean;
   public formValue: any;
 
@@ -31,6 +31,8 @@ export class EntryComponent implements OnInit {
 
   public payments: any[] = [];
   public deductions: any[] = [];
+
+  //public transactions: any[] = [];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -50,7 +52,10 @@ export class EntryComponent implements OnInit {
           this.deductionKey = this.category.key + 'Deduction'
           this.balanceKey = this.category.key + 'Balance';
           this.checkForCost(this.costKey);
+          this.payments = []; // clear out transaction array upon change of category.
+          this.deductions = []
           this.history(this.category);
+          this.showHistory = false;
         }
       });
   }
@@ -141,7 +146,10 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey);
               this.resetForm(formDirective);
-              //this.hasHistory = true;
+
+              // Update history
+              this.history(this.category);
+
             }
             );
         }
@@ -152,7 +160,9 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey);
               this.resetForm(formDirective);
-              //this.hasHistory = true;
+
+              // Update history
+              this.history(this.category);
             }
             );
         }
@@ -163,15 +173,15 @@ export class EntryComponent implements OnInit {
   }
 
   public history(cat) {
+    // Clear out array else view will aggregate - will repeat array for each entry.
+    this.payments = [];
+    this.deductions = [];
     this.currentFinancialDoc.collection(cat.key + 'Payments').ref.get()
       .then(snapshot => {
-        this.hasHistory = true;
         snapshot.forEach(
           item => {
-            console.log(`Payment: ${item.data().payment} | Date: ${item.data().date}`);
-            // const timestamp = item.data().date.toString().substring(1,10);
-            let ndate = new Date(item.data().date);
-            this.payments.push({payment: item.data().payment, date: ndate.toDateString()})
+            let date = item.data().date.toDate();
+            this.payments.push({ payment: item.data().payment, date: date })
           }
         )
       }
@@ -179,20 +189,18 @@ export class EntryComponent implements OnInit {
 
     this.currentFinancialDoc.collection(cat.key + 'Deductions').ref.get()
       .then(snapshot => {
-        this.hasHistory = true;
         snapshot.forEach(
           item => {
-            console.log(`Deduction: ${item.data().deduction} | Date: ${item.data().date}`);
-            let ndate = new Date(item.data().date);
-            this.deductions.push({deduction: item.data().deduction, date: ndate})
+            let date = item.data().date.toDate();
+            this.deductions.push({ deduction: item.data().deduction, date: date })
           }
         )
       }
       );
   }
 
-  public toggleHistory(){
-    this.hasHistory !== this.hasHistory;
+  public toggleHistory() {
+    this.showHistory = !this.showHistory;
   }
 
   private resetForm(formDirective) {
