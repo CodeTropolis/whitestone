@@ -22,11 +22,15 @@ export class EntryComponent implements OnInit {
   public category: any;
   public formGroup: FormGroup;
   public costExists: boolean;
+  public hasHistory: boolean;
   public showView: boolean;
   public formValue: any;
 
   public balance: number;
   public cost: number;
+
+  public payments: any[] = [];
+  public deductions: any[] = [];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -46,6 +50,7 @@ export class EntryComponent implements OnInit {
           this.deductionKey = this.category.key + 'Deduction'
           this.balanceKey = this.category.key + 'Balance';
           this.checkForCost(this.costKey);
+          this.history(this.category);
         }
       });
   }
@@ -55,9 +60,9 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[costKey]) {
           this.cost = snapshot.data()[costKey];
-          if(snapshot.data()[this.balanceKey]){
+          if (snapshot.data()[this.balanceKey]) {
             this.balance = snapshot.data()[this.balanceKey];
-          }else{
+          } else {
             this.balance = this.cost;
           }
           this.costExists = true;
@@ -72,20 +77,20 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[key]) {
           this.balance = snapshot.data()[key];
-          console.log(`balance in if statment: ${this.balance}`);
+          //console.log(`balance in if statment: ${this.balance}`);
         }
-        console.log(`${this.category.val} current balance: ${this.balance}`);
+        // console.log(`${this.category.val} current balance: ${this.balance}`);
         if (key.includes('tuition')) {
-          this.balance -= this.formValue[this.paymentKey]; 
-          console.log(`Tuition balance after payment: ${this.balance}`);
+          this.balance -= this.formValue[this.paymentKey];
+          //console.log(`Tuition balance after payment: ${this.balance}`);
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
           if (this.formValue[this.paymentKey] !== "") {
             this.balance = (this.balance + this.formValue[this.paymentKey]); // NOTE: Wrap formula in () and set input to type number or else += concats. 
-            console.log(`${this.category.val} balance after payment: ${this.balance}`);
+            //console.log(`${this.category.val} balance after payment: ${this.balance}`);
           }
           if (this.formValue[this.deductionKey] !== "") {
             this.balance -= this.formValue[this.deductionKey];
-            console.log(`${this.category.val} balance after deduction: ${this.balance}`);
+            // console.log(`${this.category.val} balance after deduction: ${this.balance}`);
           }
         }
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true });
@@ -100,7 +105,7 @@ export class EntryComponent implements OnInit {
       });
       this.showView = true;
       // Cost exist at this point. 
-      // Set up  payment and deduction fields.
+      // Set up payment and deduction fields.
     } else {
       this.formGroup = this.fb.group({
         [this.paymentKey]: [''],
@@ -130,22 +135,24 @@ export class EntryComponent implements OnInit {
         let date = new Date();
         // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
         if (this.formValue[this.paymentKey] !== "") {
-          console.log('submitting payment...');
+          //console.log('submitting payment...');
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments'); // creates the subcollection
           await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
               this.resetForm(formDirective);
+              //this.hasHistory = true;
             }
             );
         }
         if (this.formValue[this.deductionKey] !== "") {
-          console.log('submitting deduction...');
+          //console.log('submitting deduction...');
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions');
           await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
               this.resetForm(formDirective);
+              //this.hasHistory = true;
             }
             );
         }
@@ -153,6 +160,39 @@ export class EntryComponent implements OnInit {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  public history(cat) {
+    this.currentFinancialDoc.collection(cat.key + 'Payments').ref.get()
+      .then(snapshot => {
+        this.hasHistory = true;
+        snapshot.forEach(
+          item => {
+            console.log(`Payment: ${item.data().payment} | Date: ${item.data().date}`);
+            // const timestamp = item.data().date.toString().substring(1,10);
+            let ndate = new Date(item.data().date);
+            this.payments.push({payment: item.data().payment, date: ndate.toDateString()})
+          }
+        )
+      }
+      );
+
+    this.currentFinancialDoc.collection(cat.key + 'Deductions').ref.get()
+      .then(snapshot => {
+        this.hasHistory = true;
+        snapshot.forEach(
+          item => {
+            console.log(`Deduction: ${item.data().deduction} | Date: ${item.data().date}`);
+            let ndate = new Date(item.data().date);
+            this.deductions.push({deduction: item.data().deduction, date: ndate})
+          }
+        )
+      }
+      );
+  }
+
+  public toggleHistory(){
+    this.hasHistory !== this.hasHistory;
   }
 
   private resetForm(formDirective) {

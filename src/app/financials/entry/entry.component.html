@@ -12,9 +12,10 @@
 
 
             <ng-template #altInput>
-                    <h4>Balance for {{category.val}}: {{balance | currency}}</h4>
+                    <h4> {{category.val}} Balance: {{balance | currency}} <button (click) ="history(category)">History</button></h4>
                 <mat-form-field>
-                    <input type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
+                    <input *ngIf="category.val === 'Tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
+                    <input *ngIf="category.val !== 'Tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Credit" formControlName="{{paymentKey}}">
                 </mat-form-field>
 
                 <mat-form-field *ngIf="category.val !== 'Tuition'">
@@ -24,6 +25,13 @@
 
             <button [disabled]="!formGroup.valid" type="submit">Submit</button>
         </form>
+
+       <div *ngIf="hasHistory">
+            <ul *ngFor = "let payment of payments">
+                <li>{{payment.payment | currency}} | Date: {{payment.date}}</li>
+            </ul>
+       </div>
+
     </mat-card>
     <!-- <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{cost}}</pre> -->
 </div>
