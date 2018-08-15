@@ -35,8 +35,6 @@ export class EntryComponent implements OnInit {
   public isEnteringPayment: boolean;
   public isEnteringDeduction: boolean;
 
-  //public transactions: any[] = [];
-
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
@@ -45,9 +43,7 @@ export class EntryComponent implements OnInit {
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
-        // Previous seleted category may have set this to true. 
-        // Set to false then check for cost and set to true if applicable
-        this.costExists = false;
+        this.costExists = false; // Previous seleted category may have set this to true. Set to false then check for cost 
         this.showView = false;
         this.category = x;
         if (this.category) {
@@ -85,20 +81,15 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[key]) {
           this.balance = snapshot.data()[key];
-          //console.log(`balance in if statment: ${this.balance}`);
         }
-        // console.log(`${this.category.val} current balance: ${this.balance}`);
         if (key.includes('tuition')) {
           this.balance -= this.formValue[this.paymentKey];
-          //console.log(`Tuition balance after payment: ${this.balance}`);
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
           if (this.formValue[this.paymentKey] !== "") {
             this.balance = (this.balance + this.formValue[this.paymentKey]); // NOTE: Wrap formula in () and set input to type number or else += concats. 
-            //console.log(`${this.category.val} balance after payment: ${this.balance}`);
           }
           if (this.formValue[this.deductionKey] !== "") {
             this.balance -= this.formValue[this.deductionKey];
-            // console.log(`${this.category.val} balance after deduction: ${this.balance}`);
           }
         }
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true });
@@ -111,8 +102,8 @@ export class EntryComponent implements OnInit {
       this.formGroup = this.fb.group({
         [this.costKey]: ['', Validators.required],
       });
-      this.showView = true;
-      this.financialService.showAvatarSpinner$.next(false);
+      // this.showView = true;
+      // this.financialService.showAvatarSpinner$.next(false);
       // Cost exist at this point. 
       // Set up payment and deduction fields.
     } else {
@@ -120,9 +111,11 @@ export class EntryComponent implements OnInit {
         [this.paymentKey]: [''],
         [this.deductionKey]: [''] // View will not show this field if category is Tuition
       });
-      this.showView = true;
-      this.financialService.showAvatarSpinner$.next(false);
+      // this.showView = true;
+      // this.financialService.showAvatarSpinner$.next(false);
     }
+    this.showView = true;
+    this.financialService.showAvatarSpinner$.next(false);
   }
 
   async submitHandler(formDirective) {
@@ -145,7 +138,6 @@ export class EntryComponent implements OnInit {
         let date = new Date();
         // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
         if (this.formValue[this.paymentKey] !== "") {
-          //console.log('submitting payment...');
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments'); // creates the subcollection
           await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], date: new Date })
             .then(_ => {
@@ -155,11 +147,9 @@ export class EntryComponent implements OnInit {
               // Update history
               this.history(this.category);
 
-            }
-            );
+            });
         }
         if (this.formValue[this.deductionKey] !== "") {
-          //console.log('submitting deduction...');
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions');
           await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], date: new Date })
             .then(_ => {
