@@ -1,5 +1,5 @@
 <div *ngIf="category && showView">
-    <mat-card>
+    <!-- <mat-card> -->
 
         <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
 
@@ -42,7 +42,7 @@
             </ul>
 
         </div>
-
-    </mat-card>
+<!-- 
+    </mat-card> -->
     <!-- <pre>Category: {{category.val}} | Cost key: {{costKey}} | costExists: {{cost}}</pre> -->
 </div>
