@@ -2,7 +2,7 @@
 
 	<ng-container matColumnDef="firstname">
 		<th mat-header-cell *matHeaderCellDef mat-sort-header> Child First Name </th>
-		<td mat-cell *matCellDef="let row"> {{row.fname}} </td>
+		<td mat-cell *matCellDef="let row"> <i class="material-icons">account_circle</i> {{row.fname}} </td>
 	</ng-container>
 
 	<ng-container matColumnDef="lastname">
@@ -30,7 +30,6 @@
 		<td mat-cell *matCellDef="let row">
 			<button (click)="financials(row)" mat-mini-fab class="mat-financial">
 				<i class="material-icons">monetization_on</i>
-			
 			</button>
 		</td>
 	</ng-container>

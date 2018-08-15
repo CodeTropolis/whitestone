@@ -102,17 +102,11 @@ export class EntryComponent implements OnInit {
       this.formGroup = this.fb.group({
         [this.costKey]: ['', Validators.required],
       });
-      // this.showView = true;
-      // this.financialService.showAvatarSpinner$.next(false);
-      // Cost exist at this point. 
-      // Set up payment and deduction fields.
     } else {
       this.formGroup = this.fb.group({
         [this.paymentKey]: [''],
         [this.deductionKey]: [''] // View will not show this field if category is Tuition
       });
-      // this.showView = true;
-      // this.financialService.showAvatarSpinner$.next(false);
     }
     this.showView = true;
     this.financialService.showAvatarSpinner$.next(false);

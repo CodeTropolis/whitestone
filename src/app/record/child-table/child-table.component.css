@@ -2,3 +2,17 @@ table {
     background: #fbfdfe!important; 
     width: 100%;
     }
+
+
+.mat-financial {
+    background-color: #2fd08d !important;
+    box-shadow: none !important;
+}
+/* 
+.mat-mini-fab {
+    width: 24px;
+    height: 24px;
+}
+
+
+.mat-mini-fab .mat-button-wrapper {padding-top:0 !important;} */
