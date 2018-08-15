@@ -1,18 +1,24 @@
 button {margin:1em 0.25em;}
 
+.buttons {margin: 0 auto;}
 
-  .account-circle {
-    font-size: 120px;
-    color: var(--ws-light-grey);
-  }
+.account-circle {
+  font-size: 120px;
+  color: var(--ws-light-grey);
+}
 
-  .mat-card-content {font-size: 16px;}
+.avatar-spinner {
+   display: block;
+   margin-top: -195px;
+}
 
-  .mat-card-avatar {
+.mat-card-content {font-size: 16px;}
+
+.mat-card-avatar {
     width: 120px; /* match font size of .account-circle */
     margin-top: -20px;
-  }
+}
 
-  .mat-card-header {
+.mat-card-header {
     /* justify-content: space-evenly; */
 }

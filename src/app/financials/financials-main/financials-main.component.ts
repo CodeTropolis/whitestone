@@ -13,6 +13,9 @@ export class FinancialsMainComponent implements OnInit {
   public currentEmail: string;
   public currentChild: any;
   public categories: any;
+  public showAvatarSpinner: boolean;
+
+  private catSubscribe:any;
 
   constructor(
     private ds: DataService,
@@ -24,10 +27,18 @@ export class FinancialsMainComponent implements OnInit {
     this.currentEmail = this.ds.currentRecord.email;
     this.currentChild = this.ds.currentChild;
     this.categories = this.financialsService.categories;
-  }
+    this.catSubscribe = this.financialsService.showAvatarSpinner$.subscribe( x => {
+      this.showAvatarSpinner = x;
+      console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
+      })
+    };
 
   public setCategory(cat: string) {
     this.financialsService.currentCategory$.next(cat);
+  }
+
+  ngOnDestroy(){
+    this.catSubscribe.unsubscribe();
   }
 
 }

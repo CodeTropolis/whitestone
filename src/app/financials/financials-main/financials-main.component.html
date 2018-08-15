@@ -3,32 +3,29 @@
 </div>
 
 <ng-template #ready>
-
   <mat-card>
-      <mat-card-header>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <i class="material-icons account-circle">account_circle</i>
+        <app-progress-spinner *ngIf="showAvatarSpinner" class="avatar-spinner"></app-progress-spinner>
+      </div>
+      <mat-card-title> Financial status for
+        <strong>{{currentChild.fname}} {{currentChild.lname}}</strong>
+      </mat-card-title>
+      <mat-card-subtitle>Surname on Record:
+        <strong>{{currentSurname}}</strong>
+      </mat-card-subtitle>
+      <mat-card-subtitle>
+        <strong>{{currentEmail}}</strong>
+      </mat-card-subtitle>
 
-        <div mat-card-avatar>
-          <i class="material-icons account-circle">account_circle</i>
-        </div>
-        <mat-card-title> Financial status for <strong>{{currentChild.fname}} {{currentChild.lname}}</strong></mat-card-title>
-        <mat-card-subtitle>Surname on Record: <strong>{{currentSurname}}</strong></mat-card-subtitle>
-        <mat-card-subtitle><strong>{{currentEmail}}</strong></mat-card-subtitle>
+      <div class="buttons">
+        <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
+      </div>
+    </mat-card-header>
 
-        <div class="buttons"> 
-          <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
-        </div>
-      </mat-card-header>
-      
-   
-
-      <mat-card-content>
-          <app-entry></app-entry>
-      </mat-card-content>
-      <!-- <mat-card-actions>
-      </mat-card-actions> -->
-
-    </mat-card>
-
- 
-
+    <mat-card-content>
+      <app-entry></app-entry>
+    </mat-card-content>
+  </mat-card>
 </ng-template>

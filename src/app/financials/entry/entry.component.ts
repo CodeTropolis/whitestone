@@ -41,6 +41,7 @@ export class EntryComponent implements OnInit {
 
   ngOnInit() {
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
+
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
@@ -50,6 +51,7 @@ export class EntryComponent implements OnInit {
         this.showView = false;
         this.category = x;
         if (this.category) {
+          this.financialService.showAvatarSpinner$.next(true); // financials-main.component subscribes to this to determine spinner display show/hide
           this.costKey = this.category.key + 'Cost';
           this.paymentKey = this.category.key + 'Payment';
           this.deductionKey = this.category.key + 'Deduction'
@@ -110,6 +112,7 @@ export class EntryComponent implements OnInit {
         [this.costKey]: ['', Validators.required],
       });
       this.showView = true;
+      this.financialService.showAvatarSpinner$.next(false);
       // Cost exist at this point. 
       // Set up payment and deduction fields.
     } else {
@@ -118,6 +121,7 @@ export class EntryComponent implements OnInit {
         [this.deductionKey]: [''] // View will not show this field if category is Tuition
       });
       this.showView = true;
+      this.financialService.showAvatarSpinner$.next(false);
     }
   }
 
