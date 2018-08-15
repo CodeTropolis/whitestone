@@ -18,6 +18,10 @@ export class EntryComponent implements OnInit {
   public deductionKey: string;
   public balanceKey: string;
 
+  public costMemoKey: string;
+  public paymentMemoKey: string;
+  public deductionMemoKey: string;
+
   public currentFinancialDoc: any;
   public category: any;
   public formGroup: FormGroup;
@@ -43,15 +47,21 @@ export class EntryComponent implements OnInit {
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
-        this.costExists = false; // Previous seleted category may have set this to true. Set to false then check for cost 
+        this.costExists = false; // Previous selected category may have set this to true. Set to false then check for cost 
         this.showView = false;
         this.category = x;
         if (this.category) {
           this.financialService.showAvatarSpinner$.next(true); // financials-main.component subscribes to this to determine spinner display show/hide
+
           this.costKey = this.category.key + 'Cost';
           this.paymentKey = this.category.key + 'Payment';
           this.deductionKey = this.category.key + 'Deduction'
           this.balanceKey = this.category.key + 'Balance';
+
+          this.costMemoKey = this.category.key + 'CostMemo';
+          this.paymentMemoKey = this.category.key + 'PaymentMemo';
+          this.deductionMemoKey = this.category.key + 'DeductionMemo';
+
           this.checkForCost(this.costKey);
           this.history(this.category);
           this.showHistory = false;
@@ -105,7 +115,9 @@ export class EntryComponent implements OnInit {
     } else {
       this.formGroup = this.fb.group({
         [this.paymentKey]: [''],
-        [this.deductionKey]: [''] // View will not show this field if category is Tuition
+        [this.paymentMemoKey]: [''],
+        [this.deductionKey]: [''], // View will not show this field if category is Tuition
+        [this.deductionMemoKey]: [''],
       });
     }
     this.showView = true;
