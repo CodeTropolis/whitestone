@@ -111,6 +111,7 @@ export class EntryComponent implements OnInit {
     if (!this.costExists) {
       this.formGroup = this.fb.group({
         [this.costKey]: ['', Validators.required],
+        [this.costMemoKey]: [''],
       });
     } else {
       this.formGroup = this.fb.group({
@@ -128,7 +129,7 @@ export class EntryComponent implements OnInit {
     this.formValue = this.formGroup.value;
     try {
       if (!this.costExists) {
-        await this.currentFinancialDoc.set({ [this.costKey]: this.formValue[this.costKey] }, { merge: true })
+        await this.currentFinancialDoc.set({ [this.costKey]: this.formValue[this.costKey], [this.costMemoKey]: this.formValue[this.costMemoKey] }, { merge: true })
           .then(() => {
             // Will remove section that shows cost form for current category
             this.costExists = true;
