@@ -3,8 +3,29 @@
 </div>
 
 <ng-template #ready>
-  Financials for {{currentChild.fname}} {{currentChild.lname}} | Surname on Record: {{currentSurname}} | Email: {{currentEmail}} 
-  <hr>
-  <button *ngFor = "let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
+
+  <!-- <mat-card>
+   <br/>
+    <mat-card><strong>{{currentChild.fname}} {{currentChild.lname}} </strong>| Surname on Record: <strong>{{currentSurname}}</strong> | <strong> {{currentEmail}}</strong></mat-card>
+    <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
+  </mat-card> -->
+
+  <mat-card>
+      <mat-card-header>
+        <div mat-card-avatar class="header-image"></div>
+        <mat-card-title> Financial status for <strong>{{currentChild.fname}} {{currentChild.lname}}</strong></mat-card-title>
+        <mat-card-subtitle>Surname on Record: <strong>{{currentSurname}}</strong></mat-card-subtitle>
+        <mat-card-subtitle><strong>{{currentEmail}}</strong></mat-card-subtitle>
+      </mat-card-header>
+      <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
+      <mat-card-content>
+         
+      </mat-card-content>
+      <mat-card-actions>
+          <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
+      </mat-card-actions>
+    </mat-card>
+
   <app-entry></app-entry>
+
 </ng-template>
