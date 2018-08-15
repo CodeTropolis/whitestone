@@ -1,3 +1,8 @@
+.account-circle {
+    float: left;
+    margin: -4px 5px 0 0;
+}
+
 table {
     background: #fbfdfe!important; 
     width: 100%;
@@ -8,11 +13,12 @@ table {
     background-color: #2fd08d !important;
     box-shadow: none !important;
 }
-/* 
+
 .mat-mini-fab {
     width: 24px;
     height: 24px;
+    /* font-size: 12px; */
 }
 
 
-.mat-mini-fab .mat-button-wrapper {padding-top:0 !important;} */
+/* .mat-mini-fab .mat-button-wrapper {padding-top:0 !important;} */
