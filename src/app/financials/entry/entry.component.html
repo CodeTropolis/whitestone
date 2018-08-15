@@ -13,14 +13,17 @@
 
             <ng-template #altInput>
                 <h4> {{category.val}} Balance: {{balance | currency}}
+                    <button (click)="showPaymentForm()">Enter Payment</button>
+                    <button *ngIf="category.val !== 'Tuition'" (click)="showDeductionForm()">Enter Deduction</button>
                     <button (click)="toggleHistory()">History</button>
                 </h4>
-                <mat-form-field>
+                <mat-form-field *ngIf="isEnteringPayment">
                     <input *ngIf="category.val === 'Tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
                     <input *ngIf="category.val !== 'Tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Credit" formControlName="{{paymentKey}}">
                 </mat-form-field>
 
-                <mat-form-field *ngIf="category.val !== 'Tuition'">
+                <!-- <mat-form-field *ngIf="category.val !== 'Tuition'"> -->
+                <mat-form-field *ngIf="isEnteringDeduction">
                     <input type=number step=0.01 matInput placeholder="{{category.val}} Deduction" formControlName="{{deductionKey}}">
                 </mat-form-field>
             </ng-template>

@@ -32,6 +32,9 @@ export class EntryComponent implements OnInit {
   public payments: any[] = [];
   public deductions: any[] = [];
 
+  public isEnteringPayment: boolean;
+  public isEnteringDeduction: boolean;
+
   //public transactions: any[] = [];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
@@ -201,6 +204,18 @@ export class EntryComponent implements OnInit {
   public toggleHistory() {
     this.showHistory = !this.showHistory;
   }
+
+  public showPaymentForm(){
+    this.isEnteringPayment = true;
+    this.isEnteringDeduction = false;
+  }
+
+
+  public showDeductionForm(){
+    this.isEnteringPayment = false;
+    this.isEnteringDeduction = true;
+  }
+
 
   private resetForm(formDirective) {
     formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
