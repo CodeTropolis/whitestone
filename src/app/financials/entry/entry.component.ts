@@ -65,6 +65,8 @@ export class EntryComponent implements OnInit {
           this.checkForCost(this.costKey);
           this.history(this.category);
           this.showHistory = false;
+          this.isEnteringDeduction = false;
+          this.isEnteringPayment = false;
         }
       });
   }
@@ -81,7 +83,7 @@ export class EntryComponent implements OnInit {
           }
           this.costExists = true;
         }
-        this.setupFormGroup(this.category); // Do this only after cost state determined.
+        this.setupFormGroup(); // Do this only after cost state determined.
       }
     );
   }
@@ -89,9 +91,9 @@ export class EntryComponent implements OnInit {
   private processBalance(key) {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
-        if (snapshot.data()[key]) {
-          this.balance = snapshot.data()[key];
-        }
+        // if (snapshot.data()[key]) {
+        //   this.balance = snapshot.data()[key];
+        // }
         if (key.includes('tuition')) {
           this.balance -= this.formValue[this.paymentKey];
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
@@ -107,7 +109,7 @@ export class EntryComponent implements OnInit {
     );
   }
 
-  private setupFormGroup(category: any) {
+  private setupFormGroup() {
     if (!this.costExists) {
       this.formGroup = this.fb.group({
         [this.costKey]: ['', Validators.required],
@@ -117,7 +119,7 @@ export class EntryComponent implements OnInit {
       this.formGroup = this.fb.group({
         [this.paymentKey]: [''],
         [this.paymentMemoKey]: [''],
-        [this.deductionKey]: [''], // View will not show this field if category is Tuition
+        [this.deductionKey]: [''], 
         [this.deductionMemoKey]: [''],
       });
     }
@@ -146,7 +148,7 @@ export class EntryComponent implements OnInit {
         // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
         if (this.formValue[this.paymentKey] !== "") {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments'); // creates the subcollection
-          await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], date: new Date })
+          await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], memo: this.formValue[this.paymentMemoKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
               this.resetForm(formDirective);
@@ -158,7 +160,7 @@ export class EntryComponent implements OnInit {
         }
         if (this.formValue[this.deductionKey] !== "") {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions');
-          await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], date: new Date })
+          await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], memo: this.formValue[this.deductionMemoKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
               this.resetForm(formDirective);
@@ -221,7 +223,7 @@ export class EntryComponent implements OnInit {
   private resetForm(formDirective) {
     formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
     this.formGroup.reset();
-    this.setupFormGroup(this.category);
+    this.setupFormGroup();
   }
 
   ngOnDestroy() {

@@ -29,7 +29,7 @@ export class FinancialsMainComponent implements OnInit {
     this.categories = this.financialsService.categories;
     this.catSubscribe = this.financialsService.showAvatarSpinner$.subscribe( x => {
       this.showAvatarSpinner = x;
-      console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
+      //console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
       })
     };
 
