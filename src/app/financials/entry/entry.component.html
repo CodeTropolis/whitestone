@@ -48,7 +48,7 @@
 
         </ng-template>
 
-        <button *ngIf="isEnteringDeduction || isEnteringPayment" [disabled]="!formGroup.valid" type="submit">Submit</button>
+        <button [disabled]="!formGroup.valid" type="submit">Submit</button>
     </form>
 
     <div *ngIf="showHistory">

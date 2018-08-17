@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
+import  * as firebase from 'firebase';
+//import {Firebase} from 'firebase/app';
 
 @Component({
   selector: 'app-entry',
@@ -39,7 +41,7 @@ export class EntryComponent implements OnInit {
   public isEnteringPayment: boolean;
   public isEnteringDeduction: boolean;
 
-  constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
+  constructor( private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
@@ -67,33 +69,40 @@ export class EntryComponent implements OnInit {
           this.showHistory = false;
           this.isEnteringDeduction = false;
           this.isEnteringPayment = false;
+
         }
       });
   }
 
   private checkForCost(costKey) {
-    this.currentFinancialDoc.ref.get().then(
-      snapshot => {
-        if (snapshot.data()[costKey]) {
-          this.cost = snapshot.data()[costKey];
-          if (snapshot.data()[this.balanceKey]) {
-            this.balance = snapshot.data()[this.balanceKey];
-          } else {
-            this.balance = this.cost;
-          }
-          this.costExists = true;
-        }
-        this.setupFormGroup(); // Do this only after cost state determined.
-      }
-    );
+
+    // const latestCost = this.currentFinancialDoc.collection(this.category.key + 'StartingCost', ref => {
+    //   ref.orderBy('date', 'desc').limit(1);
+    //   console.log(ref)
+    // });
+
+    const latestCost = this.currentFinancialDoc.collection(this.category.key + 'StartingCost').orderBy('date', 'desc').limit(1);
+     console.log(latestCost);
+
+    // this.currentFinancialDoc.ref.get().then(
+    //   snapshot => {
+    //     if (snapshot.data()[costKey]) {
+    //       this.cost = snapshot.data()[costKey];
+    //       if (snapshot.data()[this.balanceKey]) {
+    //         this.balance = snapshot.data()[this.balanceKey];
+    //       } else {
+    //         this.balance = this.cost;
+    //       }
+    //       this.costExists = true;
+    //     }
+    //     this.setupFormGroup(); // Do this only after cost state determined.
+    //   }
+    // );
   }
 
   private processBalance(key) {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
-        // if (snapshot.data()[key]) {
-        //   this.balance = snapshot.data()[key];
-        // }
         if (key.includes('tuition')) {
           this.balance -= this.formValue[this.paymentKey];
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
@@ -113,14 +122,14 @@ export class EntryComponent implements OnInit {
     if (!this.costExists) {
       this.formGroup = this.fb.group({
         [this.costKey]: ['', Validators.required],
-        [this.costMemoKey]: [''],
+        [this.costMemoKey]: ['', Validators.required],
       });
     } else {
       this.formGroup = this.fb.group({
-        [this.paymentKey]: [''],
-        [this.paymentMemoKey]: [''],
-        [this.deductionKey]: [''], 
-        [this.deductionMemoKey]: [''],
+        [this.paymentKey]: ['', Validators.required],
+        [this.paymentMemoKey]: ['', Validators.required],
+        [this.deductionKey]: ['', Validators.required], 
+        [this.deductionMemoKey]: ['', Validators.required],
       });
     }
     this.showView = true;
@@ -128,10 +137,16 @@ export class EntryComponent implements OnInit {
   }
 
   async submitHandler(formDirective) {
+    let date = new Date();
     this.formValue = this.formGroup.value;
     try {
       if (!this.costExists) {
-        await this.currentFinancialDoc.set({ [this.costKey]: this.formValue[this.costKey], [this.costMemoKey]: this.formValue[this.costMemoKey] }, { merge: true })
+        //await this.currentFinancialDoc.doc(date.toString()).set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey],  date: new Date  })
+       // await this.currentFinancialDoc.set({[this.category.key + 'StartingCost']: { [this.costKey]: this.formValue[this.costKey], [this.costMemoKey]: this.formValue[this.costMemoKey],  date: new Date  }}, { merge: true })
+      // Give starting cost its own subcollection
+      const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'StartingCost'); // creates the subcollection
+      // Create a document under the subcollection.  Document name is auto set.
+      await currentCategorySubcollection.ref.doc().set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey],  date: new Date  })
           .then(() => {
             // Will remove section that shows cost form for current category
             this.costExists = true;
@@ -140,14 +155,13 @@ export class EntryComponent implements OnInit {
             // Initially, balance will equal cost.
             this.balance = this.cost;
             // Write the initial balance to the database.
-            this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+            this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true }) // Balance for current category will be placed on the root of the current financial doc
             this.resetForm(formDirective);
           });
       } else {
-        let date = new Date();
         // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
         if (this.formValue[this.paymentKey] !== "") {
-          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments'); // creates the subcollection
+          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments');
           await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], memo: this.formValue[this.paymentMemoKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
