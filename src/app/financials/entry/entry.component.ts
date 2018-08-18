@@ -65,7 +65,8 @@ export class EntryComponent implements OnInit {
           this.paymentMemoKey = this.category.key + 'PaymentMemo';
           this.deductionMemoKey = this.category.key + 'DeductionMemo';
 
-          this.checkForCost();
+          this.getStartingCost();
+          this.getBalance();
           this.history(this.category);
           this.showHistory = false;
           this.isEnteringDeduction = false;
@@ -75,7 +76,7 @@ export class EntryComponent implements OnInit {
       });
   }
 
-  private checkForCost() {
+  private getStartingCost() {
     // Starting cost is now a collection.  
     // Get the latest starting cost by obtaining the latest document based on date.
     this.latestCost$ = this.currentFinancialDoc.collection(this.category.key + 'StartingCost',
@@ -89,26 +90,26 @@ export class EntryComponent implements OnInit {
         payload.forEach(x => {
           this.cost = x.startingCost;
           this.costExists = true;
-          this.checkForBalance();
         });
       } else {
         console.log(`No starting cost for: ${this.category.key}`);
         this.costExists = false;
-        this.setupFormGroup();
-       // this.setupStartingCostForm();
+       // this.setupFormGroup();
+       this.setupStartingCostForm();
       }
     });
   }
 
-  private checkForBalance() {
+  private getBalance() {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
         if (snapshot.data()[this.balanceKey]) { // If the balance exists in the database, set this.balance to value from db
           this.balance = snapshot.data()[this.balanceKey];
-        } else {
-          this.balance = this.cost; // If balance does not exist in db, balance is set to cost
-        }
-        this.setupFormGroup(); 
+        }else{return;}
+        // else {
+        //   this.balance = this.cost; // If balance does not exist in db, balance is set to cost
+        // }
+       // this.setupFormGroup(); 
         // this.showView = true;
         // this.financialService.showAvatarSpinner$.next(false);
       });
@@ -132,14 +133,14 @@ export class EntryComponent implements OnInit {
     );
   }
 
-  // private setupStartingCostForm() {
-  //   this.formGroup = this.fb.group({
-  //     [this.costKey]: ['', Validators.required],
-  //     [this.costMemoKey]: ['', Validators.required],
-  //   });
-  //   this.showView = true;
-  //   this.financialService.showAvatarSpinner$.next(false);
-  // }
+  private setupStartingCostForm() {
+    this.formGroup = this.fb.group({
+      [this.costKey]: ['', Validators.required],
+      [this.costMemoKey]: ['', Validators.required],
+    });
+    this.showView = true;
+    this.financialService.showAvatarSpinner$.next(false);
+  }
 
   // private setupPaymentForm() {
   //   this.formGroup = this.fb.group({
@@ -159,23 +160,23 @@ export class EntryComponent implements OnInit {
   //   this.financialService.showAvatarSpinner$.next(false);
   // }
 
-  private setupFormGroup() {
-    if (!this.costExists) {
-      this.formGroup = this.fb.group({
-        [this.costKey]: ['', Validators.required],
-        [this.costMemoKey]: ['', Validators.required],
-      });
-    } else {
-      this.formGroup = this.fb.group({
-        [this.paymentKey]: [''], // Validators here must be conditional or create separate form setups based on if cost, if payment, if deduction.
-        [this.paymentMemoKey]: [''],
-        [this.deductionKey]: [''],
-        [this.deductionMemoKey]: [''],
-      });
-    }
-    this.showView = true;
-    this.financialService.showAvatarSpinner$.next(false);
-  }
+  // private setupFormGroup() {
+  //   if (!this.costExists) {
+  //     this.formGroup = this.fb.group({
+  //       [this.costKey]: ['', Validators.required],
+  //       [this.costMemoKey]: ['', Validators.required],
+  //     });
+  //   } else {
+  //     this.formGroup = this.fb.group({
+  //       [this.paymentKey]: [''], // Validators here must be conditional or create separate form setups based on if cost, if payment, if deduction.
+  //       [this.paymentMemoKey]: [''],
+  //       [this.deductionKey]: [''],
+  //       [this.deductionMemoKey]: [''],
+  //     });
+  //   }
+  //   this.showView = true;
+  //   this.financialService.showAvatarSpinner$.next(false);
+  // }
 
   async submitHandler(formDirective) {
     console.log('submitHandler');
