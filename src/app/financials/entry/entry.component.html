@@ -3,6 +3,7 @@
     <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
 
         <div *ngIf="!costExists; else altInput">
+
             <h4>Please enter a starting amount for {{category.val}}.</h4>
             <mat-form-field>
                 <input type=number step=0.01 matInput placeholder="{{category.val}} Cost" formControlName="{{costKey}}">
@@ -10,6 +11,7 @@
             <mat-form-field>
                 <input type=text matInput placeholder="{{category.val}} Memo" formControlName="{{costMemoKey}}">
             </mat-form-field>
+            
         </div>
 
 

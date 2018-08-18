@@ -76,8 +76,8 @@ export class EntryComponent implements OnInit {
   }
 
   private checkForCost() {
-   // Starting cost is now a collection.  
-   // Get the latest starting cost by obtaining the latest document based on date.
+    // Starting cost is now a collection.  
+    // Get the latest starting cost by obtaining the latest document based on date.
     this.latestCost$ = this.currentFinancialDoc.collection(this.category.key + 'StartingCost',
       ref => {
         const doc = ref.orderBy('date', 'desc').limit(1);
@@ -91,10 +91,11 @@ export class EntryComponent implements OnInit {
           this.costExists = true;
           this.checkForBalance();
         });
-      }else{
-        console.log('no starting cost');
+      } else {
+        console.log(`No starting cost for: ${this.category.key}`);
         this.costExists = false;
         this.setupFormGroup();
+       // this.setupStartingCostForm();
       }
     });
   }
@@ -108,6 +109,8 @@ export class EntryComponent implements OnInit {
           this.balance = this.cost; // If balance does not exist in db, balance is set to cost
         }
         this.setupFormGroup(); 
+        // this.showView = true;
+        // this.financialService.showAvatarSpinner$.next(false);
       });
   }
 
@@ -129,6 +132,33 @@ export class EntryComponent implements OnInit {
     );
   }
 
+  // private setupStartingCostForm() {
+  //   this.formGroup = this.fb.group({
+  //     [this.costKey]: ['', Validators.required],
+  //     [this.costMemoKey]: ['', Validators.required],
+  //   });
+  //   this.showView = true;
+  //   this.financialService.showAvatarSpinner$.next(false);
+  // }
+
+  // private setupPaymentForm() {
+  //   this.formGroup = this.fb.group({
+  //     [this.paymentKey]: ['', Validators.required],
+  //     [this.paymentMemoKey]: ['', Validators.required],
+  //   });
+  //   this.showView = true;
+  //   this.financialService.showAvatarSpinner$.next(false);
+  // }
+
+  // private setupDeductionForm() {
+  //   this.formGroup = this.fb.group({
+  //     [this.deductionKey]: ['', Validators.required],
+  //     [this.deductionMemoKey]: ['', Validators.required],
+  //   });
+  //   this.showView = true;
+  //   this.financialService.showAvatarSpinner$.next(false);
+  // }
+
   private setupFormGroup() {
     if (!this.costExists) {
       this.formGroup = this.fb.group({
@@ -137,7 +167,7 @@ export class EntryComponent implements OnInit {
       });
     } else {
       this.formGroup = this.fb.group({
-        [this.paymentKey]: [''], // Validators here must be conditional or create seperate form setups based on if cost, if payment, if deduction.
+        [this.paymentKey]: [''], // Validators here must be conditional or create separate form setups based on if cost, if payment, if deduction.
         [this.paymentMemoKey]: [''],
         [this.deductionKey]: [''],
         [this.deductionMemoKey]: [''],
@@ -148,6 +178,7 @@ export class EntryComponent implements OnInit {
   }
 
   async submitHandler(formDirective) {
+    console.log('submitHandler');
     let date = new Date();
     this.formValue = this.formGroup.value;
     try {
@@ -234,19 +265,21 @@ export class EntryComponent implements OnInit {
   public showPaymentForm() {
     this.isEnteringPayment = true;
     this.isEnteringDeduction = false;
+    //this.setupPaymentForm();
   }
 
 
   public showDeductionForm() {
     this.isEnteringPayment = false;
     this.isEnteringDeduction = true;
+    //this.setupDeductionForm();
   }
 
 
   private resetForm(formDirective) {
     formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
     this.formGroup.reset();
-    this.setupFormGroup();
+    //this.setupFormGroup();
   }
 
   ngOnDestroy() {
