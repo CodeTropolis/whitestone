@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
-import  * as firebase from 'firebase';
-//import {Firebase} from 'firebase/app';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-entry',
@@ -41,7 +40,9 @@ export class EntryComponent implements OnInit {
   public isEnteringPayment: boolean;
   public isEnteringDeduction: boolean;
 
-  constructor( private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
+  public latestCost$: Observable<any[]>;
+
+  constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
@@ -64,7 +65,7 @@ export class EntryComponent implements OnInit {
           this.paymentMemoKey = this.category.key + 'PaymentMemo';
           this.deductionMemoKey = this.category.key + 'DeductionMemo';
 
-          this.checkForCost(this.costKey);
+          this.checkForCost();
           this.history(this.category);
           this.showHistory = false;
           this.isEnteringDeduction = false;
@@ -74,35 +75,45 @@ export class EntryComponent implements OnInit {
       });
   }
 
-  private checkForCost(costKey) {
+  private checkForCost() {
+   // Starting cost is now a collection.  
+   // Get the latest starting cost by obtaining the latest document based on date.
+    this.latestCost$ = this.currentFinancialDoc.collection(this.category.key + 'StartingCost',
+      ref => {
+        const doc = ref.orderBy('date', 'desc').limit(1);
+        return doc;
+      }).valueChanges()
 
-    // const latestCost = this.currentFinancialDoc.collection(this.category.key + 'StartingCost', ref => {
-    //   ref.orderBy('date', 'desc').limit(1);
-    //   console.log(ref)
-    // });
+    this.latestCost$.subscribe(payload => {
+      if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
+        payload.forEach(x => {
+          this.cost = x.startingCost;
+          this.costExists = true;
+          this.checkForBalance();
+        });
+      }else{
+        console.log('no starting cost');
+        this.costExists = false;
+        this.setupFormGroup();
+      }
+    });
+  }
 
-    const latestCost = this.currentFinancialDoc.collection(this.category.key + 'StartingCost').orderBy('date', 'desc').limit(1);
-     console.log(latestCost);
-
-    // this.currentFinancialDoc.ref.get().then(
-    //   snapshot => {
-    //     if (snapshot.data()[costKey]) {
-    //       this.cost = snapshot.data()[costKey];
-    //       if (snapshot.data()[this.balanceKey]) {
-    //         this.balance = snapshot.data()[this.balanceKey];
-    //       } else {
-    //         this.balance = this.cost;
-    //       }
-    //       this.costExists = true;
-    //     }
-    //     this.setupFormGroup(); // Do this only after cost state determined.
-    //   }
-    // );
+  private checkForBalance() {
+    this.currentFinancialDoc.ref.get().then(
+      snapshot => {
+        if (snapshot.data()[this.balanceKey]) { // If the balance exists in the database, set this.balance to value from db
+          this.balance = snapshot.data()[this.balanceKey];
+        } else {
+          this.balance = this.cost; // If balance does not exist in db, balance is set to cost
+        }
+        this.setupFormGroup(); 
+      });
   }
 
   private processBalance(key) {
     this.currentFinancialDoc.ref.get().then(
-      snapshot => {
+      _ => {
         if (key.includes('tuition')) {
           this.balance -= this.formValue[this.paymentKey];
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
@@ -126,10 +137,10 @@ export class EntryComponent implements OnInit {
       });
     } else {
       this.formGroup = this.fb.group({
-        [this.paymentKey]: ['', Validators.required],
-        [this.paymentMemoKey]: ['', Validators.required],
-        [this.deductionKey]: ['', Validators.required], 
-        [this.deductionMemoKey]: ['', Validators.required],
+        [this.paymentKey]: [''], // Validators here must be conditional or create seperate form setups based on if cost, if payment, if deduction.
+        [this.paymentMemoKey]: [''],
+        [this.deductionKey]: [''],
+        [this.deductionMemoKey]: [''],
       });
     }
     this.showView = true;
@@ -141,12 +152,10 @@ export class EntryComponent implements OnInit {
     this.formValue = this.formGroup.value;
     try {
       if (!this.costExists) {
-        //await this.currentFinancialDoc.doc(date.toString()).set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey],  date: new Date  })
-       // await this.currentFinancialDoc.set({[this.category.key + 'StartingCost']: { [this.costKey]: this.formValue[this.costKey], [this.costMemoKey]: this.formValue[this.costMemoKey],  date: new Date  }}, { merge: true })
-      // Give starting cost its own subcollection
-      const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'StartingCost'); // creates the subcollection
-      // Create a document under the subcollection.  Document name is auto set.
-      await currentCategorySubcollection.ref.doc().set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey],  date: new Date  })
+        // Give starting cost its own subcollection
+        const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'StartingCost'); // creates the subcollection
+        // Create a document under the subcollection.  Document name is auto set.
+        await currentCategorySubcollection.ref.doc().set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey], date: new Date })
           .then(() => {
             // Will remove section that shows cost form for current category
             this.costExists = true;
@@ -194,7 +203,7 @@ export class EntryComponent implements OnInit {
     // Clear out array else view will aggregate - will repeat array for each entry.
     this.payments = [];
     this.deductions = [];
-    
+
     this.currentFinancialDoc.collection(cat.key + 'Payments').ref.get()
       .then(snapshot => {
         snapshot.forEach(
@@ -222,13 +231,13 @@ export class EntryComponent implements OnInit {
     this.showHistory = !this.showHistory;
   }
 
-  public showPaymentForm(){
+  public showPaymentForm() {
     this.isEnteringPayment = true;
     this.isEnteringDeduction = false;
   }
 
 
-  public showDeductionForm(){
+  public showDeductionForm() {
     this.isEnteringPayment = false;
     this.isEnteringDeduction = true;
   }
