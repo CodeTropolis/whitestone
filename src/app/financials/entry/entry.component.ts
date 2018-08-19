@@ -42,6 +42,8 @@ export class EntryComponent implements OnInit {
 
   public latestCost$: Observable<any[]>;
 
+  public showSubmitButton: boolean;
+
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
@@ -71,6 +73,7 @@ export class EntryComponent implements OnInit {
           this.showHistory = false;
           this.isEnteringDeduction = false;
           this.isEnteringPayment = false;
+          this.showSubmitButton = true;
 
         }
       });
@@ -110,20 +113,25 @@ export class EntryComponent implements OnInit {
       });
   }
 
-  private processBalance(key) {
+  private processBalance(key, formDirective) {
+    //console.log("processBalance()");
     this.currentFinancialDoc.ref.get()
       .then(_ => {
         if (key.includes('tuition')) {
           this.balance -= this.formValue[this.paymentKey];
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
-          if (this.formValue[this.paymentKey] !== "") {
+          if (this.isEnteringPayment) {
             this.balance = (this.balance + this.formValue[this.paymentKey]); // NOTE: Wrap formula in () and set input to type number or else += concats. 
           }
-          if (this.formValue[this.deductionKey] !== "") {
+          if (this.isEnteringDeduction) {
             this.balance -= this.formValue[this.deductionKey];
           }
         }
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true });
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+        .then(_ => {
+          // this.history(this.category)
+          // this.resetForm(formDirective);
+        });
       }
       );
   }
@@ -150,7 +158,8 @@ export class EntryComponent implements OnInit {
   }
 
   async submitHandler(formDirective) {
-    //console.log('submitHandler');
+    this.showSubmitButton = false; // Prevent value from multiple entry upon rapid repeat of enter key
+    console.log('submitHandler');
     let date = new Date();
     this.formValue = this.formGroup.value;
     try {
@@ -176,9 +185,8 @@ export class EntryComponent implements OnInit {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments');
           await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], memo: this.formValue[this.paymentMemoKey], date: new Date })
             .then(_ => {
-              this.processBalance(this.balanceKey);
-              //this.resetForm(formDirective);
-              // Update history
+              this.processBalance(this.balanceKey, formDirective);
+              this.resetForm(formDirective);
               this.history(this.category);
 
             });
@@ -187,9 +195,8 @@ export class EntryComponent implements OnInit {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions');
           await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], memo: this.formValue[this.deductionMemoKey], date: new Date })
             .then(_ => {
-              this.processBalance(this.balanceKey);
-              //this.resetForm(formDirective);
-              // Update history
+              this.processBalance(this.balanceKey, formDirective);
+              this.resetForm(formDirective);
               this.history(this.category);
             }
             );
@@ -253,6 +260,7 @@ export class EntryComponent implements OnInit {
     this.formGroup.reset();
     this.showView = true;
     this.financialService.showAvatarSpinner$.next(false);
+    this.showSubmitButton = true;
   }
 
   public toggleHistory() {
