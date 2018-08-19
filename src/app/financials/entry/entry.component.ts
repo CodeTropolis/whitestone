@@ -77,8 +77,7 @@ export class EntryComponent implements OnInit {
   }
 
   private getStartingCost() {
-    // Starting cost is now a collection.  
-    // Get the latest starting cost by obtaining the latest document based on date.
+    // Starting cost is now a collection. Get the latest starting cost by obtaining the latest document based on date.
     this.latestCost$ = this.currentFinancialDoc.collection(this.category.key + 'StartingCost',
       ref => {
         const doc = ref.orderBy('date', 'desc').limit(1);
@@ -90,12 +89,14 @@ export class EntryComponent implements OnInit {
         payload.forEach(x => {
           this.cost = x.startingCost;
           this.costExists = true;
+          console.log(`Starting cost for: ${this.category.key}: ${this.cost}`);
+          this.showView = true; // Show view which will dynamically determine showing either the paymentor deduction forms.
+          this.financialService.showAvatarSpinner$.next(false);
         });
       } else {
         console.log(`No starting cost for: ${this.category.key}`);
         this.costExists = false;
-       // this.setupFormGroup();
-       this.setupStartingCostForm();
+        this.showStartingCostForm();
       }
     });
   }
@@ -105,19 +106,13 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[this.balanceKey]) { // If the balance exists in the database, set this.balance to value from db
           this.balance = snapshot.data()[this.balanceKey];
-        }else{return;}
-        // else {
-        //   this.balance = this.cost; // If balance does not exist in db, balance is set to cost
-        // }
-       // this.setupFormGroup(); 
-        // this.showView = true;
-        // this.financialService.showAvatarSpinner$.next(false);
+        }
       });
   }
 
   private processBalance(key) {
-    this.currentFinancialDoc.ref.get().then(
-      _ => {
+    this.currentFinancialDoc.ref.get()
+      .then(_ => {
         if (key.includes('tuition')) {
           this.balance -= this.formValue[this.paymentKey];
         } else { // Its not tution so process balance by adding payments and subtracting deductions to existing balance
@@ -130,56 +125,32 @@ export class EntryComponent implements OnInit {
         }
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true });
       }
-    );
+      );
   }
 
-  private setupStartingCostForm() {
+  private setupStartingCostFormControls() {
     this.formGroup = this.fb.group({
       [this.costKey]: ['', Validators.required],
       [this.costMemoKey]: ['', Validators.required],
     });
-    this.showView = true;
-    this.financialService.showAvatarSpinner$.next(false);
   }
 
-  // private setupPaymentForm() {
-  //   this.formGroup = this.fb.group({
-  //     [this.paymentKey]: ['', Validators.required],
-  //     [this.paymentMemoKey]: ['', Validators.required],
-  //   });
-  //   this.showView = true;
-  //   this.financialService.showAvatarSpinner$.next(false);
-  // }
+  private setupPaymentFormControls() {
+    this.formGroup = this.fb.group({
+      [this.paymentKey]: ['', Validators.required],
+      [this.paymentMemoKey]: ['', Validators.required],
+    });
+  }
 
-  // private setupDeductionForm() {
-  //   this.formGroup = this.fb.group({
-  //     [this.deductionKey]: ['', Validators.required],
-  //     [this.deductionMemoKey]: ['', Validators.required],
-  //   });
-  //   this.showView = true;
-  //   this.financialService.showAvatarSpinner$.next(false);
-  // }
-
-  // private setupFormGroup() {
-  //   if (!this.costExists) {
-  //     this.formGroup = this.fb.group({
-  //       [this.costKey]: ['', Validators.required],
-  //       [this.costMemoKey]: ['', Validators.required],
-  //     });
-  //   } else {
-  //     this.formGroup = this.fb.group({
-  //       [this.paymentKey]: [''], // Validators here must be conditional or create separate form setups based on if cost, if payment, if deduction.
-  //       [this.paymentMemoKey]: [''],
-  //       [this.deductionKey]: [''],
-  //       [this.deductionMemoKey]: [''],
-  //     });
-  //   }
-  //   this.showView = true;
-  //   this.financialService.showAvatarSpinner$.next(false);
-  // }
+  private setupDeductionFormControls() {
+    this.formGroup = this.fb.group({
+      [this.deductionKey]: ['', Validators.required],
+      [this.deductionMemoKey]: ['', Validators.required],
+    });
+  }
 
   async submitHandler(formDirective) {
-    console.log('submitHandler');
+    //console.log('submitHandler');
     let date = new Date();
     this.formValue = this.formGroup.value;
     try {
@@ -188,7 +159,7 @@ export class EntryComponent implements OnInit {
         const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'StartingCost'); // creates the subcollection
         // Create a document under the subcollection.  Document name is auto set.
         await currentCategorySubcollection.ref.doc().set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey], date: new Date })
-          .then(() => {
+          .then(_ => {
             // Will remove section that shows cost form for current category
             this.costExists = true;
             // Update the cost property else cost will show from previously selected category
@@ -201,25 +172,23 @@ export class EntryComponent implements OnInit {
           });
       } else {
         // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
-        if (this.formValue[this.paymentKey] !== "") {
+        if (this.isEnteringPayment) {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments');
           await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], memo: this.formValue[this.paymentMemoKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
-              this.resetForm(formDirective);
-
+              //this.resetForm(formDirective);
               // Update history
               this.history(this.category);
 
             });
         }
-        if (this.formValue[this.deductionKey] !== "") {
+        if (this.isEnteringDeduction) {
           const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions');
           await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], memo: this.formValue[this.deductionMemoKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey);
-              this.resetForm(formDirective);
-
+              //this.resetForm(formDirective);
               // Update history
               this.history(this.category);
             }
@@ -244,8 +213,7 @@ export class EntryComponent implements OnInit {
             this.payments.push({ payment: item.data().payment, date: date })
           }
         )
-      }
-      );
+      });
 
     this.currentFinancialDoc.collection(cat.key + 'Deductions').ref.get()
       .then(snapshot => {
@@ -255,32 +223,40 @@ export class EntryComponent implements OnInit {
             this.deductions.push({ deduction: item.data().deduction, date: date })
           }
         )
-      }
-      );
+      });
   }
 
-  public toggleHistory() {
-    this.showHistory = !this.showHistory;
+  private showStartingCostForm() {
+    this.setupStartingCostFormControls();
+    this.showView = true;
+    this.financialService.showAvatarSpinner$.next(false);
   }
 
   public showPaymentForm() {
     this.isEnteringPayment = true;
     this.isEnteringDeduction = false;
-    //this.setupPaymentForm();
+    this.setupPaymentFormControls();
+    this.showView = true;
+    this.financialService.showAvatarSpinner$.next(false);
   }
-
 
   public showDeductionForm() {
     this.isEnteringPayment = false;
     this.isEnteringDeduction = true;
-    //this.setupDeductionForm();
+    this.setupDeductionFormControls();
+    this.showView = true;
+    this.financialService.showAvatarSpinner$.next(false);
   }
-
 
   private resetForm(formDirective) {
     formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
     this.formGroup.reset();
-    //this.setupFormGroup();
+    this.showView = true;
+    this.financialService.showAvatarSpinner$.next(false);
+  }
+
+  public toggleHistory() {
+    this.showHistory = !this.showHistory;
   }
 
   ngOnDestroy() {
