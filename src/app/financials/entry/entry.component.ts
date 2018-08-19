@@ -217,7 +217,7 @@ export class EntryComponent implements OnInit {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            this.payments.push({ payment: item.data().payment, date: date })
+            this.payments.push({ payment: item.data().payment, date: date, memo: item.data().memo })
           }
         )
       });
@@ -227,7 +227,7 @@ export class EntryComponent implements OnInit {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            this.deductions.push({ deduction: item.data().deduction, date: date })
+            this.deductions.push({ deduction: item.data().deduction, date: date, memo: item.data().memo })
           }
         )
       });
