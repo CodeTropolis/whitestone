@@ -1,6 +1,7 @@
 
 button, mat-form-field {margin-right: 1em;}
 
-table.history {
-    width: 100%;;
-}
+
+.history  {margin-top:2em;}
+
+.history table {width: 100%;;}
