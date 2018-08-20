@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
@@ -11,8 +11,6 @@ import { MatSort, MatTableDataSource } from '@angular/material';
   styleUrls: ['./entry.component.css']
 })
 export class EntryComponent implements OnInit {
-
-  @ViewChild(MatSort) sort: MatSort;
 
   private categorySubscription: any;
   private latestCostSubscription: any;
@@ -57,13 +55,23 @@ export class EntryComponent implements OnInit {
 
   public showSubmitButton: boolean;
 
+
+  //@ViewChild(MatSort) sort: MatSort;
+
+  private sort: MatSort;
+
+  @ViewChild(MatSort) set content(c: MatSort) {
+    this.sort = c;
+    console.log(`this.sort: ${this.sort}`);
+  }
+
   public historyTableData: MatTableDataSource<any>;
-  public historyTableColumns: string[] = [];
+  public historyTableColumns = ['amount', 'type', 'date', 'memo'];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
-    console.log(`entry.component init()`);
+    //console.log(`entry.component init()`);
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
@@ -111,12 +119,9 @@ export class EntryComponent implements OnInit {
 
           latestPayment.subscribe(payload => {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
-             // console.log(`${this.paymentsCollection} exists`);
+              // console.log(`${this.paymentsCollection} exists`);
               this.hasHistory = true;
-            } else {
-              //console.log(`${this.paymentsCollection} does not exist.`);
-              //this.hasHistory = false;
-            }
+            } 
           });
 
           // Check for a deduction in the current category's deductions subcollection
@@ -128,12 +133,9 @@ export class EntryComponent implements OnInit {
 
           latestDeduction.subscribe(payload => {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
-             // console.log(`${this.deductionsCollection} exists`);
+              // console.log(`${this.deductionsCollection} exists`);
               this.hasHistory = true;
-            } else {
-              //console.log(`${this.deductionsCollection} does not exist.`);
-              //this.hasHistory = false;
-            }
+            } 
           });
 
 
@@ -155,12 +157,12 @@ export class EntryComponent implements OnInit {
         payload.forEach(x => {
           this.cost = x.startingCost;
           this.costExists = true;
-          console.log(`Starting cost for: ${this.category.key}: ${this.cost}`);
+          // console.log(`Starting cost for: ${this.category.key}: ${this.cost}`);
           this.showView = true; // Show view which will dynamically determine showing either the paymentor deduction forms.
           this.financialService.showAvatarSpinner$.next(false);
         });
       } else {
-        console.log(`No starting cost for: ${this.category.key}`);
+        //console.log(`No starting cost for: ${this.category.key}`);
         this.costExists = false;
         this.showStartingCostForm();
       }
@@ -268,7 +270,9 @@ export class EntryComponent implements OnInit {
     }
   }
 
-  public history() {  // history() is ran on init and on payments / deductions
+ // history() is ran on init and on payments / deductions
+  public history() { 
+
     // Clear out array else view will aggregate - will repeat array for each entry.
     this.transactions = [];
 
@@ -294,18 +298,6 @@ export class EntryComponent implements OnInit {
       });
 
     this.hasHistory = true;
-    this.historyTableData = new MatTableDataSource(this.transactions);
-
-    this.historyTableData.sort = this.sort;
-    this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
-
-    // this.historyTableData.filterPredicate = (data, filter) => {
-    //   let dataStr = data.amount + data.type + data.date + data.memo;
-    //   dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-    //   return dataStr.indexOf(filter) != -1;
-    // }
-
-
   }
 
   private showStartingCostForm() {
@@ -339,7 +331,15 @@ export class EntryComponent implements OnInit {
   }
 
   public toggleHistory() {
+
     this.showHistory = !this.showHistory;
+    this.historyTableData = new MatTableDataSource(this.transactions);
+    this.historyTableData.sort = this.sort;
+
+    // setTimeout(() => {
+  
+    // }, 1);
+
   }
 
   ngOnDestroy() {
