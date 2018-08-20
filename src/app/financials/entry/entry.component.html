@@ -54,19 +54,23 @@
     </div>
 
     <div *ngIf="showHistory" class="history">
-    
+
         <h3>Transaction History for {{category.val}}</h3>
 
         <table mat-table [dataSource]="transactions" matSort>
 
-            <ng-container matColumnDef="payment">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment </th>
-                <td mat-cell *matCellDef="let row"> {{row.payment | currency}}</td>
+            <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Amount </th>
+                <td mat-cell *matCellDef="let row">
+                    <span [class.deduction]="row.type === 'Deduction'"> {{row.amount | currency}}</span>
+                </td>
             </ng-container>
 
-            <ng-container matColumnDef="deduction">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Deduction </th>
-                <td mat-cell *matCellDef="let row"> {{row.deduction | currency}}</td>
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+                <td mat-cell *matCellDef="let row">
+                    <span [class.deduction]="row.type === 'Deduction'">{{row.type}}</span>
+                </td>
             </ng-container>
 
             <ng-container matColumnDef="date">

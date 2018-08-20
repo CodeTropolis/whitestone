@@ -89,7 +89,7 @@ export class EntryComponent implements OnInit {
 
           this.getStartingCost();
           this.getBalance();
-          this.history();
+          this.history(); // The history method will populate transactions array on init
           this.showHistory = false;
           this.isEnteringDeduction = false;
           this.isEnteringPayment = false;
@@ -266,10 +266,8 @@ export class EntryComponent implements OnInit {
     }
   }
 
-  public history() {
+  public history() {  // history() is ran on init and on payments / deductions
     // Clear out array else view will aggregate - will repeat array for each entry.
-    // this.payments = [];
-    // this.deductions = [];
     this.transactions = [];
 
     this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
@@ -277,7 +275,7 @@ export class EntryComponent implements OnInit {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            this.transactions.push({ payment: item.data().payment, date: date, memo: item.data().memo })
+            this.transactions.push({ amount: item.data().payment, type:"Payment", date: date, memo: item.data().memo })
           }
         )
       });
@@ -287,14 +285,14 @@ export class EntryComponent implements OnInit {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            this.transactions.push({ deduction: item.data().deduction, date: date, memo: item.data().memo })
+            this.transactions.push({ amount: item.data().deduction, type:"Deduction", date: date, memo: item.data().memo })
           }
         )
       });
 
     this.hasHistory = true;
     this.historyTableData = new MatTableDataSource(this.transactions);
-    this.historyTableColumns = ['payment', 'deduction', 'date', 'memo'];
+    this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
 
   }
 
