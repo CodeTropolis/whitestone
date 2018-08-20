@@ -86,11 +86,5 @@
             <tr mat-header-row *matHeaderRowDef="historyTableColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: historyTableColumns;"></tr>
         </table>
-        <!-- <ul *ngFor="let p of payments">
-            <li>Payment: {{p.payment | currency}} | {{p.date | date:"medium"}} | Memo: {{p.memo}}</li>
-        </ul>
-        <ul *ngFor="let d of deductions">
-            <li>Deduction: {{d.deduction | currency}} | {{d.date | date:"medium"}} | Memo: {{d.memo}}</li>
-        </ul> -->
     </div>
 </div>

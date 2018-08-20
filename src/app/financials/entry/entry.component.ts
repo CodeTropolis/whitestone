@@ -275,7 +275,8 @@ export class EntryComponent implements OnInit {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            this.transactions.push({ amount: item.data().payment, type:"Payment", date: date, memo: item.data().memo })
+            const type = this.category.key === 'tuition' ? "Payment" : "Credit"
+            this.transactions.push({ amount: item.data().payment, type:type, date: date, memo: item.data().memo })
           }
         )
       });
