@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
@@ -11,6 +11,8 @@ import { MatSort, MatTableDataSource } from '@angular/material';
   styleUrls: ['./entry.component.css']
 })
 export class EntryComponent implements OnInit {
+
+  @ViewChild(MatSort) sort: MatSort;
 
   private categorySubscription: any;
   private latestCostSubscription: any;
@@ -73,10 +75,10 @@ export class EntryComponent implements OnInit {
         if (this.category) {
           this.financialService.showAvatarSpinner$.next(true); // financials-main.component subscribes to this to determine spinner display show/hide
 
-           // Buid collection names.
-           this.startingCostCollection = this.category.key + 'StartingCost';
-           this.paymentsCollection = this.category.key + 'Payments';
-           this.deductionsCollection = this.category.key + 'Deductions';
+          // Buid collection names.
+          this.startingCostCollection = this.category.key + 'StartingCost';
+          this.paymentsCollection = this.category.key + 'Payments';
+          this.deductionsCollection = this.category.key + 'Deductions';
 
           this.costKey = this.category.key + 'Cost';
           this.paymentKey = this.category.key + 'Payment';
@@ -109,10 +111,10 @@ export class EntryComponent implements OnInit {
 
           latestPayment.subscribe(payload => {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
-              console.log(`${this.paymentsCollection} exists`);
+             // console.log(`${this.paymentsCollection} exists`);
               this.hasHistory = true;
             } else {
-              console.log(`${this.paymentsCollection} does not exist.`);
+              //console.log(`${this.paymentsCollection} does not exist.`);
               //this.hasHistory = false;
             }
           });
@@ -126,10 +128,10 @@ export class EntryComponent implements OnInit {
 
           latestDeduction.subscribe(payload => {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
-              console.log(`${this.deductionsCollection} exists`);
+             // console.log(`${this.deductionsCollection} exists`);
               this.hasHistory = true;
             } else {
-              console.log(`${this.deductionsCollection} does not exist.`);
+              //console.log(`${this.deductionsCollection} does not exist.`);
               //this.hasHistory = false;
             }
           });
@@ -276,7 +278,7 @@ export class EntryComponent implements OnInit {
           item => {
             let date = item.data().date.toDate();
             const type = this.category.key === 'tuition' ? "Payment" : "Credit"
-            this.transactions.push({ amount: item.data().payment, type:type, date: date, memo: item.data().memo })
+            this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
           }
         )
       });
@@ -286,14 +288,23 @@ export class EntryComponent implements OnInit {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            this.transactions.push({ amount: item.data().deduction, type:"Deduction", date: date, memo: item.data().memo })
+            this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
           }
         )
       });
 
     this.hasHistory = true;
     this.historyTableData = new MatTableDataSource(this.transactions);
+
+    this.historyTableData.sort = this.sort;
     this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
+
+    // this.historyTableData.filterPredicate = (data, filter) => {
+    //   let dataStr = data.amount + data.type + data.date + data.memo;
+    //   dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+    //   return dataStr.indexOf(filter) != -1;
+    // }
+
 
   }
 
@@ -332,8 +343,8 @@ export class EntryComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.categorySubscription.unsubscribe();
-    this.latestCostSubscription.unsubscribe();
+    // this.categorySubscription.unsubscribe();
+    // this.latestCostSubscription.unsubscribe();
   }
 
 }
