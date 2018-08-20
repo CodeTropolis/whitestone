@@ -6,7 +6,7 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireStorageModule } from 'angularfire2/storage';
 import { environment } from '../../environments/environment';
-import { MatCardModule, MatButtonModule, MatFormFieldModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatCardModule, MatButtonModule, MatFormFieldModule, MatProgressSpinnerModule, MatTableModule } from '@angular/material';
 import { MatInputModule } from '@angular/material/input';
 import { ProgressSpinnerComponent } from '../progress-spinner/progress-spinner.component';
 import { MapToIterablePipe } from './pipes/map-to-iterable.pipe';
@@ -24,6 +24,7 @@ import { ReactiveFormsModule }   from '@angular/forms';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatInputModule,
+    MatTableModule,
     ReactiveFormsModule,
   ],
   providers: [],
@@ -38,6 +39,7 @@ import { ReactiveFormsModule }   from '@angular/forms';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatInputModule,
+    MatTableModule,
     MapToIterablePipe,
     ReactiveFormsModule,
   ],

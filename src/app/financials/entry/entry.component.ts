@@ -3,6 +3,7 @@ import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
 import { Observable } from 'rxjs';
+import { MatSort, MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-entry',
@@ -52,7 +53,8 @@ export class EntryComponent implements OnInit {
 
   public showSubmitButton: boolean;
 
-
+  public historyTableData: MatTableDataSource<any>;
+  public historyTableColumns: string[] = [];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -91,6 +93,8 @@ export class EntryComponent implements OnInit {
           this.isEnteringPayment = false;
           this.showSubmitButton = true;
 
+          this.hasHistory = false;
+
           // Current category may have a history upon init.  
           // Set hasHistory based on presence of payment or deduction subcollection.
 
@@ -107,11 +111,11 @@ export class EntryComponent implements OnInit {
               this.hasHistory = true;
             } else {
               console.log(`${this.paymentsCollection} does not exist.`);
-              this.hasHistory = false;
+              //this.hasHistory = false;
             }
           });
 
-          // Check for a payment in the current category's deductions subcollection
+          // Check for a deduction in the current category's deductions subcollection
           const latestDeduction = this.currentFinancialDoc.collection(this.deductionsCollection,
             ref => {
               const doc = ref.orderBy('date', 'desc').limit(1);
@@ -124,7 +128,7 @@ export class EntryComponent implements OnInit {
               this.hasHistory = true;
             } else {
               console.log(`${this.deductionsCollection} does not exist.`);
-              this.hasHistory = false;
+              //this.hasHistory = false;
             }
           });
 
@@ -286,6 +290,10 @@ export class EntryComponent implements OnInit {
       });
 
     this.hasHistory = true;
+
+    this.historyTableData = new MatTableDataSource(this.payments);
+    this.historyTableColumns = ['amount', 'date', 'memo'];
+
   }
 
   private showStartingCostForm() {

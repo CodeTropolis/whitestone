@@ -14,9 +14,12 @@
     </div>
 
     <ng-template #transactionButtons>
-        <h4> {{category.val}} Balance: {{balance | currency}}</h4>
+        <h3> Current Category: {{category.val}}</h3>
+        <h4>Starting Cost: {{this.cost | currency}} | Balance: {{balance | currency}}</h4>
         <div class="buttons">
-            <button mat-flat-button color="primary" *ngIf="category.key === 'tuition'" (click)="showPaymentForm()">Enter Payment</button>
+            <button mat-flat-button color="primary" *ngIf="category.key === 'tuition'" (click)="showPaymentForm()">Enter
+                Payment
+            </button>
             <span *ngIf="category.key !== 'tuition'">
                 <button mat-flat-button color="primary" (click)="showPaymentForm()">Enter Credit</button>
                 <button mat-flat-button color="primary" (click)="showDeductionForm()">Enter Deduction</button>
@@ -51,11 +54,35 @@
     </div>
 
     <div *ngIf="showHistory">
-        <ul *ngFor="let p of payments">
+        <h3>Transaction History</h3>
+        <table class="history" mat-table [dataSource]="payments" matSort>
+
+            <!--- Note that these columns can be defined in any order.
+                          The actual rendered columns are set as a property on the row definition" -->
+
+            <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Amount </th>
+                <td mat-cell *matCellDef="let row"> {{row.payment | currency}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+                <td mat-cell *matCellDef="let row"> {{row.date | date:"medium"}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="memo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Memo</th>
+                <td mat-cell *matCellDef="let row"> {{row.memo}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="historyTableColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: historyTableColumns;"></tr>
+        </table>
+        <!-- <ul *ngFor="let p of payments">
             <li>Payment: {{p.payment | currency}} | {{p.date | date:"medium"}} | Memo: {{p.memo}}</li>
         </ul>
         <ul *ngFor="let d of deductions">
             <li>Deduction: {{d.deduction | currency}} | {{d.date | date:"medium"}} | Memo: {{d.memo}}</li>
-        </ul>
+        </ul> -->
     </div>
 </div>
