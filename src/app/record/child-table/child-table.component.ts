@@ -13,13 +13,14 @@ export class ChildTableComponent implements OnInit {
   @Input() record;
   @ViewChild(MatSort) sort: MatSort;
   public data: MatTableDataSource<any>;
-  public displayedColumnsChildren = ['firstname', 'lastname', 'grade', 'gender', 'race', 'financials'];
+  public displayedColumnsChildren = ['fname', 'lname', 'grade', 'gender', 'race', 'financials'];
 
   constructor(private dataService: DataService, private router: Router) { }
 
   ngOnInit() {
     this.data = new MatTableDataSource(this.dataService.convertMapToArray(this.record.children));
     this.data.sort = this.sort;
+    console.log(`this.data.sort: ${this.data.sort}`);
   }
 
   financials(child) {

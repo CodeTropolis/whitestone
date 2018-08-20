@@ -18,7 +18,7 @@ button {margin:1em 0.25em;}
     width: 120px; /* match font size of .account-circle */
     margin-top: -20px;
 }
-
+/* 
 .mat-card-header {
-    /* justify-content: space-evenly; */
-}
+    justify-content: space-evenly;
+} */

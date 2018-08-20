@@ -36,12 +36,16 @@ export class RecordListComponent implements OnInit {
       this.records = x;
       this.ds = new MatTableDataSource(this.records);
 
-      this.ds.filterPredicate = (data, filter) => {
-        let dataStr = data.surname + data.email + data.seconaryEmail + data.district + data.catholic;
-        data.children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-        dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-        return dataStr.indexOf(filter) != -1;
-      }
+      // Need to fix filtering for including childrent this. data.children no longer an array.
+
+      // this.ds.filterPredicate = (data, filter) => {
+      //   // console.log(data.children);
+      //   // return data;
+      //   let dataStr = data.surname + data.email + data.seconaryEmail + data.district + data.catholic;
+      //   data.children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
+      //   dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+      //   return dataStr.indexOf(filter) != -1;
+      // }
 
       this.ds.paginator = this.paginator;
       this.ds.sort = this.sort;
