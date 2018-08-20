@@ -28,6 +28,11 @@ export class EntryComponent implements OnInit {
 
   public currentFinancialDoc: any;
   public category: any;
+
+  private startingCostCollection: string;
+  private paymentsCollection: string;
+  private deductionsCollection: string;
+
   public formGroup: FormGroup;
   public costExists: boolean;
   public showHistory: boolean;
@@ -47,9 +52,7 @@ export class EntryComponent implements OnInit {
 
   public showSubmitButton: boolean;
 
-  private startingCostCollection: string;
-  private paymentsCollection: string;
-  private deductionsCollection: string;
+
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -66,6 +69,11 @@ export class EntryComponent implements OnInit {
         if (this.category) {
           this.financialService.showAvatarSpinner$.next(true); // financials-main.component subscribes to this to determine spinner display show/hide
 
+           // Buid collection names.
+           this.startingCostCollection = this.category.key + 'StartingCost';
+           this.paymentsCollection = this.category.key + 'Payments';
+           this.deductionsCollection = this.category.key + 'Deductions';
+
           this.costKey = this.category.key + 'Cost';
           this.paymentKey = this.category.key + 'Payment';
           this.deductionKey = this.category.key + 'Deduction'
@@ -77,17 +85,11 @@ export class EntryComponent implements OnInit {
 
           this.getStartingCost();
           this.getBalance();
-          this.history(this.category);
+          this.history();
           this.showHistory = false;
           this.isEnteringDeduction = false;
           this.isEnteringPayment = false;
           this.showSubmitButton = true;
-
-          // Buid collection names.
-          this.startingCostCollection = this.category.key + 'StartingCost';
-          this.paymentsCollection = this.category.key + 'Payments';
-          this.deductionsCollection = this.category.key + 'Deductions';
-
 
           // Current category may have a history upon init.  
           // Set hasHistory based on presence of payment or deduction subcollection.
@@ -132,8 +134,9 @@ export class EntryComponent implements OnInit {
   }
 
   private getStartingCost() {
-    // Starting cost is now a collection. Get the latest starting cost by obtaining the latest document based on date.
-    this.latestCost$ = this.currentFinancialDoc.collection(this.category.key + 'StartingCost',
+    // Starting cost is now a collection. 
+    // Get the latest starting cost by obtaining the latest document from collection based on date.
+    this.latestCost$ = this.currentFinancialDoc.collection(this.startingCostCollection,
       ref => {
         const doc = ref.orderBy('date', 'desc').limit(1);
         return doc;
@@ -181,8 +184,7 @@ export class EntryComponent implements OnInit {
         }
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
           .then(_ => {
-            // this.history(this.category)
-            // this.resetForm(formDirective);
+            // Possibly do something here...
           });
       }
       );
@@ -217,9 +219,9 @@ export class EntryComponent implements OnInit {
     try {
       if (!this.costExists) {
         // Give starting cost its own subcollection
-        const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'StartingCost'); // creates the subcollection
+        const currentCollection = this.currentFinancialDoc.collection(this.startingCostCollection); // creates the subcollection
         // Create a document under the subcollection.  Document name is auto set.
-        await currentCategorySubcollection.ref.doc().set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey], date: new Date })
+        await currentCollection.ref.doc().set({ startingCost: this.formValue[this.costKey], memo: this.formValue[this.costMemoKey], date: new Date })
           .then(_ => {
             // Will remove section that shows cost form for current category
             this.costExists = true;
@@ -234,21 +236,21 @@ export class EntryComponent implements OnInit {
       } else {
         // Payments and deductions will be subcollections i.e. lunchPayments, lunchDeductions.  
         if (this.isEnteringPayment) {
-          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Payments');
-          await currentCategorySubcollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], memo: this.formValue[this.paymentMemoKey], date: new Date })
+          const currentCollection = this.currentFinancialDoc.collection(this.paymentsCollection);
+          await currentCollection.doc(date.toString()).set({ payment: this.formValue[this.paymentKey], memo: this.formValue[this.paymentMemoKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-              this.history(this.category);
+              this.history();
             });
         }
         if (this.isEnteringDeduction) {
-          const currentCategorySubcollection = this.currentFinancialDoc.collection(this.category.key + 'Deductions');
-          await currentCategorySubcollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], memo: this.formValue[this.deductionMemoKey], date: new Date })
+          const currentCollection = this.currentFinancialDoc.collection(this.deductionsCollection);
+          await currentCollection.doc(date.toString()).set({ deduction: this.formValue[this.deductionKey], memo: this.formValue[this.deductionMemoKey], date: new Date })
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-              this.history(this.category);
+              this.history();
             }
             );
         }
@@ -258,12 +260,12 @@ export class EntryComponent implements OnInit {
     }
   }
 
-  public history(cat) {
+  public history() {
     // Clear out array else view will aggregate - will repeat array for each entry.
     this.payments = [];
     this.deductions = [];
 
-    this.currentFinancialDoc.collection(cat.key + 'Payments').ref.get()
+    this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
           item => {
@@ -273,7 +275,7 @@ export class EntryComponent implements OnInit {
         )
       });
 
-    this.currentFinancialDoc.collection(cat.key + 'Deductions').ref.get()
+    this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
           item => {
