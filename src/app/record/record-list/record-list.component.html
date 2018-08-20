@@ -17,6 +17,11 @@
 				<mat-cell *matCellDef="let row"> {{row.email}}</mat-cell>
 			</ng-container>
 
+			<ng-container matColumnDef="secondaryEmail">
+				<mat-header-cell *matHeaderCellDef mat-sort-header> Secondary Email </mat-header-cell>
+				<mat-cell *matCellDef="let row"> {{row.secondaryEmail}}</mat-cell>
+			</ng-container>
+
 			<ng-container matColumnDef="district">
 				<mat-header-cell *matHeaderCellDef mat-sort-header> School District </mat-header-cell>
 				<mat-cell *matCellDef="let row"> {{row.district}} </mat-cell>

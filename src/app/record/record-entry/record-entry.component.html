@@ -29,6 +29,13 @@
 						<div *ngIf="f.email.errors.email">Email must be a valid email address</div>
 					</mat-error>
 				</mat-form-field>
+				<mat-form-field class="email">
+					<input matInput placeholder="Secondary Email (For Alt Login)" formControlName="secondaryEmail">
+					<mat-error *ngIf="f.secondaryEmail.invalid && (f.secondaryEmail.dirty || f.secondaryEmail.touched)">
+						<!-- <div *ngIf="f.secondaryEmail.errors.required"> Email address is required.</div> -->
+						<div *ngIf="f.secondaryEmail.errors.email">Email must be a valid email address</div>
+					</mat-error>
+				</mat-form-field>
 			</tr> 
 			<tr>
 				<mat-form-field>

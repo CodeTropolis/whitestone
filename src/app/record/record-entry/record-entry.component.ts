@@ -59,6 +59,7 @@ export class RecordEntryComponent implements OnInit {
     this.myForm = this.fb.group({
       surname: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      secondaryEmail: ['', [Validators.email]],
       district: ['', Validators.required],
       catholic: ['', Validators.required],
       children: this.fb.array([]),
