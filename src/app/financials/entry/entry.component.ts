@@ -47,13 +47,14 @@ export class EntryComponent implements OnInit {
 
   public showSubmitButton: boolean;
 
-  private startingCostSubCollection: string;
-  private paymentsSubCollection: string;
-  private deductionsSubCollection: string;
+  private startingCostCollection: string;
+  private paymentsCollection: string;
+  private deductionsCollection: string;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
+    console.log(`entry.component init()`);
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
@@ -82,42 +83,53 @@ export class EntryComponent implements OnInit {
           this.isEnteringPayment = false;
           this.showSubmitButton = true;
 
-          // Buid subcollection names.
-          this.startingCostSubCollection = this.category.key + 'StartingCost';
-          this.paymentsSubCollection = this.category.key + 'Payments';
-          this.deductionsSubCollection = this.category.key + 'Deductions';
+          // Buid collection names.
+          this.startingCostCollection = this.category.key + 'StartingCost';
+          this.paymentsCollection = this.category.key + 'Payments';
+          this.deductionsCollection = this.category.key + 'Deductions';
 
 
           // Current category may have a history upon init.  
           // Set hasHistory based on presence of payment or deduction subcollection.
 
           // Check for a payment in the current category's payments subcollection
-          const latestPayment = this.currentFinancialDoc.collection(this.paymentsSubCollection,
+          const latestPayment = this.currentFinancialDoc.collection(this.paymentsCollection,
             ref => {
               const doc = ref.orderBy('date', 'desc').limit(1);
               return doc;
             }).valueChanges();
 
-            latestPayment.subscribe(payload => {
-              if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
-                console.log(`${this.paymentsSubCollection} exists`);
-                this.hasHistory = true;
-              } else {
-                console.log(`${this.paymentsSubCollection} does not exist.`);
-                this.hasHistory = false;
-              }
-            });
+          latestPayment.subscribe(payload => {
+            if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
+              console.log(`${this.paymentsCollection} exists`);
+              this.hasHistory = true;
+            } else {
+              console.log(`${this.paymentsCollection} does not exist.`);
+              this.hasHistory = false;
+            }
+          });
+
+          // Check for a payment in the current category's deductions subcollection
+          const latestDeduction = this.currentFinancialDoc.collection(this.deductionsCollection,
+            ref => {
+              const doc = ref.orderBy('date', 'desc').limit(1);
+              return doc;
+            }).valueChanges();
+
+          latestDeduction.subscribe(payload => {
+            if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
+              console.log(`${this.deductionsCollection} exists`);
+              this.hasHistory = true;
+            } else {
+              console.log(`${this.deductionsCollection} does not exist.`);
+              this.hasHistory = false;
+            }
+          });
 
 
         }
       });
   }
-
-  // if (doc.size  > 0 ) {
-  //   console.log(`${this.category.key + 'Payments'} exists`)
-  // } else {
-  //   console.log(`subcollection does not exist.`);
-  // }
 
   private getStartingCost() {
     // Starting cost is now a collection. Get the latest starting cost by obtaining the latest document based on date.
