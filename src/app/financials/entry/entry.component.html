@@ -9,19 +9,19 @@
             <mat-form-field>
                 <input type=text matInput placeholder="Memo" formControlName="{{costMemoKey}}">
             </mat-form-field>
-            <button *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
+            <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
         </form>
     </div>
 
     <ng-template #transactionButtons>
         <h4> {{category.val}} Balance: {{balance | currency}}</h4>
         <div class="buttons">
-            <button *ngIf="category.key === 'tuition'" (click)="showPaymentForm()">Enter Payment</button>
+            <button mat-flat-button color="primary" *ngIf="category.key === 'tuition'" (click)="showPaymentForm()">Enter Payment</button>
             <span *ngIf="category.key !== 'tuition'">
-                <button (click)="showPaymentForm()">Enter Credit</button>
-                <button (click)="showDeductionForm()">Enter Deduction</button>
+                <button mat-flat-button color="primary" (click)="showPaymentForm()">Enter Credit</button>
+                <button mat-flat-button color="primary" (click)="showDeductionForm()">Enter Deduction</button>
             </span>
-            <button (click)="toggleHistory()">History</button>
+            <button *ngIf="hasHistory" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
         </div>
     </ng-template>
 
@@ -34,7 +34,7 @@
             <mat-form-field>
                 <input type=text matInput placeholder="Memo" formControlName="{{paymentMemoKey}}">
             </mat-form-field>
-            <button *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
+            <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
         </form>
     </div>
 
@@ -46,7 +46,7 @@
             <mat-form-field>
                 <input type=text matInput placeholder="{{category.val}} Memo" formControlName="{{deductionMemoKey}}">
             </mat-form-field>
-            <button *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
+            <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
         </form>
     </div>
 
@@ -55,7 +55,7 @@
             <li>Payment: {{p.payment | currency}} | {{p.date | date:"medium"}} | Memo: {{p.memo}}</li>
         </ul>
         <ul *ngFor="let d of deductions">
-            <li>Deduction: {{d.deduction | currency}} | {{d.date | date:"medium"}} | Memo: {{p.memo}}</li>
+            <li>Deduction: {{d.deduction | currency}} | {{d.date | date:"medium"}} | Memo: {{d.memo}}</li>
         </ul>
     </div>
 </div>

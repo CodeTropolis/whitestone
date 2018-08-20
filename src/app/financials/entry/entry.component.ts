@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 export class EntryComponent implements OnInit {
 
   private categorySubscription: any;
+  private latestCostSubscription: any;
 
   // Keys set based on category
   public costKey: string;
@@ -22,6 +23,8 @@ export class EntryComponent implements OnInit {
   public costMemoKey: string;
   public paymentMemoKey: string;
   public deductionMemoKey: string;
+
+  public hasHistory: boolean;
 
   public currentFinancialDoc: any;
   public category: any;
@@ -43,6 +46,10 @@ export class EntryComponent implements OnInit {
   public latestCost$: Observable<any[]>;
 
   public showSubmitButton: boolean;
+
+  private startingCostSubCollection: string;
+  private paymentsSubCollection: string;
+  private deductionsSubCollection: string;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -75,9 +82,42 @@ export class EntryComponent implements OnInit {
           this.isEnteringPayment = false;
           this.showSubmitButton = true;
 
+          // Buid subcollection names.
+          this.startingCostSubCollection = this.category.key + 'StartingCost';
+          this.paymentsSubCollection = this.category.key + 'Payments';
+          this.deductionsSubCollection = this.category.key + 'Deductions';
+
+
+          // Current category may have a history upon init.  
+          // Set hasHistory based on presence of payment or deduction subcollection.
+
+          // Check for a payment in the current category's payments subcollection
+          const latestPayment = this.currentFinancialDoc.collection(this.paymentsSubCollection,
+            ref => {
+              const doc = ref.orderBy('date', 'desc').limit(1);
+              return doc;
+            }).valueChanges();
+
+            latestPayment.subscribe(payload => {
+              if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
+                console.log(`${this.paymentsSubCollection} exists`);
+                this.hasHistory = true;
+              } else {
+                console.log(`${this.paymentsSubCollection} does not exist.`);
+                this.hasHistory = false;
+              }
+            });
+
+
         }
       });
   }
+
+  // if (doc.size  > 0 ) {
+  //   console.log(`${this.category.key + 'Payments'} exists`)
+  // } else {
+  //   console.log(`subcollection does not exist.`);
+  // }
 
   private getStartingCost() {
     // Starting cost is now a collection. Get the latest starting cost by obtaining the latest document based on date.
@@ -87,7 +127,7 @@ export class EntryComponent implements OnInit {
         return doc;
       }).valueChanges()
 
-    this.latestCost$.subscribe(payload => {
+    this.latestCostSubscription = this.latestCost$.subscribe(payload => {
       if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
         payload.forEach(x => {
           this.cost = x.startingCost;
@@ -128,10 +168,10 @@ export class EntryComponent implements OnInit {
           }
         }
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
-        .then(_ => {
-          // this.history(this.category)
-          // this.resetForm(formDirective);
-        });
+          .then(_ => {
+            // this.history(this.category)
+            // this.resetForm(formDirective);
+          });
       }
       );
   }
@@ -188,7 +228,6 @@ export class EntryComponent implements OnInit {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
               this.history(this.category);
-
             });
         }
         if (this.isEnteringDeduction) {
@@ -231,6 +270,8 @@ export class EntryComponent implements OnInit {
           }
         )
       });
+
+    this.hasHistory = true;
   }
 
   private showStartingCostForm() {
@@ -269,6 +310,7 @@ export class EntryComponent implements OnInit {
 
   ngOnDestroy() {
     this.categorySubscription.unsubscribe();
+    this.latestCostSubscription.unsubscribe();
   }
 
 }

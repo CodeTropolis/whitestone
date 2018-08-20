@@ -13,6 +13,11 @@ a {
     color: var(--ws-smoke);
 }
 
+app-entry {
+    display: block;
+    margin-top: 2em !important;
+}
+
 app-login {
     display: block;
     margin: 7em auto;

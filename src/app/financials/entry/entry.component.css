@@ -1,1 +1,2 @@
-/* .buttons {display: inline;} */
+
+button, mat-form-field {margin-right: 2em;}
