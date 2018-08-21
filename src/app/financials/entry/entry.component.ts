@@ -46,7 +46,7 @@ export class EntryComponent implements OnInit {
   // public payments: any[] = [];
   // public deductions: any[] = [];
 
-  public transactions: any[] = [];
+  //public transactions: any[] = [];
 
   public isEnteringPayment: boolean;
   public isEnteringDeduction: boolean;
@@ -99,7 +99,7 @@ export class EntryComponent implements OnInit {
 
           this.getStartingCost();
           this.getBalance();
-          this.history(); // The history method will populate transactions array on init
+          //this.history(); // The history method will populate transactions array on init
           this.showHistory = false;
           this.isEnteringDeduction = false;
           this.isEnteringPayment = false;
@@ -137,8 +137,6 @@ export class EntryComponent implements OnInit {
               this.hasHistory = true;
             } 
           });
-
-
         }
       });
   }
@@ -251,7 +249,8 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-              this.history();
+             // this.history();
+             this.hasHistory = true;
             });
         }
         if (this.isEnteringDeduction) {
@@ -260,7 +259,8 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-              this.history();
+             // this.history();
+             this.hasHistory = true;
             }
             );
         }
@@ -271,34 +271,34 @@ export class EntryComponent implements OnInit {
   }
 
  // history() is ran on init and on payments / deductions
-  public history() { 
+  // public history() { 
 
-    // // Clear out array else view will aggregate - will repeat array for each entry.
-    // this.transactions = [];
+  //   // // Clear out array else view will aggregate - will repeat array for each entry.
+  //   // this.transactions = [];
 
-    // this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
-    //   .then(snapshot => {
-    //     snapshot.forEach(
-    //       item => {
-    //         let date = item.data().date.toDate();
-    //         const type = this.category.key === 'tuition' ? "Payment" : "Credit"
-    //         this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
-    //       }
-    //     )
-    //   });
+  //   // this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
+  //   //   .then(snapshot => {
+  //   //     snapshot.forEach(
+  //   //       item => {
+  //   //         let date = item.data().date.toDate();
+  //   //         const type = this.category.key === 'tuition' ? "Payment" : "Credit"
+  //   //         this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
+  //   //       }
+  //   //     )
+  //   //   });
 
-    // this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
-    //   .then(snapshot => {
-    //     snapshot.forEach(
-    //       item => {
-    //         let date = item.data().date.toDate();
-    //         this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
-    //       }
-    //     )
-    //   });
+  //   // this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
+  //   //   .then(snapshot => {
+  //   //     snapshot.forEach(
+  //   //       item => {
+  //   //         let date = item.data().date.toDate();
+  //   //         this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
+  //   //       }
+  //   //     )
+  //   //   });
 
-    this.hasHistory = true;
-  }
+  //   this.hasHistory = true;
+  // }
 
   private showStartingCostForm() {
     this.setupStartingCostFormControls();
@@ -333,6 +333,10 @@ export class EntryComponent implements OnInit {
   public toggleHistory() {
 
     this.showHistory = !this.showHistory;
+      // Send items to data.service for history.component to consume
+      this.dataService.category$.next(this.category);
+      this.dataService.paymentsCollection$.next(this.paymentsCollection);
+      this.dataService.deductionsCollection$.next(this.deductionsCollection);
     // this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
     // this.historyTableData = new MatTableDataSource(this.transactions);
     // this.historyTableData.sort = this.sort;

@@ -3,6 +3,7 @@ import { FirebaseService } from '../../core/services/firebase.service';
 import { RecordService } from '../record.service';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
+import { DataService } from '../../core/services/data.service';
 
 
 @Component({
@@ -26,7 +27,8 @@ export class RecordListComponent implements OnInit {
   constructor(
   private fs: FirebaseService, 
   private res: RecordService,
-  private route: ActivatedRoute
+  private route: ActivatedRoute,
+  private dataService: DataService,
   ) { }
 
   ngOnInit() {
@@ -38,14 +40,14 @@ export class RecordListComponent implements OnInit {
 
       // Need to fix filtering for including childrent this. data.children no longer an array.
 
-      // this.ds.filterPredicate = (data, filter) => {
-      //   // console.log(data.children);
-      //   // return data;
-      //   let dataStr = data.surname + data.email + data.seconaryEmail + data.district + data.catholic;
-      //   data.children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-      //   dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-      //   return dataStr.indexOf(filter) != -1;
-      // }
+      this.ds.filterPredicate = (data, filter) => {
+        let dataStr = data.surname + data.email + data.seconaryEmail + data.district + data.catholic;
+        const children = this.dataService.convertMapToArray(data.children);
+        children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
+        // data.children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
+        dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+        return dataStr.indexOf(filter) != -1;
+      }
 
       this.ds.paginator = this.paginator;
       this.ds.sort = this.sort;

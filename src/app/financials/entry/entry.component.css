@@ -1,10 +1,4 @@
 
 button, mat-form-field {margin-right: 1em;}
 
-.deduction {color: red; }
-
 form, .history {margin-top: 2em;}
-
-.history h3 {margin-bottom: 0;}
-
-.history mat-table {width: 100%;}
