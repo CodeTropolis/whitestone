@@ -3,7 +3,7 @@ import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
 import { Observable } from 'rxjs';
-import { MatSort, MatTableDataSource } from '@angular/material';
+//import { MatSort, MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-entry',
@@ -58,15 +58,15 @@ export class EntryComponent implements OnInit {
 
   //@ViewChild(MatSort) sort: MatSort;
 
-  private sort: MatSort;
+  //private sort: MatSort;
 
-  @ViewChild(MatSort) set content(c: MatSort) {
-    this.sort = c;
-    console.log(`this.sort: ${this.sort}`);
-  }
+  // @ViewChild(MatSort) set content(c: MatSort) {
+  //   this.sort = c;
+  //   console.log(`this.sort: ${this.sort}`);
+  // }
 
-  public historyTableData: MatTableDataSource<any>;
-  public historyTableColumns: string[] = [];
+  // public historyTableData: MatTableDataSource<any>;
+  // public historyTableColumns: string[] = [];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -273,29 +273,29 @@ export class EntryComponent implements OnInit {
  // history() is ran on init and on payments / deductions
   public history() { 
 
-    // Clear out array else view will aggregate - will repeat array for each entry.
-    this.transactions = [];
+    // // Clear out array else view will aggregate - will repeat array for each entry.
+    // this.transactions = [];
 
-    this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
-      .then(snapshot => {
-        snapshot.forEach(
-          item => {
-            let date = item.data().date.toDate();
-            const type = this.category.key === 'tuition' ? "Payment" : "Credit"
-            this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
-          }
-        )
-      });
+    // this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
+    //   .then(snapshot => {
+    //     snapshot.forEach(
+    //       item => {
+    //         let date = item.data().date.toDate();
+    //         const type = this.category.key === 'tuition' ? "Payment" : "Credit"
+    //         this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
+    //       }
+    //     )
+    //   });
 
-    this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
-      .then(snapshot => {
-        snapshot.forEach(
-          item => {
-            let date = item.data().date.toDate();
-            this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
-          }
-        )
-      });
+    // this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
+    //   .then(snapshot => {
+    //     snapshot.forEach(
+    //       item => {
+    //         let date = item.data().date.toDate();
+    //         this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
+    //       }
+    //     )
+    //   });
 
     this.hasHistory = true;
   }
@@ -333,9 +333,9 @@ export class EntryComponent implements OnInit {
   public toggleHistory() {
 
     this.showHistory = !this.showHistory;
-    this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
-    this.historyTableData = new MatTableDataSource(this.transactions);
-    this.historyTableData.sort = this.sort;
+    // this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
+    // this.historyTableData = new MatTableDataSource(this.transactions);
+    // this.historyTableData.sort = this.sort;
 
 
   }

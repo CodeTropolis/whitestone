@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatSort, MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-history',
@@ -7,9 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HistoryComponent implements OnInit {
 
+  @ViewChild(MatSort) sort: MatSort;
+  public historyTableData: MatTableDataSource<any>;
+  public historyTableColumns: string[] = [];
+
   constructor() { }
 
   ngOnInit() {
+
+    this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
+    this.historyTableData = new MatTableDataSource(this.transactions);
+    this.historyTableData.sort = this.sort;
+
   }
 
 }
