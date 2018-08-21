@@ -7,6 +7,7 @@ import { FinancialsRoutingModule } from './financials-routing.module';
 import { FinancialsMainComponent } from './financials-main/financials-main.component';
 import { FinancialsService } from './financials.service';
 import { EntryComponent } from './entry/entry.component';
+import { HistoryComponent } from './history/history.component';
 
 
 @NgModule({
@@ -17,7 +18,7 @@ import { EntryComponent } from './entry/entry.component';
   ],
   declarations: [
     FinancialsMainComponent, 
-    EntryComponent,  
+    EntryComponent, HistoryComponent,  
   ],
   providers:[FinancialsService]
 })

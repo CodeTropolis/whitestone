@@ -66,7 +66,7 @@ export class EntryComponent implements OnInit {
   }
 
   public historyTableData: MatTableDataSource<any>;
-  public historyTableColumns = ['amount', 'type', 'date', 'memo'];
+  public historyTableColumns: string[] = [];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -333,12 +333,10 @@ export class EntryComponent implements OnInit {
   public toggleHistory() {
 
     this.showHistory = !this.showHistory;
+    this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
     this.historyTableData = new MatTableDataSource(this.transactions);
     this.historyTableData.sort = this.sort;
 
-    // setTimeout(() => {
-  
-    // }, 1);
 
   }
 
