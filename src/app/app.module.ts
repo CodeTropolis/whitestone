@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+//import { CommonModule } from '@angular/common';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -12,12 +13,14 @@ import { LoginComponent } from './login/login.component';
     LoginComponent,
   ],
   imports: [
+    //CommonModule, // Imported in core.module.  
+    CoreModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    CoreModule,
   ],
-  //exports:[CoreModule], // Still need to import core.module in lazy loaded components.
+  //exports:[CoreModule], // Importing/Exporting CoreModule in this module does not work.
+  //exports:[CommonModule], // Importing/Exporting CommonModule in this module does not work.
   providers: [],
   bootstrap: [AppComponent]
 })

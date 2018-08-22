@@ -6,10 +6,9 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireStorageModule } from 'angularfire2/storage';
 import { MaterialModule } from './material.module';
 import { ReactiveFormsModule }   from '@angular/forms';
-import { environment } from '../../environments/environment';
 import { ProgressSpinnerComponent } from '../progress-spinner/progress-spinner.component';
 import { MapToIterablePipe } from './pipes/map-to-iterable.pipe';
-
+import { environment } from '../../environments/environment';
 
 @NgModule({
   imports: [
