@@ -43,10 +43,7 @@ export class EntryComponent implements OnInit {
   public balance: number;
   public cost: number;
 
-  // public payments: any[] = [];
-  // public deductions: any[] = [];
-
-  //public transactions: any[] = [];
+  public transactions: any[] = [];
 
   public isEnteringPayment: boolean;
   public isEnteringDeduction: boolean;
@@ -54,19 +51,6 @@ export class EntryComponent implements OnInit {
   public latestCost$: Observable<any[]>;
 
   public showSubmitButton: boolean;
-
-
-  //@ViewChild(MatSort) sort: MatSort;
-
-  //private sort: MatSort;
-
-  // @ViewChild(MatSort) set content(c: MatSort) {
-  //   this.sort = c;
-  //   console.log(`this.sort: ${this.sort}`);
-  // }
-
-  // public historyTableData: MatTableDataSource<any>;
-  // public historyTableColumns: string[] = [];
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -88,6 +72,11 @@ export class EntryComponent implements OnInit {
           this.paymentsCollection = this.category.key + 'Payments';
           this.deductionsCollection = this.category.key + 'Deductions';
 
+          // Send items to data.service for history.component to consume
+          this.dataService.category$.next(this.category);
+          this.dataService.paymentsCollection$.next(this.paymentsCollection);
+          this.dataService.deductionsCollection$.next(this.deductionsCollection);
+
           this.costKey = this.category.key + 'Cost';
           this.paymentKey = this.category.key + 'Payment';
           this.deductionKey = this.category.key + 'Deduction'
@@ -100,6 +89,7 @@ export class EntryComponent implements OnInit {
           this.getStartingCost();
           this.getBalance();
           //this.history(); // The history method will populate transactions array on init
+          this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection); // Need transactions (if any) prior to any transactions entered
           this.showHistory = false;
           this.isEnteringDeduction = false;
           this.isEnteringPayment = false;
@@ -121,7 +111,7 @@ export class EntryComponent implements OnInit {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
               // console.log(`${this.paymentsCollection} exists`);
               this.hasHistory = true;
-            } 
+            }
           });
 
           // Check for a deduction in the current category's deductions subcollection
@@ -135,7 +125,7 @@ export class EntryComponent implements OnInit {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
               // console.log(`${this.deductionsCollection} exists`);
               this.hasHistory = true;
-            } 
+            }
           });
         }
       });
@@ -221,7 +211,7 @@ export class EntryComponent implements OnInit {
 
   async submitHandler(formDirective) {
     this.showSubmitButton = false; // Prevent value from multiple entry upon rapid repeat of enter key
-    console.log('submitHandler');
+    //console.log('submitHandler');
     let date = new Date();
     this.formValue = this.formGroup.value;
     try {
@@ -249,8 +239,9 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-             // this.history();
-             this.hasHistory = true;
+              // this.history();
+              this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection);
+              this.hasHistory = true; // May not be a history for current category on init but now that a transaction (payment or deduction) has been, we now have a history.
             });
         }
         if (this.isEnteringDeduction) {
@@ -259,8 +250,9 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-             // this.history();
-             this.hasHistory = true;
+              //this.history();
+              this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection);
+              this.hasHistory = true;
             }
             );
         }
@@ -270,32 +262,32 @@ export class EntryComponent implements OnInit {
     }
   }
 
- // history() is ran on init and on payments / deductions
+  // history() is ran on init and on payments / deductions
   // public history() { 
 
-  //   // // Clear out array else view will aggregate - will repeat array for each entry.
-  //   // this.transactions = [];
+  //   // Clear out array else view will aggregate - will repeat array for each entry.
+  //   this.transactions = [];
 
-  //   // this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
-  //   //   .then(snapshot => {
-  //   //     snapshot.forEach(
-  //   //       item => {
-  //   //         let date = item.data().date.toDate();
-  //   //         const type = this.category.key === 'tuition' ? "Payment" : "Credit"
-  //   //         this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
-  //   //       }
-  //   //     )
-  //   //   });
+  //   this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
+  //     .then(snapshot => {
+  //       snapshot.forEach(
+  //         item => {
+  //           let date = item.data().date.toDate();
+  //           const type = this.category.key === 'tuition' ? "Payment" : "Credit"
+  //           this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
+  //         }
+  //       )
+  //     });
 
-  //   // this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
-  //   //   .then(snapshot => {
-  //   //     snapshot.forEach(
-  //   //       item => {
-  //   //         let date = item.data().date.toDate();
-  //   //         this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
-  //   //       }
-  //   //     )
-  //   //   });
+  //   this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
+  //     .then(snapshot => {
+  //       snapshot.forEach(
+  //         item => {
+  //           let date = item.data().date.toDate();
+  //           this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
+  //         }
+  //       )
+  //     });
 
   //   this.hasHistory = true;
   // }
@@ -333,10 +325,7 @@ export class EntryComponent implements OnInit {
   public toggleHistory() {
 
     this.showHistory = !this.showHistory;
-      // Send items to data.service for history.component to consume
-      this.dataService.category$.next(this.category);
-      this.dataService.paymentsCollection$.next(this.paymentsCollection);
-      this.dataService.deductionsCollection$.next(this.deductionsCollection);
+
     // this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
     // this.historyTableData = new MatTableDataSource(this.transactions);
     // this.historyTableData.sort = this.sort;

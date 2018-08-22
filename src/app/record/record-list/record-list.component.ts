@@ -14,7 +14,7 @@ import { DataService } from '../../core/services/data.service';
 export class RecordListComponent implements OnInit {
 
   private recordsSubscription: any;
-  public records: any[] = [];
+  //public records: any[] = [];
   public isUpdating: boolean;
   public ds: MatTableDataSource<any>;
   public displayedColumns = ['surname',  'email', 'secondaryEmail', 'district', 'catholic',];
@@ -35,16 +35,15 @@ export class RecordListComponent implements OnInit {
  
     this.recordsSubscription = this.fs.records$.subscribe(x => {
     
-      this.records = x;
-      this.ds = new MatTableDataSource(this.records);
+      // this.records = x;
+      // this.ds = new MatTableDataSource(this.records);
+      this.ds = new MatTableDataSource(x);
 
-      // Need to fix filtering for including childrent this. data.children no longer an array.
 
       this.ds.filterPredicate = (data, filter) => {
         let dataStr = data.surname + data.email + data.seconaryEmail + data.district + data.catholic;
         const children = this.dataService.convertMapToArray(data.children);
         children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-        // data.children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
         dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
         return dataStr.indexOf(filter) != -1;
       }
