@@ -23,23 +23,27 @@ export class EntryComponent implements OnInit {
   ngOnInit() {
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
-    console.log(`currentFinacialDoc.data(): ${this.currentFinancialDoc}`);
+   // console.log(`currentFinacialDoc: ${this.currentFinancialDoc}`);
 
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
         
         this.currentCategory = x;
-        console.log(`Current category: ${this.currentCategory}`);
-
-        if(this.currentCategory == null){return;}
-        console.log('next steps...')
+        
+        // Do not do anything until a category is selected.
+        if(this.currentCategory == null){
+          console.log('catgory is null');
+          return;
+        } 
+        // Else we have a catogory - proceed.
+        console.log('next steps...');
       })
 
   }
 
   ngOnDestroy(){
     if(this.categorySubscription){
-      this.categorySubscription.unsubcribe();
+      //this.categorySubscription.unsubcribe();
     }
   }
   
