@@ -13,8 +13,6 @@ export class DataService {
 
   public transactions: any[] = [];
 
-  public paymentsCollection$ = new BehaviorSubject<any>(null);
-  public deductionsCollection$ = new BehaviorSubject<any>(null);
   public transactions$ = new BehaviorSubject<any>(null);
 
   constructor(private fs: FirebaseService) { }
