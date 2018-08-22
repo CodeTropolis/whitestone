@@ -15,8 +15,9 @@ export class EntryComponent implements OnInit {
   private latestCostSubscription: any;
 
   public currentFinancialDoc: any;
-  public currentCategory: any;
+  public category: any;
   public balanceKey: string;
+  public balance: number;
   public formGroup: FormGroup;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
@@ -29,10 +30,10 @@ export class EntryComponent implements OnInit {
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => { // This gets hit upon component load and category selection.
         
-        this.currentCategory = x;
+        this.category = x;
         
         // Do not do anything until a category is selected.
-        if(this.currentCategory == null){
+        if(this.category == null){
           console.log('catgory is null');
           return;
         } 
@@ -40,19 +41,24 @@ export class EntryComponent implements OnInit {
         console.log('next steps...');
 
         // Set balance key based on current category
-        this.balanceKey = this.currentCategory.key + 'Balance';
+        this.balanceKey = this.category.key + 'Balance';
         console.log(this.balanceKey);
       
 
         // Check the DB for a balance key in the currentFinacialDoc.  
+        this.currentFinancialDoc.ref.get().then(
+          snapshot => {
+            if (snapshot.data()[this.balanceKey]) {
+              this.balance = snapshot.data()[this.balanceKey];
+            }else{
+              console.log('balanceKey does not exist');
+            }
+          });
 
         // Setup form - Enter Payment & Enter Charge - applicable to all categories
 
         // If no balance exists, make the initial Balance the amount entered for either Payment or Charge and
         // write to the root of the current financial document.
-
-
-
 
       })
 
@@ -60,7 +66,7 @@ export class EntryComponent implements OnInit {
 
   ngOnDestroy(){
     if(this.categorySubscription){
-      //this.categorySubscription.unsubcribe();
+      this.categorySubscription.unsubcribe();
     }
   }
   
