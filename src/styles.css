@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:300');
 
 :root {
+    --ws-darkcyan:      darkcyan;
     --ws-blue:          #45b6e9;
-    --ws-green:         #88e90a;
+    --ws-green:         #92ff05;
     --ws-light-grey:    #e4e7e9;
     --ws-smoke:         whitesmoke;
     --ws-error:         #e27562;
@@ -15,7 +16,7 @@ a {
 
 app-entry {
     display: block;
-    margin-top: 2em !important;
+    margin-top: 1em !important;
 }
 
 app-login {

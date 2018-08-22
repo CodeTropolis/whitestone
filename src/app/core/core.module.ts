@@ -8,6 +8,7 @@ import { AngularFireStorageModule } from 'angularfire2/storage';
 import { environment } from '../../environments/environment';
 import { MatCardModule, MatButtonModule, MatFormFieldModule, MatProgressSpinnerModule, MatTableModule, MatSortModule } from '@angular/material';
 import { MatInputModule } from '@angular/material/input';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ProgressSpinnerComponent } from '../progress-spinner/progress-spinner.component';
 import { MapToIterablePipe } from './pipes/map-to-iterable.pipe';
 import { ReactiveFormsModule }   from '@angular/forms';
@@ -26,6 +27,7 @@ import { ReactiveFormsModule }   from '@angular/forms';
     MatInputModule,
     MatTableModule,
     MatSortModule,
+    MatToolbarModule,
     ReactiveFormsModule,
   ],
   providers: [],
@@ -42,6 +44,7 @@ import { ReactiveFormsModule }   from '@angular/forms';
     MatInputModule,
     MatTableModule,
     MatSortModule,
+    MatToolbarModule,
     MapToIterablePipe,
     ReactiveFormsModule,
   ],

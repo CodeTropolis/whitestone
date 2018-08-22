@@ -8,4 +8,4 @@ button {margin: 1em 0.5em;}
 mat-form-field {margin-right: 2em;}
 mat-form-field.email {width: 250px;}
 
-mat-toolbar.login .info {font-size: 0.7em;}
+mat-toolbar .info {font-size: 0.7em;}

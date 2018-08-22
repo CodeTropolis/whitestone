@@ -3,21 +3,33 @@
 </div>
 
 <ng-template #ready>
-    <!-- <a [routerLink]="['/record-entry']">Back to Record Entry</a> -->
+
+  <mat-toolbar color="primary">
+
+    <span class="fill-space"></span>
+    <span class="info">
+      <div *ngIf="currentUser$ | async as user">{{user.email}} |
+        <a [routerLink]="['/record-entry']">Back to Record Entry</a> 
+        <!-- | <a [routerLink]="" (click)="logOut()">Logout</a> -->
+      </div>
+    </span>
+  </mat-toolbar>
+
   <mat-card>
     <mat-card-header>
       <div mat-card-avatar>
         <i class="material-icons account-circle">account_circle</i>
         <app-progress-spinner *ngIf="showAvatarSpinner" class="avatar-spinner"></app-progress-spinner>
       </div>
-      <mat-card-title> Financial status for
-        <strong>{{currentChild.fname}} {{currentChild.lname}}</strong>
+      <mat-card-title>
+        <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
       </mat-card-title>
       <mat-card-subtitle>Surname on Record:
         <strong>{{currentSurname}}</strong>
       </mat-card-subtitle>
       <mat-card-subtitle>
         <strong>{{currentEmail}}</strong>
+
       </mat-card-subtitle>
 
       <div class="buttons">

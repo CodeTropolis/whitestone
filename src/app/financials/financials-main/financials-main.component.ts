@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
+import { AuthService } from '../../core/services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-financials-main',
@@ -9,6 +11,7 @@ import { FinancialsService } from '../financials.service';
 })
 export class FinancialsMainComponent implements OnInit {
 
+  public currentUser$: Observable<any>;
   public currentSurname: string;
   public currentEmail: string;
   public currentChild: any;
@@ -20,9 +23,14 @@ export class FinancialsMainComponent implements OnInit {
   constructor(
     private ds: DataService,
     private financialsService: FinancialsService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
+
+      // Get the current user from the service and set to async in view
+      this.currentUser$ = this.authService.authState;
+
     this.currentSurname = this.ds.currentRecord.surname;
     this.currentEmail = this.ds.currentRecord.email;
     this.currentChild = this.ds.currentChild;
@@ -35,6 +43,10 @@ export class FinancialsMainComponent implements OnInit {
 
   public setCategory(cat: string) {
     this.financialsService.currentCategory$.next(cat);
+  }
+
+  public logOut() {
+    this.authService.logOut('');
   }
 
   ngOnDestroy(){
