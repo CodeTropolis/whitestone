@@ -16,6 +16,7 @@ export class EntryComponent implements OnInit {
 
   public currentFinancialDoc: any;
   public currentCategory: any;
+  public balanceKey: string;
   public formGroup: FormGroup;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
@@ -26,7 +27,7 @@ export class EntryComponent implements OnInit {
    // console.log(`currentFinacialDoc: ${this.currentFinancialDoc}`);
 
     this.categorySubscription = this.financialService.currentCategory$
-      .subscribe(x => {
+      .subscribe(x => { // This gets hit upon component load and category selection.
         
         this.currentCategory = x;
         
@@ -35,8 +36,24 @@ export class EntryComponent implements OnInit {
           console.log('catgory is null');
           return;
         } 
-        // Else we have a catogory - proceed.
+        // We have a category - proceed.
         console.log('next steps...');
+
+        // Set balance key based on current category
+        this.balanceKey = this.currentCategory.key + 'Balance';
+        console.log(this.balanceKey);
+      
+
+        // Check the DB for a balance key in the currentFinacialDoc.  
+
+        // Setup form - Enter Payment & Enter Charge - applicable to all categories
+
+        // If no balance exists, make the initial Balance the amount entered for either Payment or Charge and
+        // write to the root of the current financial document.
+
+
+
+
       })
 
   }
