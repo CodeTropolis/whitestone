@@ -55,7 +55,7 @@ export class EntryComponent implements OnInit {
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
-    //console.log(`entry.component init()`);
+
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
@@ -65,8 +65,6 @@ export class EntryComponent implements OnInit {
         this.showView = false;
         this.category = x;
         if (this.category) {
-          this.financialService.showAvatarSpinner$.next(true); // financials-main.component subscribes to this to determine spinner display show/hide
-
           // Buid collection names.
           this.startingCostCollection = this.category.key + 'StartingCost';
           this.paymentsCollection = this.category.key + 'Payments';
@@ -145,13 +143,14 @@ export class EntryComponent implements OnInit {
           this.cost = x.startingCost;
           this.costExists = true;
           // console.log(`Starting cost for: ${this.category.key}: ${this.cost}`);
-          this.showView = true; // Show view which will dynamically determine showing either the paymentor deduction forms.
+          this.showView = true; 
           this.financialService.showAvatarSpinner$.next(false);
         });
       } else {
         //console.log(`No starting cost for: ${this.category.key}`);
         this.costExists = false;
         this.showStartingCostForm();
+        this.financialService.showAvatarSpinner$.next(false);
       }
     });
   }
@@ -262,7 +261,6 @@ export class EntryComponent implements OnInit {
   private showStartingCostForm() {
     this.setupStartingCostFormControls();
     this.showView = true;
-    this.financialService.showAvatarSpinner$.next(false);
   }
 
   public showPaymentForm() {
@@ -270,7 +268,6 @@ export class EntryComponent implements OnInit {
     this.isEnteringDeduction = false;
     this.setupPaymentFormControls();
     this.showView = true;
-    this.financialService.showAvatarSpinner$.next(false);
   }
 
   public showDeductionForm() {
@@ -278,14 +275,12 @@ export class EntryComponent implements OnInit {
     this.isEnteringDeduction = true;
     this.setupDeductionFormControls();
     this.showView = true;
-    this.financialService.showAvatarSpinner$.next(false);
   }
 
   private resetForm(formDirective) {
     formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
     this.formGroup.reset();
     this.showView = true;
-    this.financialService.showAvatarSpinner$.next(false);
     this.showSubmitButton = true;
   }
 

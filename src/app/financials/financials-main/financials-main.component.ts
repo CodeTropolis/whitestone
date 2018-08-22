@@ -37,12 +37,17 @@ export class FinancialsMainComponent implements OnInit {
     this.categories = this.financialsService.categories;
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => {
       this.showAvatarSpinner = x;
-      console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
+      //console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
     })
   };
 
   public setCategory(cat: string) {
     this.financialsService.currentCategory$.next(cat);
+
+    // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
+    // beginning of entry.component to prevent  "Expression has changed after it was checked" err.
+    this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup i.e. checking for a latest cost.
+    // entry.component will set this to false at some point.
   }
 
   public logOut() {
@@ -52,7 +57,6 @@ export class FinancialsMainComponent implements OnInit {
   ngOnDestroy() {
     if(this.spinnerSubscribe){
       this.spinnerSubscribe.unsubscribe();
-     // console.log('spinnerSubscribe unsubscribe')
     }
     
   }
