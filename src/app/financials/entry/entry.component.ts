@@ -42,14 +42,15 @@ export class EntryComponent implements OnInit {
 
         // Set balance key based on current category
         this.balanceKey = this.category.key + 'Balance';
-        console.log(this.balanceKey);
+        // console.log(this.balanceKey);
       
 
         // Check the DB for a balance key in the currentFinacialDoc.  
         this.currentFinancialDoc.ref.get().then(
           snapshot => {
-            if (snapshot.data()[this.balanceKey]) {
+            if (snapshot.data()[this.balanceKey]) {  // NOTE: Hitting the DB - This may take a second to resolve.
               this.balance = snapshot.data()[this.balanceKey];
+              console.log(`this.balance: ${this.balance}`);
             }else{
               console.log('balanceKey does not exist');
             }
@@ -57,16 +58,19 @@ export class EntryComponent implements OnInit {
 
         // Setup form - Enter Payment & Enter Charge - applicable to all categories
 
-        // If no balance exists, make the initial Balance the amount entered for either Payment or Charge and
+        // On form submission, if no balance exists, make the initial Balance the amount entered for either Payment or Charge and
         // write to the root of the current financial document.
 
       })
 
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     if(this.categorySubscription){
-      this.categorySubscription.unsubcribe();
+      this.categorySubscription.unsubscribe();
+    }
+    if(this.latestCostSubscription){
+      this.latestCostSubscription.unsubscribe();
     }
   }
   
