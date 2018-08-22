@@ -18,7 +18,7 @@ export class FinancialsMainComponent implements OnInit {
   public categories: any;
   public showAvatarSpinner: boolean;
 
-  private catSubscribe:any;
+  private spinnerSubscribe: any;
 
   constructor(
     private ds: DataService,
@@ -28,18 +28,18 @@ export class FinancialsMainComponent implements OnInit {
 
   ngOnInit() {
 
-      // Get the current user from the service and set to async in view
-      this.currentUser$ = this.authService.authState;
+    // Get the current user from the service and set to async in view
+    this.currentUser$ = this.authService.authState;
 
     this.currentSurname = this.ds.currentRecord.surname;
     this.currentEmail = this.ds.currentRecord.email;
     this.currentChild = this.ds.currentChild;
     this.categories = this.financialsService.categories;
-    this.catSubscribe = this.financialsService.showAvatarSpinner$.subscribe( x => {
+    this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => {
       this.showAvatarSpinner = x;
-      //console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
-      })
-    };
+      console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
+    })
+  };
 
   public setCategory(cat: string) {
     this.financialsService.currentCategory$.next(cat);
@@ -49,8 +49,12 @@ export class FinancialsMainComponent implements OnInit {
     this.authService.logOut('');
   }
 
-  ngOnDestroy(){
-    this.catSubscribe.unsubscribe();
+  ngOnDestroy() {
+    if(this.spinnerSubscribe){
+      this.spinnerSubscribe.unsubscribe();
+     // console.log('spinnerSubscribe unsubscribe')
+    }
+    
   }
 
 }

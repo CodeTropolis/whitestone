@@ -290,12 +290,19 @@ export class EntryComponent implements OnInit {
   }
 
   public toggleHistory() {
+    this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection); // run again to prevent dup entries from showing on history table.
     this.showHistory = !this.showHistory;
   }
 
   ngOnDestroy() {
-    // this.categorySubscription.unsubscribe();
-    // this.latestCostSubscription.unsubscribe();
+    if(this.categorySubscription){
+      this.categorySubscription.unsubscribe();
+      console.log('categorySubscription unsubscribe')
+    }
+    if(this.latestCostSubscription){
+      this.latestCostSubscription.unsubscribe();
+      console.log('latestCostSubscription unsubscribe')
+    }
   }
 
 }

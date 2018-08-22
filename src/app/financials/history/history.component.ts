@@ -22,18 +22,9 @@ export class HistoryComponent implements OnInit {
 
   ngOnInit() {
 
-    this.transactionSubscription = this.dataService.transactions$.subscribe(x => { // unsubscribe onDestroy
+    this.transactionSubscription = this.dataService.transactions$.subscribe(x => { 
       
       this.tableData = new MatTableDataSource(x);
-
-      // this.ds.filterPredicate = (data, filter) => {
-      //   let dataStr = data.surname + data.email + data.seconaryEmail + data.district + data.catholic;
-      //   const children = this.dataService.convertMapToArray(data.children);
-      //   children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-      //   dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-      //   return dataStr.indexOf(filter) != -1;
-      // }
-
       // this.ds.paginator = this.paginator;
       this.tableData.sort = this.sort;
     });
