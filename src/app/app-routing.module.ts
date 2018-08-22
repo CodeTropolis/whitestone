@@ -13,7 +13,6 @@ const routes: Routes = [
   },
   {path: 'financials', loadChildren: './financials/financials.module#FinancialsModule', 
   canLoad:[AuthGuard],
-  //resolve: {records: RecordResolverService}
   },
 ];
 

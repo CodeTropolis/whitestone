@@ -13,7 +13,7 @@ import { HistoryComponent } from './history/history.component';
 @NgModule({
   imports: [
     CommonModule,
-    CoreModule,
+    //CoreModule,
     FinancialsRoutingModule,
   ],
   declarations: [

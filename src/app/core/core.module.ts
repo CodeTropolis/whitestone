@@ -6,8 +6,11 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireStorageModule } from 'angularfire2/storage';
 import { environment } from '../../environments/environment';
-import { MatCardModule, MatButtonModule, MatFormFieldModule, MatProgressSpinnerModule, MatTableModule, MatSortModule } from '@angular/material';
+import { MatCardModule, MatButtonModule, MatFormFieldModule, MatProgressSpinnerModule, MatTableModule, MatSortModule, MatPaginatorModule } from '@angular/material';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ProgressSpinnerComponent } from '../progress-spinner/progress-spinner.component';
 import { MapToIterablePipe } from './pipes/map-to-iterable.pipe';
@@ -25,8 +28,12 @@ import { ReactiveFormsModule }   from '@angular/forms';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatInputModule,
+    MatSelectModule,
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
+    MatChipsModule,
+    MatCheckboxModule,
     MatToolbarModule,
     ReactiveFormsModule,
   ],
@@ -42,8 +49,12 @@ import { ReactiveFormsModule }   from '@angular/forms';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatChipsModule,
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
     MatToolbarModule,
     MapToIterablePipe,
     ReactiveFormsModule,
