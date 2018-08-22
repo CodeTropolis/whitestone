@@ -88,7 +88,6 @@ export class EntryComponent implements OnInit {
 
           this.getStartingCost();
           this.getBalance();
-          //this.history(); // The history method will populate transactions array on init
           this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection); // Need transactions (if any) prior to any transactions entered
           this.showHistory = false;
           this.isEnteringDeduction = false;
@@ -181,9 +180,9 @@ export class EntryComponent implements OnInit {
           }
         }
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
-          .then(_ => {
-            // Possibly do something here...
-          });
+          // .then(_ => {
+          //   // Possibly do something here...
+          // });
       }
       );
   }
@@ -239,9 +238,8 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-              // this.history();
               this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection);
-              this.hasHistory = true; // May not be a history for current category on init but now that a transaction (payment or deduction) has been, we now have a history.
+              this.hasHistory = true; // May not be a history for current category on init but now that a transaction (payment or deduction) has occured, we now have a history.
             });
         }
         if (this.isEnteringDeduction) {
@@ -250,7 +248,6 @@ export class EntryComponent implements OnInit {
             .then(_ => {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
-              //this.history();
               this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection);
               this.hasHistory = true;
             }
@@ -261,36 +258,6 @@ export class EntryComponent implements OnInit {
       console.log(err);
     }
   }
-
-  // history() is ran on init and on payments / deductions
-  // public history() { 
-
-  //   // Clear out array else view will aggregate - will repeat array for each entry.
-  //   this.transactions = [];
-
-  //   this.currentFinancialDoc.collection(this.paymentsCollection).ref.get()
-  //     .then(snapshot => {
-  //       snapshot.forEach(
-  //         item => {
-  //           let date = item.data().date.toDate();
-  //           const type = this.category.key === 'tuition' ? "Payment" : "Credit"
-  //           this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo })
-  //         }
-  //       )
-  //     });
-
-  //   this.currentFinancialDoc.collection(this.deductionsCollection).ref.get()
-  //     .then(snapshot => {
-  //       snapshot.forEach(
-  //         item => {
-  //           let date = item.data().date.toDate();
-  //           this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo })
-  //         }
-  //       )
-  //     });
-
-  //   this.hasHistory = true;
-  // }
 
   private showStartingCostForm() {
     this.setupStartingCostFormControls();
@@ -323,14 +290,7 @@ export class EntryComponent implements OnInit {
   }
 
   public toggleHistory() {
-
     this.showHistory = !this.showHistory;
-
-    // this.historyTableColumns = ['amount', 'type', 'date', 'memo'];
-    // this.historyTableData = new MatTableDataSource(this.transactions);
-    // this.historyTableData.sort = this.sort;
-
-
   }
 
   ngOnDestroy() {

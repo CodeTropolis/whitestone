@@ -46,7 +46,6 @@ export class DataService {
           const type = category.key === 'tuition' ? "Payment" : "Credit"
           this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo });
           this.transactions$.next(this.transactions);
-          //console.log(`this.transactions: ${this.transactions}`);
         }
       )
 
@@ -57,7 +56,6 @@ export class DataService {
             let date = item.data().date.toDate();
             this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo });
             this.transactions$.next(this.transactions);
-            //console.log(`In history.component - this.transactions: ${this.transactions}`);
           }
         )
       });
