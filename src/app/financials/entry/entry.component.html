@@ -27,7 +27,7 @@
                     <button mat-flat-button color="primary" (click)="showPaymentForm()">Enter Credit</button>
                     <button mat-flat-button color="primary" (click)="showDeductionForm()">Enter Deduction</button>
                 </span>
-                <button *ngIf="hasHistory" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
+                <button *ngIf="showHistoryButton" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
             </div>
         </div>
     </ng-template>

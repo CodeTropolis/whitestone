@@ -35,10 +35,7 @@ export class FinancialsMainComponent implements OnInit {
     this.currentEmail = this.ds.currentRecord.email;
     this.currentChild = this.ds.currentChild;
     this.categories = this.financialsService.categories;
-    this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => {
-      this.showAvatarSpinner = x;
-      //console.log(`this.avatarSpinner: ${this.showAvatarSpinner}`);
-    })
+    this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
 
   public setCategory(cat: string) {
@@ -58,6 +55,7 @@ export class FinancialsMainComponent implements OnInit {
     if(this.spinnerSubscribe){
       this.spinnerSubscribe.unsubscribe();
     }
+    this.financialsService.currentCategory$.next(null); // Clear out the current category else next selected child's financials will start out with previously selected category.
     
   }
 

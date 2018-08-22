@@ -25,7 +25,7 @@ export class EntryComponent implements OnInit {
   public paymentMemoKey: string;
   public deductionMemoKey: string;
 
-  public hasHistory: boolean;
+  public showHistoryButton: boolean;
 
   public currentFinancialDoc: any;
   public category: any;
@@ -59,19 +59,20 @@ export class EntryComponent implements OnInit {
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
     // listen to catetory selection (tuition, lunch, etc) from financials-main.component
+    // Current category selected by user in financials-main
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
+        console.log(`in subscribe`) // this logs when component loads.
         this.costExists = false; // Previous selected category may have set this to true. Set to false then check for cost 
         this.showView = false;
         this.category = x;
         if (this.category) {
+          console.log(`in if(this.category)`); 
           // Buid collection names.
           this.startingCostCollection = this.category.key + 'StartingCost';
           this.paymentsCollection = this.category.key + 'Payments';
           this.deductionsCollection = this.category.key + 'Deductions';
 
-          // Send items to data.service for history.component to consume
-          this.dataService.category$.next(this.category);
           this.dataService.paymentsCollection$.next(this.paymentsCollection);
           this.dataService.deductionsCollection$.next(this.deductionsCollection);
 
@@ -92,10 +93,10 @@ export class EntryComponent implements OnInit {
           this.isEnteringPayment = false;
           this.showSubmitButton = true;
 
-          this.hasHistory = false;
+          this.showHistoryButton = false;
 
           // Current category may have a history upon init.  
-          // Set hasHistory based on presence of payment or deduction subcollection.
+          // Set showHistoryButton based on presence of payment or deduction subcollection.
 
           // Check for a payment in the current category's payments subcollection
           const latestPayment = this.currentFinancialDoc.collection(this.paymentsCollection,
@@ -107,7 +108,7 @@ export class EntryComponent implements OnInit {
           latestPayment.subscribe(payload => {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
               // console.log(`${this.paymentsCollection} exists`);
-              this.hasHistory = true;
+              this.showHistoryButton = true;
             }
           });
 
@@ -121,7 +122,7 @@ export class EntryComponent implements OnInit {
           latestDeduction.subscribe(payload => {
             if (payload.length != 0) { // Payload is an array of one element (the object of the latest doc)
               // console.log(`${this.deductionsCollection} exists`);
-              this.hasHistory = true;
+              this.showHistoryButton = true;
             }
           });
         }
@@ -142,12 +143,10 @@ export class EntryComponent implements OnInit {
         payload.forEach(x => {
           this.cost = x.startingCost;
           this.costExists = true;
-          // console.log(`Starting cost for: ${this.category.key}: ${this.cost}`);
           this.showView = true; 
           this.financialService.showAvatarSpinner$.next(false);
         });
       } else {
-        //console.log(`No starting cost for: ${this.category.key}`);
         this.costExists = false;
         this.showStartingCostForm();
         this.financialService.showAvatarSpinner$.next(false);
@@ -158,6 +157,7 @@ export class EntryComponent implements OnInit {
   private getBalance() {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
+        console.log(`in getBalance - the snapshot: ${snapshot}`);
         if (snapshot.data()[this.balanceKey]) { // If the balance exists in the database, set this.balance to value from db
           this.balance = snapshot.data()[this.balanceKey];
         }
@@ -238,7 +238,7 @@ export class EntryComponent implements OnInit {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
               this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection);
-              this.hasHistory = true; // May not be a history for current category on init but now that a transaction (payment or deduction) has occured, we now have a history.
+              this.showHistoryButton = true; // May not be a history for current category on init but now that a transaction (payment or deduction) has occured, we now have a history.
             });
         }
         if (this.isEnteringDeduction) {
@@ -248,7 +248,7 @@ export class EntryComponent implements OnInit {
               this.processBalance(this.balanceKey, formDirective);
               this.resetForm(formDirective);
               this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection);
-              this.hasHistory = true;
+              this.showHistoryButton = true;
             }
             );
         }
@@ -292,11 +292,11 @@ export class EntryComponent implements OnInit {
   ngOnDestroy() {
     if(this.categorySubscription){
       this.categorySubscription.unsubscribe();
-      console.log('categorySubscription unsubscribe')
+      //console.log('categorySubscription unsubscribe')
     }
     if(this.latestCostSubscription){
       this.latestCostSubscription.unsubscribe();
-      console.log('latestCostSubscription unsubscribe')
+      //console.log('latestCostSubscription unsubscribe')
     }
   }
 

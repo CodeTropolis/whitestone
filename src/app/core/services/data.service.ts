@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,6 @@ export class DataService {
 
   public transactions: any[] = [];
 
-  public category$ = new BehaviorSubject<any>(null);
   public paymentsCollection$ = new BehaviorSubject<any>(null);
   public deductionsCollection$ = new BehaviorSubject<any>(null);
   public transactions$ = new BehaviorSubject<any>(null);
