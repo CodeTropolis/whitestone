@@ -1,23 +1,20 @@
 <div *ngIf="category && showTransactionSection">
     <div class="container">
-
         <h3> Current Category: {{category.val}}</h3>
-
+        <h4 *ngIf="balance; else balanceNote"> Balance: {{balance | currency}}</h4>
         <div class="buttons">
             <button mat-flat-button color="primary" (click)="enterPayment()">Enter Payment</button>
             <button mat-flat-button color="primary" (click)="enterCharge()">Enter Charge</button>
             <button *ngIf="showHistoryButton" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
         </div>
-
-        <h4 *ngIf="balance; else balanceNote"> Balance: {{balance | currency}}</h4>
-        <ng-template #balanceNote>
-            <div class="attention">
-                <p> <strong>Attention:</strong> Balance not present for <strong>{{category.val}}.</strong></p>
-                <p>First entry for either payment or charge will serve as the starting balance.</p>
-                <p>Memo accordingly.</p>
-            </div>
-        </ng-template>
     </div>
+    <ng-template #balanceNote>
+        <div class="attention">
+            <p> <strong>Attention:</strong> Balance not present for <strong>{{category.val}}.</strong></p>
+            <p>First entry for either payment or charge will serve as the starting balance.</p>
+            <p>Memo accordingly.</p>
+        </div>
+    </ng-template>
 </div>
 
 
