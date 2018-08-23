@@ -9,8 +9,7 @@
     <span class="fill-space"></span>
     <span class="info">
       <div *ngIf="currentUser$ | async as user">{{user.email}} |
-        <a [routerLink]="['/record-entry']">Back to Record Entry</a> 
-        <!-- | <a [routerLink]="" (click)="logOut()">Logout</a> -->
+        <a [routerLink]="['/record-entry']">Back to Record Entry</a>
       </div>
     </span>
   </mat-toolbar>

@@ -12,7 +12,7 @@ export class FinancialsService {
        this.categories = {
            tuition: 'Tuition',
            lunch : 'Lunch',
-           extraCare: 'Extra Care', 
+           extendedCare: 'Extended Care', 
            misc: 'Misc',
        }
     }
