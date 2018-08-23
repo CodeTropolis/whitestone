@@ -78,12 +78,14 @@ export class EntryComponent implements OnInit {
     this.isEnteringPayment = true;
     this.isEnteringCharge = false;
     this.showForm = true;
+    this.showSubmitButton = true;
   }
 
   public enterCharge() {
     this.isEnteringPayment = false;
     this.isEnteringCharge = true;
     this.showForm = true;
+    this.showSubmitButton = true;
   }
 
   public submitHandler() {
@@ -93,6 +95,7 @@ export class EntryComponent implements OnInit {
     if (!this.balance) {
       console.log(`${this.category.val} does not have a balance`);
       // whatever was selected, payment or charge will be set as balance
+      // ToDo - no memo for initial balance? since no running record of balance
       this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: this.formValue.memo }, { merge: true })
         .then(_ => {
           this.checkForBalance(); // If user does not select another category, checkForBlance will not run, so run it here.
@@ -101,25 +104,28 @@ export class EntryComponent implements OnInit {
           this.showForm = false;
           this.resetForm();
         })
-      // 3) If balance, create a payment or charge subcollection,
-      // write the payment / charges document to its respective subcollection then 
-      // subtract payment from balance or add charges to balance
-    } else {
+
+      // 3) else If balance:
+      //  A) Create a payment or charge subcollection,
+      //  B) Write the payment / charge to the document under the respective subcollection  
+      //  C) Subtract payment from balance or add charges to balance
+      //  D) Update the currentFincial doc with updated balance
+
+    } else { // 3)
       console.log(`${this.category.val} balance: ${this.balance}`);
       if (this.isEnteringPayment) {
-        const collection = this.currentFinancialDoc.collection(this.paymentsCollection); // creates the subcollection
-        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
+        const collection = this.currentFinancialDoc.collection(this.paymentsCollection); // A)
+        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date }) // B)
         // Update balance and write to currentFinancialDoc
-        this.balance -= this.formValue.amount;
-        // ToDo - no memo for initial balance? since no running record of balance
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: "balance had a payment deducted" }, { merge: true })
+        this.balance -= this.formValue.amount; // C)
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance, [this.balanceKey + 'Memo']: "balance had a payment deducted" }, { merge: true }) // D)
           .then( this.resetForm()) ;
       }
       if (this.isEnteringCharge) {
-        const collection = this.currentFinancialDoc.collection(this.chargesCollection); // creates the subcollection
+        const collection = this.currentFinancialDoc.collection(this.chargesCollection); 
         collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
-        this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else += concats. 
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: "balance had a charge added" }, { merge: true })
+        this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else concats. 
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance, [this.balanceKey + 'Memo']: "balance had a charge added" }, { merge: true })
           .then( this.resetForm()) ;
       }
     }
@@ -127,7 +133,7 @@ export class EntryComponent implements OnInit {
 
 
   private resetForm(formDirective?) {
-    // formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
+    formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
     this.formGroup.reset();
     this.showSubmitButton = true;
   }

@@ -13,7 +13,7 @@
 </div>
 
 
-<form *ngIf="showForm" [formGroup]="formGroup" (ngSubmit)="submitHandler()">
+<form *ngIf="showForm" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
     <div *ngIf="isEnteringPayment">
         <mat-form-field>
             <input type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="amount">
