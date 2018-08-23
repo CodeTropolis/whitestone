@@ -22,6 +22,7 @@ export class EntryComponent implements OnInit {
   public showSubmitButton: boolean;
   public isEnteringPayment: boolean;
   public isEnteringCharge: boolean;
+  public showTransactionSection: boolean
 
   private paymentsCollection: string;
   private chargesCollection: string;
@@ -30,6 +31,7 @@ export class EntryComponent implements OnInit {
 
   ngOnInit() {
 
+    this.showTransactionSection = false;
     this.showForm = false;
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
@@ -64,6 +66,7 @@ export class EntryComponent implements OnInit {
           this.balance = null;
         }
         this.financialService.showAvatarSpinner$.next(false);
+        this.showTransactionSection = true;
       });
   }
 
@@ -95,8 +98,10 @@ export class EntryComponent implements OnInit {
     if (!this.balance) {
       // console.log(`${this.category.val} does not have a balance`);
       // whatever was selected, payment or charge will be set as balance
-      // ToDo - no memo for initial balance? since no running record of balance
-      this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: this.formValue.memo }, { merge: true })
+      // Write the staring balance for history
+      this.currentFinancialDoc.set({ [this.category.key+'StartingBalance']: this.formValue.amount, [this.category.key+'StartingBalanceMemo']: this.formValue.memo }, { merge: true })
+      // This will be the blance that future Payment/Charges will calc against
+      this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount}, { merge: true })
         .then(_ => {
           this.checkForBalance(); // If user does not select another category, checkForBlance will not run, so run it here.
           // Before another payment or change can be entered, hide the form which will force user to select either Enter Payment or 
@@ -112,19 +117,19 @@ export class EntryComponent implements OnInit {
       //  D) Update the currentFincial doc with updated balance
 
     } else { // 3)
-      console.log(`${this.category.val} balance: ${this.balance}`);
+     // console.log(`${this.category.val} balance: ${this.balance}`);
       if (this.isEnteringPayment) {
         const collection = this.currentFinancialDoc.collection(this.paymentsCollection); // A)
         collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date }) // B)
         this.balance -= this.formValue.amount; // C)
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance, [this.balanceKey + 'Memo']: "balance had a payment deducted" }, { merge: true }) // D)
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true }) // D)
           .then( this.resetForm(formDirective)) ;
       }
       if (this.isEnteringCharge) {
         const collection = this.currentFinancialDoc.collection(this.chargesCollection); 
         collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
         this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else concats. 
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance, [this.balanceKey + 'Memo']: "balance had a charge added" }, { merge: true })
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance}, { merge: true })
           .then( this.resetForm(formDirective)) ;
       }
     }

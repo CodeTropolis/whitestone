@@ -1,8 +1,17 @@
-<div *ngIf="category">
+<div *ngIf="category && showTransactionSection">
     <div class="container">
         <div class="info">
             <h3> Current Category: {{category.val}}</h3>
-            <h4 *ngIf="balance"> Balance: {{balance | currency}}</h4>
+            <h4 *ngIf="balance; else balanceNote"> Balance: {{balance | currency}}</h4>
+            <ng-template #balanceNote>
+                <div class="attention">
+                    <h3> Attention:</h3>
+                    <p> Balance not present for {{category.val}}. <br>
+                        First entry for either payment or charge will serve as the starting balance.<br> 
+                        <strong>Memo accordingly.</strong></p>
+                </div>
+            </ng-template>
+
         </div>
         <div class="buttons">
             <button mat-flat-button color="primary" (click)="enterPayment()">Enter Payment</button>
@@ -28,52 +37,5 @@
         <input type=text matInput placeholder="Memo" formControlName="memo">
     </mat-form-field>
     <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
-    
 </form>
-
-
-<!-- <div *ngIf="category && showView">
-
-    <div *ngIf="!costExists; else transactionButtons">
-        <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-            <h4>Please enter a starting amount for {{category.val}}.</h4>
-            <mat-form-field>
-                <input type=number step=0.01 matInput placeholder="{{category.val}} Cost" formControlName="{{costKey}}">
-            </mat-form-field>
-            <mat-form-field>
-                <input type=text matInput placeholder="Memo" formControlName="{{costMemoKey}}">
-            </mat-form-field>
-            <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
-        </form>
-    </div>
-
-    <ng-template #transactionButtons>
-
-    </ng-template>
-
-    <div *ngIf="isEnteringPayment">
-        <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-            <mat-form-field>
-                <input *ngIf="category.key === 'tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="{{paymentKey}}">
-                <input *ngIf="category.key !== 'tuition'" type=number step=0.01 matInput placeholder="{{category.val}} Credit" formControlName="{{paymentKey}}">
-            </mat-form-field>
-            <mat-form-field>
-                <input type=text matInput placeholder="Memo" formControlName="{{paymentMemoKey}}">
-            </mat-form-field>
-            <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
-        </form>
-    </div>
-
-    <div *ngIf="isEnteringDeduction">
-        <form *ngIf="formGroup" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-            <mat-form-field>
-                <input type=number step=0.01 matInput placeholder="{{category.val}} Deduction" formControlName="{{deductionKey}}">
-            </mat-form-field>
-            <mat-form-field>
-                <input type=text matInput placeholder="Memo" formControlName="{{deductionMemoKey}}">
-            </mat-form-field>
-            <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
-        </form>
-    </div>
-    <app-history *ngIf="showHistory"></app-history>
-</div> -->
+<app-history *ngIf="showHistory"></app-history>
