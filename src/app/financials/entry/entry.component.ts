@@ -17,31 +17,36 @@ export class EntryComponent implements OnInit {
   public balanceKey: string;
   public balance: number;
   public formGroup: FormGroup;
+  public formValue: any;
   public showForm: boolean;
-  public isEnteringPayment:boolean;
-  public isEnteringCharge:boolean;
+  public isEnteringPayment: boolean;
+  public isEnteringCharge: boolean;
+
+  private paymentsCollection: string;
+  private chargesCollection: string;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
-   ngOnInit() {
+  ngOnInit() {
 
     this.showForm = false;
-    
+
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
     this.categorySubscription = this.financialService.currentCategory$
-      .subscribe(x => {                                  
-        
+      .subscribe(x => {
+
         this.category = x;
-         // Because the body of the subscribe is ran on init(why?), 
-         // make sure nothing happens until a category is selected.
-        if (this.category == null) {return}
+        // Because the body of the subscribe is ran on init(why?), 
+        // make sure nothing happens until a category is selected.
+        if (this.category == null) { return }
 
-        this.balanceKey = this.category.key + 'Balance'; 
-        
+        this.balanceKey = this.category.key + 'Balance';
+        this.paymentsCollection = this.category.key + 'Payments';
+        this.chargesCollection = this.category.key + 'Charges';
+
         this.checkForBalance();
-
-        this.setFormControls(); // Only want this to fire if category is selected.
+        this.setFormControls();
       });
   }
 
@@ -55,9 +60,9 @@ export class EntryComponent implements OnInit {
           // console.log(`this.balance: ${this.balance}`);
         } else {
           // console.log('balanceKey does not exist');
-          this.balance = null; 
+          this.balance = null;
         }
-
+        this.financialService.showAvatarSpinner$.next(false);
       });
   }
 
@@ -69,33 +74,50 @@ export class EntryComponent implements OnInit {
     });
   }
 
-  public enterPayment(){
+  public enterPayment() {
     this.isEnteringPayment = true;
     this.isEnteringCharge = false;
     this.showForm = true;
   }
 
-  public enterCharge(){
+  public enterCharge() {
     this.isEnteringPayment = false;
     this.isEnteringCharge = true;
     this.showForm = true;
   }
 
-  public submitHandler(){
+  public submitHandler() {
+    this.formValue = this.formGroup.value;
     // 2) If no balance, save either payment or charge as balance to currentFinancialDoc 
-    if(!this.balance){
+    if (!this.balance) {
       console.log(`${this.category.val} does not have a balance`);
-      if(this.isEnteringPayment){
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.formGroup[amount] }, { merge: true }) 
+      // whatever was selected, payment or charge will be set as balance
+      this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: this.formValue.memo }, { merge: true })
+        .then(_ => {
+          this.checkForBalance(); // If user does not select another category, checkForBlance will not run, so run it here.
+          // Before another payment or change can be entered, hide the form which will force user to select either Enter Payment or 
+          // Enter Charge in order to fire enterPayment() or enterCharge() to set the booleans set to correct value for step 3)
+          this.showForm = false;
+        })
+      // 3) If balance, create a payment or charge subcollection,
+      // write the payment / charges document to its respective subcollection then 
+      // subtract payment from balance or add charges to balance
+    } else {
+      console.log(`${this.category.val} balance: ${this.balance}`);
+      if (this.isEnteringPayment) {
+        const collection = this.currentFinancialDoc.collection(this.paymentsCollection); // creates the subcollection
+        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
+        // Update balance and write to currentFinancialDoc
+        this.balance -= this.formValue.amount;
+        // ToDo - no memo for initial balance? since no running record of balance
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: "balance had a payment deducted" }, { merge: true })
       }
-      if(this.isEnteringCharge){
-
+      if (this.isEnteringCharge) {
+        const collection = this.currentFinancialDoc.collection(this.chargesCollection); // creates the subcollection
+        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
+        this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else += concats. 
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: "balance had a charge added" }, { merge: true })
       }
-    // 3) If balance, add/subtract payment or charge from balance contained in currentFinancialDoc
-    // At this point, this.balance has already been set by the checkForBalance() method
-    }else{
-      console.log(`${this.category} balance: ${this.balance}`);
-     
     }
   }
 
