@@ -53,8 +53,7 @@ export class EntryComponent implements OnInit {
       });
   }
 
-  // 1) Check for balance. Submit handler flow determined by presence of balance i.e.
-  //    if no balance, post either payment or charge as balance.
+  // 1) Check for balance. Submit handler flow determined by presence of balance.
   private checkForBalance() {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
