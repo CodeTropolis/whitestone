@@ -26,14 +26,10 @@ export class EntryComponent implements OnInit {
 
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {                                   // This gets hit upon component load and category selection.
-        console.log('in subscribe')
         this.category = x;
-        if (this.category == null) {
-          console.log('catgory is null');
-          return;                                         // Because the body of the subscribe is ran on init(why?), 
-                                                          // make sure nothing happens until a category is selected.
-        }
-                                                          // We have a category - proceed.
+         // Because the body of the subscribe is ran on init(why?), 
+         // make sure nothing happens until a category is selected.
+        if (this.category == null) {return}
         this.balanceKey = this.category.key + 'Balance'; 
         this.checkForBalance().then(x => {
           console.log(x);
