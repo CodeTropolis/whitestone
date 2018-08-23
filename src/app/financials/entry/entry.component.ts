@@ -19,6 +19,7 @@ export class EntryComponent implements OnInit {
   public formGroup: FormGroup;
   public formValue: any;
   public showForm: boolean;
+  public showSubmitButton: boolean;
   public isEnteringPayment: boolean;
   public isEnteringCharge: boolean;
 
@@ -67,7 +68,6 @@ export class EntryComponent implements OnInit {
   }
 
   private setFormControls() {
-    //console.log('setFormControls');
     this.formGroup = this.fb.group({
       amount: ['', Validators.required],
       memo: ['', Validators.required],
@@ -87,6 +87,7 @@ export class EntryComponent implements OnInit {
   }
 
   public submitHandler() {
+    this.showSubmitButton = false;
     this.formValue = this.formGroup.value;
     // 2) If no balance, save either payment or charge as balance to currentFinancialDoc 
     if (!this.balance) {
@@ -98,6 +99,7 @@ export class EntryComponent implements OnInit {
           // Before another payment or change can be entered, hide the form which will force user to select either Enter Payment or 
           // Enter Charge in order to fire enterPayment() or enterCharge() to set the booleans set to correct value for step 3)
           this.showForm = false;
+          this.resetForm();
         })
       // 3) If balance, create a payment or charge subcollection,
       // write the payment / charges document to its respective subcollection then 
@@ -111,14 +113,23 @@ export class EntryComponent implements OnInit {
         this.balance -= this.formValue.amount;
         // ToDo - no memo for initial balance? since no running record of balance
         this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: "balance had a payment deducted" }, { merge: true })
+          .then( this.resetForm()) ;
       }
       if (this.isEnteringCharge) {
         const collection = this.currentFinancialDoc.collection(this.chargesCollection); // creates the subcollection
         collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
         this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else += concats. 
         this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount, [this.balanceKey + 'Memo']: "balance had a charge added" }, { merge: true })
+          .then( this.resetForm()) ;
       }
     }
+  }
+
+
+  private resetForm(formDirective?) {
+    // formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
+    this.formGroup.reset();
+    this.showSubmitButton = true;
   }
 
   ngOnDestroy() {
