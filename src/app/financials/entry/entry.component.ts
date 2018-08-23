@@ -17,7 +17,9 @@ export class EntryComponent implements OnInit {
   public balanceKey: string;
   public balance: number;
   public formGroup: FormGroup;
-  public showForm: boolean
+  public showForm: boolean;
+  public isEnteringPayment:boolean;
+  public isEnteringCharge:boolean;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -37,30 +39,63 @@ export class EntryComponent implements OnInit {
 
         this.balanceKey = this.category.key + 'Balance'; 
         
+        this.checkForBalance();
+
         this.setFormControls(); // Only want this to fire if category is selected.
       });
   }
 
-  // private checkForBalance() {
-  //   this.currentFinancialDoc.ref.get().then(
-  //     snapshot => {
-  //       if (snapshot.data()[this.balanceKey]) {
-  //         this.balance = snapshot.data()[this.balanceKey];
-  //         console.log(`this.balance: ${this.balance}`);
-  //       } else {
-  //         console.log('balanceKey does not exist');
-  //       }
-  //     });
-  // }
+  // 1) Check for balance. Submit handler flow determined by presence of balance i.e.
+  //    if no balance, post either payment or charge as balance.
+  private checkForBalance() {
+    this.currentFinancialDoc.ref.get().then(
+      snapshot => {
+        if (snapshot.data()[this.balanceKey]) {
+          this.balance = snapshot.data()[this.balanceKey];
+          // console.log(`this.balance: ${this.balance}`);
+        } else {
+          // console.log('balanceKey does not exist');
+          this.balance = null; 
+        }
 
+      });
+  }
 
   private setFormControls() {
-    console.log('setFormControls');
+    //console.log('setFormControls');
     this.formGroup = this.fb.group({
       amount: ['', Validators.required],
       memo: ['', Validators.required],
     });
+  }
+
+  public enterPayment(){
+    this.isEnteringPayment = true;
+    this.isEnteringCharge = false;
     this.showForm = true;
+  }
+
+  public enterCharge(){
+    this.isEnteringPayment = false;
+    this.isEnteringCharge = true;
+    this.showForm = true;
+  }
+
+  public submitHandler(){
+    // 2) If no balance, save either payment or charge as balance to currentFinancialDoc 
+    if(!this.balance){
+      console.log(`${this.category.val} does not have a balance`);
+      if(this.isEnteringPayment){
+        //this.currentFinancialDoc.
+      }
+      if(this.isEnteringCharge){
+
+      }
+    // 3) If balance, add/subtract payment or charge from balance contained in currentFinancialDoc
+    // At this point, this.balance has already been set by looking currentFinancialDoc in checkForBalance() method
+    }else{
+      console.log(`${this.category} balance: ${this.balance}`);
+    }
   }
 
   ngOnDestroy() {
