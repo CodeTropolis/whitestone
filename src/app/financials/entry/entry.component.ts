@@ -86,7 +86,7 @@ export class EntryComponent implements OnInit {
     if(!this.balance){
       console.log(`${this.category.val} does not have a balance`);
       if(this.isEnteringPayment){
-        //this.currentFinancialDoc.
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.formGroup[amount] }, { merge: true }) 
       }
       if(this.isEnteringCharge){
 
@@ -95,6 +95,7 @@ export class EntryComponent implements OnInit {
     // At this point, this.balance has already been set by the checkForBalance() method
     }else{
       console.log(`${this.category} balance: ${this.balance}`);
+     
     }
   }
 
