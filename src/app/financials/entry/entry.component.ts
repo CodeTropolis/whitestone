@@ -17,24 +17,28 @@ export class EntryComponent implements OnInit {
   public balanceKey: string;
   public balance: number;
   public formGroup: FormGroup;
+  public showForm: boolean
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
    ngOnInit() {
 
+    this.showForm = false;
+    
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
     this.categorySubscription = this.financialService.currentCategory$
-      .subscribe(x => {                                   // This gets hit upon component load and category selection.
+      .subscribe(x => {                                  
+        
         this.category = x;
          // Because the body of the subscribe is ran on init(why?), 
          // make sure nothing happens until a category is selected.
         if (this.category == null) {return}
+
         this.balanceKey = this.category.key + 'Balance'; 
-        this.checkForBalance().then(x => {
-          console.log(x);
-        });
-      })
+        
+        this.setFormControls(); // Only want this to fire if category is selected.
+      });
   }
 
   // private checkForBalance() {
@@ -49,15 +53,6 @@ export class EntryComponent implements OnInit {
   //     });
   // }
 
-  private async checkForBalance() {
-    const snapshot = await this.currentFinancialDoc.ref.get()
-    if (snapshot.data()[this.balanceKey]) { 
-      return snapshot.data()[this.balanceKey];
-    } else {
-      console.log('balanceKey does not exist');
-      return false;
-    }
-  }
 
   private setFormControls() {
     console.log('setFormControls');
@@ -65,6 +60,7 @@ export class EntryComponent implements OnInit {
       amount: ['', Validators.required],
       memo: ['', Validators.required],
     });
+    this.showForm = true;
   }
 
   ngOnDestroy() {

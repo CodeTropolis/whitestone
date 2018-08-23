@@ -1,4 +1,19 @@
-
+<form *ngIf="showForm" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
+    <div *ngIf="isEnteringPayment">
+        <mat-form-field>
+            <input type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="{{amount}}">
+        </mat-form-field>
+    </div>
+    <div *ngIf="isEnteringCharge">
+        <mat-form-field>
+            <input type=number step=0.01 matInput placeholder="{{category.val}} Charge" formControlName="{{amount}}">
+        </mat-form-field>
+    </div>
+    <mat-form-field>
+        <input type=text matInput placeholder="Memo" formControlName="{{memo}}">
+    </mat-form-field>
+    <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
+</form>
 
 <!-- <div *ngIf="category && showView">
 
