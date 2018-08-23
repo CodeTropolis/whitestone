@@ -92,7 +92,7 @@ export class EntryComponent implements OnInit {
 
       }
     // 3) If balance, add/subtract payment or charge from balance contained in currentFinancialDoc
-    // At this point, this.balance has already been set by looking currentFinancialDoc in checkForBalance() method
+    // At this point, this.balance has already been set by the checkForBalance() method
     }else{
       console.log(`${this.category} balance: ${this.balance}`);
     }
