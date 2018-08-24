@@ -40,7 +40,7 @@ export class EntryComponent implements OnInit {
 
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
-
+        console.log(`in subscribe`)
         this.category = x;
         // Because the body of the subscribe is ran on init(why?), 
         // make sure nothing happens until a category is selected.
@@ -52,14 +52,18 @@ export class EntryComponent implements OnInit {
 
         this.checkForBalance();
 
-        // Check if a transaction has occured, either payment or charge to determine showHistoryButton state.
-        if (this.dataService.checkForCollection(this.currentFinancialDoc, this.paymentsCollection) ||
-          this.dataService.checkForCollection(this.currentFinancialDoc, this.chargesCollection)) {
-          this.showHistoryButton = true;
-        }
+        this.checkForTransactions()
 
         this.setFormControls();
       });
+  }
+  // Check if payment or deduction transaction has occured.
+  private checkForTransactions() {
+    // Check if a transaction has occured, either payment or charge to determine showHistoryButton state.
+    if (this.dataService.checkForCollection(this.currentFinancialDoc, this.paymentsCollection) ||
+      this.dataService.checkForCollection(this.currentFinancialDoc, this.chargesCollection)) {
+      this.showHistoryButton = true;
+    }
   }
 
   // 1) Check for balance. Submit handler flow determined by presence of balance.
@@ -132,7 +136,8 @@ export class EntryComponent implements OnInit {
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })                      // D)
           .then(_ => {
             this.resetForm(formDirective);
-            this.showHistoryButton = true;                                                                      // E)
+            this.checkForTransactions();
+            //this.showHistoryButton = true;                                                                      // E)
           });
       }
       if (this.isEnteringCharge) {
@@ -142,7 +147,8 @@ export class EntryComponent implements OnInit {
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
           .then(_ => {
             this.resetForm(formDirective);
-            this.showHistoryButton = true;
+            this.checkForBalance();
+            //this.showHistoryButton = true;
           });
       }
     }
