@@ -33,31 +33,44 @@ export class DataService {
     return keys.map(key => map[`${key}`])
   }
 
-  public getTransactions(category, paymentsCollection, deductionsCollection){
+  public checkForCollection(currentDoc: any, collection: string) {
+    currentDoc.collection(collection).ref.get().
+      then(sub => {
+        if (sub.docs.length > 0) {
+          console.log(`${collection} exists`);
+          return true;
+        } else {
+          console.log(`${collection} does not exist`);
+          return false;
+        }
+      });
+  }
+
+  public getTransactions(category, paymentsCollection, deductionsCollection) {
     this.transactions = [];
     this.currentFinancialDoc.collection(paymentsCollection).ref.get()
-    .then(snapshot => {
-      snapshot.forEach(
-        item => {
-          let date = item.data().date.toDate();
-          const type = category.key === 'tuition' ? "Payment" : "Credit"
-          this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo });
-          this.transactions$.next(this.transactions);
-        }
-      )
-
-      this.currentFinancialDoc.collection(deductionsCollection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo });
+            const type = category.key === 'tuition' ? "Payment" : "Credit"
+            this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo });
             this.transactions$.next(this.transactions);
           }
         )
-      });
 
-    });
+        this.currentFinancialDoc.collection(deductionsCollection).ref.get()
+          .then(snapshot => {
+            snapshot.forEach(
+              item => {
+                let date = item.data().date.toDate();
+                this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo });
+                this.transactions$.next(this.transactions);
+              }
+            )
+          });
+
+      });
 
   }
 

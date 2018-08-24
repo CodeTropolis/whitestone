@@ -23,6 +23,7 @@ export class EntryComponent implements OnInit {
   public isEnteringPayment: boolean;
   public isEnteringCharge: boolean;
   public showTransactionSection: boolean
+  public showHistoryButton: boolean
 
   private paymentsCollection: string;
   private chargesCollection: string;
@@ -33,6 +34,7 @@ export class EntryComponent implements OnInit {
 
     this.showTransactionSection = false;
     this.showForm = false;
+    this.showHistoryButton = false;
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
@@ -49,6 +51,13 @@ export class EntryComponent implements OnInit {
         this.chargesCollection = this.category.key + 'Charges';
 
         this.checkForBalance();
+
+        // Check if a transaction has occured, either payment or charge to determine showHistoryButton state.
+        if (this.dataService.checkForCollection(this.currentFinancialDoc, this.paymentsCollection) ||
+          this.dataService.checkForCollection(this.currentFinancialDoc, this.chargesCollection)) {
+          this.showHistoryButton = true;
+        }
+
         this.setFormControls();
       });
   }
@@ -59,9 +68,7 @@ export class EntryComponent implements OnInit {
       snapshot => {
         if (snapshot.data()[this.balanceKey]) {
           this.balance = snapshot.data()[this.balanceKey];
-          // console.log(`this.balance: ${this.balance}`);
         } else {
-          // console.log('balanceKey does not exist');
           this.balance = null;
         }
         this.financialService.showAvatarSpinner$.next(false);
@@ -98,9 +105,9 @@ export class EntryComponent implements OnInit {
       // console.log(`${this.category.val} does not have a balance`);
       // whatever was selected, payment or charge will be set as balance
       // Write the staring balance for history
-      this.currentFinancialDoc.set({ [this.category.key+'StartingBalance']: this.formValue.amount, [this.category.key+'StartingBalanceMemo']: this.formValue.memo }, { merge: true })
+      this.currentFinancialDoc.set({ [this.category.key + 'StartingBalance']: this.formValue.amount, [this.category.key + 'StartingBalanceMemo']: this.formValue.memo }, { merge: true })
       // This will be the blance that future Payment/Charges will calc against
-      this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount}, { merge: true })
+      this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount }, { merge: true })
         .then(_ => {
           this.checkForBalance(); // If user does not select another category, checkForBlance will not run, so run it here.
           // Before another payment or change can be entered, hide the form which will force user to select either Enter Payment or 
@@ -114,29 +121,36 @@ export class EntryComponent implements OnInit {
       //  B) Write the payment / charge to the document under the respective subcollection  
       //  C) Subtract payment from balance or add charges to balance
       //  D) Update the currentFincial doc with updated balance
+      //  E) Now that a transaction occured, set showHistoryButton to true.
 
     } else { // 3)
-     // console.log(`${this.category.val} balance: ${this.balance}`);
+      // console.log(`${this.category.val} balance: ${this.balance}`);
       if (this.isEnteringPayment) {
-        const collection = this.currentFinancialDoc.collection(this.paymentsCollection); // A)
-        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date }) // B)
-        this.balance -= this.formValue.amount; // C)
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true }) // D)
-          .then( this.resetForm(formDirective)) ;
+        const collection = this.currentFinancialDoc.collection(this.paymentsCollection);                        // A)
+        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })  // B)
+        this.balance -= this.formValue.amount;                                                                  // C)
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })                      // D)
+          .then(_ => {
+            this.resetForm(formDirective);
+            this.showHistoryButton = true;                                                                      // E)
+          });
       }
       if (this.isEnteringCharge) {
-        const collection = this.currentFinancialDoc.collection(this.chargesCollection); 
+        const collection = this.currentFinancialDoc.collection(this.chargesCollection);
         collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
         this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else concats. 
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance}, { merge: true })
-          .then( this.resetForm(formDirective)) ;
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+          .then(_ => {
+            this.resetForm(formDirective);
+            this.showHistoryButton = true;
+          });
       }
     }
   }
 
 
   private resetForm(formDirective?) {
-    if(formDirective){
+    if (formDirective) {
       formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
     }
     this.formGroup.reset();
