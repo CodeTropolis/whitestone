@@ -14,12 +14,21 @@ export class EntryComponent implements OnInit {
   private categorySubscription: any;
   public currentFinancialDoc: any;
   public category: any;
+
+  public startingBalanceKey: string;
+  public startingBalanceMemoKey: string;
+  public startingBalance: number;
+
+  // Balance will update based on transaction. 
+  // Memos given for transations (Payments and Charges) so no memo given on running balance.
   public balanceKey: string;
   public balance: number;
+
   public formGroup: FormGroup;
   public formValue: any;
   public showForm: boolean;
   public showSubmitButton: boolean;
+  public showHistory: boolean;
   public isEnteringPayment: boolean;
   public isEnteringCharge: boolean;
   public showTransactionSection: boolean
@@ -40,44 +49,53 @@ export class EntryComponent implements OnInit {
 
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
-        console.log(`in subscribe`)
+        // console.log(`in subscribe`)
         this.category = x;
-        // Because the body of the subscribe is ran on init(why?), 
-        // make sure nothing happens until a category is selected.
+        // Because the body of the subscribe is ran on init(why?), need to make sure nothing happens until a category is selected.
         if (this.category == null) { return }
+        this.showHistoryButton = false;
+        this.startingBalanceKey =       this.category.key + 'StartingBalance';
+        this.startingBalanceMemoKey =   this.category.key + 'StartingBalanceMemo';
+        this.balanceKey =               this.category.key + 'Balance';
 
-        this.balanceKey = this.category.key + 'Balance';
-        this.paymentsCollection = this.category.key + 'Payments';
-        this.chargesCollection = this.category.key + 'Charges';
+        this.paymentsCollection =       this.category.key + 'Payments';
+        //console.log(`paymentsCollection name: ${this.paymentsCollection}`);
+        this.chargesCollection =        this.category.key + 'Charges';
+        //console.log(`chargesCollection name: ${this.chargesCollection}`);
 
-        this.checkForBalance();
+        this.showTransactionSection = true;
 
-        this.checkForTransactions()
-
+        this.getBalances();
+        this.checkForTransaction();
         this.setFormControls();
       });
   }
-  // Check if payment or deduction transaction has occured.
-  private checkForTransactions() {
-    // Check if a transaction has occured, either payment or charge to determine showHistoryButton state.
-    if (this.dataService.checkForCollection(this.currentFinancialDoc, this.paymentsCollection) ||
-      this.dataService.checkForCollection(this.currentFinancialDoc, this.chargesCollection)) {
-      this.showHistoryButton = true;
-    }
-  }
 
-  // 1) Check for balance. Submit handler flow determined by presence of balance.
-  private checkForBalance() {
+  // 1) Check for starting and running blaance. Submit handler flow determined by presence of balance.
+  private getBalances() {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
+        if (snapshot.data()[this.startingBalanceKey]) {
+          this.startingBalance = snapshot.data()[this.startingBalanceKey];
+        } else {
+          this.startingBalance = null;
+        }
+        // Check for running balance
         if (snapshot.data()[this.balanceKey]) {
           this.balance = snapshot.data()[this.balanceKey];
         } else {
           this.balance = null;
         }
         this.financialService.showAvatarSpinner$.next(false);
-        this.showTransactionSection = true;
       });
+  }
+
+  private checkForTransaction() {
+    // console.log(`checkForTransaction`);
+    if (this.dataService.checkForCollection(this.currentFinancialDoc, this.paymentsCollection) ||
+      this.dataService.checkForCollection(this.currentFinancialDoc, this.chargesCollection)) {
+      this.showHistoryButton = true;
+    }
   }
 
   private setFormControls() {
@@ -104,16 +122,15 @@ export class EntryComponent implements OnInit {
   public submitHandler(formDirective) {
     this.showSubmitButton = false;
     this.formValue = this.formGroup.value;
-    // 2) If no balance, save either payment or charge as balance to currentFinancialDoc 
+    // 2) If no balance, save either payment or charge as the starting balance to currentFinancialDoc 
     if (!this.balance) {
-      // console.log(`${this.category.val} does not have a balance`);
-      // whatever was selected, payment or charge will be set as balance
-      // Write the staring balance for history
-      this.currentFinancialDoc.set({ [this.category.key + 'StartingBalance']: this.formValue.amount, [this.category.key + 'StartingBalanceMemo']: this.formValue.memo }, { merge: true })
-      // This will be the blance that future Payment/Charges will calc against
+      // Whatever was entered, either payment or charge, will be set as the startingbalance
+      this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true });
+      // Set the running balance.  This will be the blance that future Payment/Charges will calc against
       this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount }, { merge: true })
         .then(_ => {
-          this.checkForBalance(); // If user does not select another category, checkForBlance will not run, so run it here.
+          this.getBalances(); // If user does not select another category, getBalances will not run, so run it here.
+          
           // Before another payment or change can be entered, hide the form which will force user to select either Enter Payment or 
           // Enter Charge in order to fire enterPayment() or enterCharge() to set the booleans set to correct value for step 3)
           this.showForm = false;
@@ -125,10 +142,9 @@ export class EntryComponent implements OnInit {
       //  B) Write the payment / charge to the document under the respective subcollection  
       //  C) Subtract payment from balance or add charges to balance
       //  D) Update the currentFincial doc with updated balance
-      //  E) Now that a transaction occured, set showHistoryButton to true.
+      //  E) Now that a transaction occured, run checkForTransaction in order to set showHistoryButton state.
 
     } else { // 3)
-      // console.log(`${this.category.val} balance: ${this.balance}`);
       if (this.isEnteringPayment) {
         const collection = this.currentFinancialDoc.collection(this.paymentsCollection);                        // A)
         collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })  // B)
@@ -136,8 +152,7 @@ export class EntryComponent implements OnInit {
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })                      // D)
           .then(_ => {
             this.resetForm(formDirective);
-            this.checkForTransactions();
-            //this.showHistoryButton = true;                                                                      // E)
+            this.checkForTransaction();                                                                         // E)                                                                   
           });
       }
       if (this.isEnteringCharge) {
@@ -147,8 +162,7 @@ export class EntryComponent implements OnInit {
         this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
           .then(_ => {
             this.resetForm(formDirective);
-            this.checkForBalance();
-            //this.showHistoryButton = true;
+            this.checkForTransaction();
           });
       }
     }
@@ -161,6 +175,11 @@ export class EntryComponent implements OnInit {
     }
     this.formGroup.reset();
     this.showSubmitButton = true;
+  }
+
+  public toggleHistory() {
+    //this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection); // run again to prevent dup entries from showing on history table.
+    this.showHistory = !this.showHistory;
   }
 
   ngOnDestroy() {
