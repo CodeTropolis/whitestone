@@ -1,7 +1,6 @@
 <!-- <h3> Transaction History for {{category.val}}</h3> -->
 
 <mat-table [dataSource]="tableData" matSort>
-    {{transactions | json}}
   <ng-container matColumnDef="amount">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
     <mat-cell *matCellDef="let row">

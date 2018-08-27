@@ -43,7 +43,7 @@ export class FinancialsMainComponent implements OnInit {
 
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
     // beginning of entry.component to prevent  "Expression has changed after it was checked" err.
-    this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup i.e. checking for a latest cost.
+    this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup 
     // entry.component will set this to false at some point.
   }
 

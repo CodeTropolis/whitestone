@@ -4,7 +4,7 @@
         <div class="buttons">
             <button mat-flat-button color="primary" (click)="enterPayment()">Enter Payment</button>
             <button mat-flat-button color="primary" (click)="enterCharge()">Enter Charge</button>
-            <button *ngIf="showHistoryButton" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
+            <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
         </div>
     </div>
     <h4 *ngIf="startingBalance; else balanceNote">Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}</h4>
@@ -34,4 +34,4 @@
     </mat-form-field>
     <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
 </form>
-<!-- <app-history *ngIf="showHistory"></app-history> -->
+<app-history *ngIf="showHistory"></app-history>

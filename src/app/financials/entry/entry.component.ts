@@ -31,8 +31,11 @@ export class EntryComponent implements OnInit {
   public showHistory: boolean;
   public isEnteringPayment: boolean;
   public isEnteringCharge: boolean;
-  public showTransactionSection: boolean
-  public showHistoryButton: boolean
+  public showTransactionSection: boolean;
+  public showHistoryButton: boolean;
+
+  public paymentsCollectionExists: boolean;
+  public chargesCollectionExists: boolean;
 
   private paymentsCollection: string;
   private chargesCollection: string;
@@ -42,36 +45,37 @@ export class EntryComponent implements OnInit {
   ngOnInit() {
 
     this.showTransactionSection = false;
-    this.showForm = false;
     this.showHistoryButton = false;
+    this.showForm = false;
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
-        // console.log(`in subscribe`)
+        // console.log(`in subscribe`);
+        this.paymentsCollectionExists = false;
+        this.chargesCollectionExists = false;
+        this.showHistory = false;
         this.category = x;
         // Because the body of the subscribe is ran on init(why?), need to make sure nothing happens until a category is selected.
-        if (this.category == null) { return }
-        this.showHistoryButton = false;
-        this.startingBalanceKey =       this.category.key + 'StartingBalance';
-        this.startingBalanceMemoKey =   this.category.key + 'StartingBalanceMemo';
-        this.balanceKey =               this.category.key + 'Balance';
-
-        this.paymentsCollection =       this.category.key + 'Payments';
-        //console.log(`paymentsCollection name: ${this.paymentsCollection}`);
-        this.chargesCollection =        this.category.key + 'Charges';
-        //console.log(`chargesCollection name: ${this.chargesCollection}`);
-
-        this.showTransactionSection = true;
+        if (this.category == null) { return; }
+        this.startingBalanceKey = this.category.key + 'StartingBalance';
+        this.startingBalanceMemoKey = this.category.key + 'StartingBalanceMemo';
+        this.balanceKey = this.category.key + 'Balance';
+        this.paymentsCollection = this.category.key + 'Payments';
+        this.chargesCollection = this.category.key + 'Charges';
 
         this.getBalances();
+
         this.checkForTransaction();
+
         this.setFormControls();
+
+        //this.dataService.getTransactions(this.paymentsCollection, this.chargesCollection); // Get transactions (if any) prior to any transactions entered
       });
   }
 
-  // 1) Check for starting and running blaance. Submit handler flow determined by presence of balance.
+  // 1) Check for starting and running blaance. Submit handler flow determined by presence of running balance.
   private getBalances() {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
@@ -86,16 +90,34 @@ export class EntryComponent implements OnInit {
         } else {
           this.balance = null;
         }
-        this.financialService.showAvatarSpinner$.next(false);
       });
   }
-
+  // A transaction is considered any entry for payment or changer *after* balance has been set.
+  // It is at that point that payment or chages subcollections are set.
   private checkForTransaction() {
-    // console.log(`checkForTransaction`);
-    if (this.dataService.checkForCollection(this.currentFinancialDoc, this.paymentsCollection) ||
-      this.dataService.checkForCollection(this.currentFinancialDoc, this.chargesCollection)) {
-      this.showHistoryButton = true;
-    }
+    this.currentFinancialDoc.collection(this.paymentsCollection).ref.get().
+      then(sub => {
+        this.readyToDisplayTransactionSection(); // ToDo: Indicate when each method that reaches out to DB has completed, then run this method.
+        if (sub.docs.length > 0) {
+          console.log(`${this.paymentsCollection} exists`);
+          this.paymentsCollectionExists = true;
+        } else {
+          console.log(`${this.paymentsCollection} does not exist`);
+          this.paymentsCollectionExists = false;
+        }
+      });
+    this.currentFinancialDoc.collection(this.chargesCollection).ref.get().
+      then(sub => {
+        this.readyToDisplayTransactionSection();
+        if (sub.docs.length > 0) {
+          console.log(`${this.chargesCollection} exists`);
+          this.chargesCollectionExists = true;
+        } else {
+          console.log(`${this.chargesCollection} does not exist`);
+          this.chargesCollectionExists = false;
+        }
+      });
+
   }
 
   private setFormControls() {
@@ -130,7 +152,7 @@ export class EntryComponent implements OnInit {
       this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount }, { merge: true })
         .then(_ => {
           this.getBalances(); // If user does not select another category, getBalances will not run, so run it here.
-          
+
           // Before another payment or change can be entered, hide the form which will force user to select either Enter Payment or 
           // Enter Charge in order to fire enterPayment() or enterCharge() to set the booleans set to correct value for step 3)
           this.showForm = false;
@@ -138,33 +160,52 @@ export class EntryComponent implements OnInit {
         })
 
       // 3) else If balance:
-      //  A) Create a payment or charge subcollection,
+      //  A) Create either a payment or charge subcollection,
       //  B) Write the payment / charge to the document under the respective subcollection  
       //  C) Subtract payment from balance or add charges to balance
       //  D) Update the currentFincial doc with updated balance
       //  E) Now that a transaction occured, run checkForTransaction in order to set showHistoryButton state.
 
     } else { // 3)
-      if (this.isEnteringPayment) {
-        const collection = this.currentFinancialDoc.collection(this.paymentsCollection);                        // A)
-        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })  // B)
-        this.balance -= this.formValue.amount;                                                                  // C)
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })                      // D)
-          .then(_ => {
-            this.resetForm(formDirective);
-            this.checkForTransaction();                                                                         // E)                                                                   
-          });
-      }
-      if (this.isEnteringCharge) {
-        const collection = this.currentFinancialDoc.collection(this.chargesCollection);
-        collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
-        this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else concats. 
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
-          .then(_ => {
-            this.resetForm(formDirective);
-            this.checkForTransaction();
-          });
-      }
+      this.processTransaction(formDirective)
+      // if (this.isEnteringPayment) {
+      //   const collection = this.currentFinancialDoc.collection(this.paymentsCollection);                        // A)
+      //   collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })  // B)
+      //   this.balance -= this.formValue.amount;                                                                  // C)
+      //   this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })                      // D)
+      //     .then(_ => {
+      //       this.resetForm(formDirective);
+      //       this.checkForTransaction();                                                                         // E)                                                                   
+      //     });
+      // }
+      // if (this.isEnteringCharge) {
+      //   const collection = this.currentFinancialDoc.collection(this.chargesCollection);
+      //   collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date })
+      //   this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else concats. 
+      //   this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+      //     .then(_ => {
+      //       this.resetForm(formDirective);
+      //       this.checkForTransaction();
+      //     });
+      // }
+    }
+  }
+
+  private processTransaction(formDirective) {
+    this.balance = null;
+    let _coll = null;
+    this.isEnteringPayment ? _coll = this.currentFinancialDoc.collection(this.paymentsCollection) : _coll = this.currentFinancialDoc.collection(this.chargesCollection);
+    _coll ? _coll.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date }) : console.log(`There was an issue setting _coll`);
+    this.isEnteringPayment ? this.balance -= this.formValue.amount : this.balance = (this.balance + this.formValue.amount); // NOTE: Wrap formula in () and set input to type number or else + will concat. 
+    if (this.balance) {
+      this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+        .then(_ => {
+          this.showForm = false;
+          this.resetForm(formDirective);
+          this.checkForTransaction();
+        });
+    }else{
+      console.log( `There was a problem calculating balance.`);
     }
   }
 
@@ -177,9 +218,17 @@ export class EntryComponent implements OnInit {
     this.showSubmitButton = true;
   }
 
+  private readyToDisplayTransactionSection() {
+    this.showTransactionSection = true;
+    this.financialService.showAvatarSpinner$.next(false);
+  }
+
   public toggleHistory() {
-    //this.dataService.getTransactions(this.category, this.paymentsCollection, this.deductionsCollection); // run again to prevent dup entries from showing on history table.
     this.showHistory = !this.showHistory;
+    if (this.showHistory) {
+      this.dataService.getTransactions(this.paymentsCollection);
+      this.dataService.getTransactions(this.chargesCollection);
+    }
   }
 
   ngOnDestroy() {

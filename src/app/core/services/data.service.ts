@@ -14,6 +14,7 @@ export class DataService {
   public transactions: any[] = [];
 
   public transactions$ = new BehaviorSubject<any>(null);
+  public collectionExits$ = new BehaviorSubject<boolean>(false);
 
   constructor(private fs: FirebaseService) { }
 
@@ -33,44 +34,44 @@ export class DataService {
     return keys.map(key => map[`${key}`])
   }
 
-  public checkForCollection(currentDoc: any, collection: string) {
-    currentDoc.collection(collection).ref.get().
-      then(sub => {
-        if (sub.docs.length > 0) {
-          console.log(`${collection} exists`);
-          return true;
-        } else {
-          console.log(`${collection} does not exist`);
-          return false;
-        }
-      });
-  }
+  // public checkForCollection(currentDoc: any, collection: string) {
+  //   currentDoc.collection(collection).ref.get().
+  //     then(sub => {
+  //       if (sub.docs.length > 0) {
+  //        console.log(`${collection} exists`);
+  //         this.collectionExits$.next(true);
+  //       } else {
+  //        console.log(`${collection} does not exist`);
+  //         this.collectionExits$.next(false);
+  //       }
+  //     });
+  // }
 
-  public getTransactions(category, paymentsCollection, deductionsCollection) {
+  public getTransactions(collection) {
     this.transactions = [];
-    this.currentFinancialDoc.collection(paymentsCollection).ref.get()
+    this.currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
-            const type = category.key === 'tuition' ? "Payment" : "Credit"
-            this.transactions.push({ amount: item.data().payment, type: type, date: date, memo: item.data().memo });
+            const type = collection.includes('Payment') ? 'Payment' : 'Charge'
+            this.transactions.push({ amount: item.data().amount, type: type, date: date, memo: item.data().memo });
             this.transactions$.next(this.transactions);
           }
         )
 
-        this.currentFinancialDoc.collection(deductionsCollection).ref.get()
-          .then(snapshot => {
-            snapshot.forEach(
-              item => {
-                let date = item.data().date.toDate();
-                this.transactions.push({ amount: item.data().deduction, type: "Deduction", date: date, memo: item.data().memo });
-                this.transactions$.next(this.transactions);
-              }
-            )
-          });
-
       });
+
+      // this.currentFinancialDoc.collection(chargesCollection).ref.get()
+      // .then(snapshot => {
+      //   snapshot.forEach(
+      //     item => {
+      //       let date = item.data().date.toDate();
+      //       this.transactions.push({ amount: item.data().amount, type: "Charge", date: date, memo: item.data().memo });
+      //       this.transactions$.next(this.transactions);
+      //     }
+      //   )
+      // });
 
   }
 
