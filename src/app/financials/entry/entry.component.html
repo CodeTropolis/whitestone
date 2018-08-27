@@ -10,9 +10,9 @@
     <h4 *ngIf="startingBalance; else balanceNote">Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}</h4>
     <ng-template #balanceNote>
         <div class="attention">
-            <p> <strong>Attention:</strong> Balance not present for <strong>{{category.val}}.</strong></p>
-            <p>First entry for either payment or charge will serve as the starting balance.</p>
-            <p>Memo accordingly.</p>
+            <p><i class="material-icons">warning</i><strong> Attention: </strong> Balance not present for <strong>{{category.val}}.</strong></p>
+            <p>Entry for either <strong>payment</strong> or <strong>charge</strong> will serve as the <strong>starting balance</strong>.</p>
+            <p>Please memo accordingly.</p>
         </div>
     </ng-template>
 </div>

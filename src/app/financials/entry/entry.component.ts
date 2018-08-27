@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-entry',
@@ -68,8 +69,8 @@ export class EntryComponent implements OnInit {
         this.paymentsCollection = this.category.key + 'Payments';
         this.chargesCollection = this.category.key + 'Charges';
 
-        this.getBalances();           // Need this to run on category select.
-        this.checkForTransaction();   // Transactions may already be present for this.category.
+        this.getBalances();             // Need this to run on category select.
+        this.checkForSubCollections();  // Transactions may already be present for this.category.
         this.setFormControls();
 
       });
@@ -96,13 +97,13 @@ export class EntryComponent implements OnInit {
   // It is at that point that payment or chages subcollections are set.
 
   // Check for transactions in order to set state of payments<charges>Exists state to determine show history button.
-  private checkForTransaction() {
+  private checkForSubCollections() {
     this.currentFinancialDoc.collection(this.paymentsCollection).ref.get().
       then(sub => {
         this.readyToDisplayTransactionSection(); // ToDo: Indicate when each method that reaches out to DB has completed, then run this method.
         if (sub.docs.length > 0) {
           console.log(`${this.paymentsCollection} exists`);
-          this.paymentsCollectionExists = true;
+          this.paymentsCollectionExists = true; // Update the view to show history button
         } else {
           console.log(`${this.paymentsCollection} does not exist`);
           this.paymentsCollectionExists = false;
@@ -146,35 +147,40 @@ export class EntryComponent implements OnInit {
   }
 
   public submitHandler(formDirective) {
+
     this.showSubmitButton = false;
     this.formValue = this.formGroup.value;
+
     // 2) If no balance, save either payment or charge as the starting balance to currentFinancialDoc 
-    if (!this.balance || !this.startingBalance) {
-      this.processBalance(formDirective);
+    if (!this.balance && !this.startingBalance) {
+      this.setStartingAndRunningBalance(formDirective);
     } else {
-      // 3) else If balance:
+      // 3) else If balance
+      this.processTransaction(formDirective);
+      // This method will:
       //  A) Create either a payment or charge subcollection,
       //  B) Write the payment / charge to the document under the respective subcollection  
       //  C) Subtract/add payment/charge to/from balance
       //  D) Update the currentFincial doc with updated balance
       //  E) Now that a transaction occured, run checkForTransaction in order to 
       //    determine history button state in view: if <collectionName>Exists.
-      this.processTransaction(formDirective)
     }
   }
 
-  private processBalance(fd) {
+  private setStartingAndRunningBalance(fd) {
     // Whatever was entered, either payment or charge, will be set as the startingbalance
-    this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true });
-    // Set the running balance.  This will be the blance that future Payment/Charges will calc against
-    this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount }, { merge: true })
-      .then(_ => {
-        this.getBalances(); //  We need state of this.balance for submitHandler flow which will determine if setting balance/startingBalance or perform transaction.
-        // Before another payment or change can be entered, hide the form which will force user to select either enter a payment or 
-        // charge in order to fire enterPayment() or enterCharge() to set the booleans set to correct value for step 3)
-        this.showForm = false;
-        this.resetForm(fd);
-      })
+    this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true })
+      .then(
+        // Set the running balance.  This will be the blance that future Payment/Charges will calc against
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount }, { merge: true })
+          .then(_ => {
+            this.getBalances(); //  User may immediately enter another payment or charge.  We need state of this.balance for submitHandler flow which will determine if setting balance/startingBalance or perform a payment/charge transaction.
+            // Before another payment or change can be entered, hide the form which will force user to select either enter a payment or 
+            // charge in order to fire enterPayment() or enterCharge() to set the booleans set to correct value for step 3)
+            this.showForm = false;
+            this.resetForm(fd);
+          })
+      );
   }
 
   private processTransaction(fd) {
@@ -188,7 +194,7 @@ export class EntryComponent implements OnInit {
           this.showForm = false;
           this.showHistory = false;
           this.resetForm(fd);
-          this.checkForTransaction();
+          this.checkForSubCollections();
         });
     } else {
       console.log(`There was a problem calculating balance.`);
@@ -211,8 +217,12 @@ export class EntryComponent implements OnInit {
   public toggleHistory() {
     this.showHistory = !this.showHistory;
     if (this.showHistory) {
-      this.dataService.getTransactions(this.paymentsCollection);
-      this.dataService.getTransactions(this.chargesCollection);
+      if (this.paymentsCollection) {
+        this.dataService.getTransactions(this.paymentsCollection);
+      }
+      if (this.chargesCollection) {
+        this.dataService.getTransactions(this.chargesCollection);
+      }
     }
   }
 
