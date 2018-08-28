@@ -159,7 +159,7 @@ export class EntryComponent implements OnInit {
       this.processTransaction(formDirective);
       // This method will:
       //  A) Create either a payment or charge subcollection,
-      //  B) Write the payment / charge to the document under the respective subcollection  
+      //  B) Write each payment / charge to a *new* document under the respective subcollection  
       //  C) Subtract/add payment/charge to/from balance
       //  D) Update the currentFincial doc with updated balance
       //  E) Now that a transaction occured, run checkForTransaction in order to 
