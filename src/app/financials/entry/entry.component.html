@@ -1,8 +1,8 @@
 <div *ngIf="category">
     <div *ngIf="!showInputForStartingBalance">
-        <pre>Starting Balance: {{startingBalance}} | Running Balance: {{balance}}</pre>
-        <button type="button" (click)="enterPayment()">Enter Payment</button>
-        <button type="button" (click)="enterCharge()">Enter Charge</button>
+        <pre>Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}</pre>
+        <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
+        <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
         <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
         <br> <br>
     </div>
@@ -11,49 +11,25 @@
         <!-- <div style="display:inline;" *ngIf="!startingBalance"> -->
         <div style="display:inline;" *ngIf="showInputForStartingBalance">
             <p><strong>Enter starting balance for {{category.val}}</strong></p>
-            <input type=number step=0.01 placeholder="{{category.val}} Start Bal." formControlName="amount">
+
+            <mat-form-field>
+                <input matInput type=number step=0.01 placeholder="{{category.val}} Start Bal." formControlName="amount">
+            </mat-form-field>
         </div>
-        <input *ngIf="isEnteringPayment" type=number step=0.01 placeholder="{{category.val}} Payment" formControlName="amount">
-        <input *ngIf="isEnteringCharge" type=number step=0.01  placeholder="{{category.val}} Charge" formControlName="amount">
-        <input type=text placeholder="Memo" formControlName="memo">
-        <button *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
+
+        <mat-form-field *ngIf="isEnteringPayment">
+            <input matInput type=number step=0.01 placeholder="{{category.val}} Payment" formControlName="amount">
+        </mat-form-field>
+
+        <mat-form-field *ngIf="isEnteringCharge">
+            <input matInput type=number step=0.01 placeholder="{{category.val}} Charge" formControlName="amount">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput type=text placeholder="Memo" formControlName="memo">
+        </mat-form-field>
+
+        <button *ngIf="showSubmitButton" mat-flat-button color="basic" [disabled]="!formGroup.valid" type="submit">Submit</button>
     </form>
 </div>
-
-<!-- <div *ngIf="category && showTransactionSection">
-    <div class="transaction">
-        <h3> Current Category: {{category.val}}</h3>
-        <div class="buttons">
-            <button mat-flat-button color="primary" (click)="enterPayment()">Enter Payment</button>
-            <button mat-flat-button color="primary" (click)="enterCharge()">Enter Charge</button>
-            <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
-        </div>
-    </div>
-    <h4 *ngIf="startingBalance; else balanceNote">Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}</h4>
-    <ng-template #balanceNote>
-        <div class="attention">
-            <p><i class="material-icons">warning</i><strong> Attention: </strong> Balance not present for <strong>{{category.val}}.</strong></p>
-            <p>Entry for either <strong>payment</strong> or <strong>charge</strong> will serve as the <strong>starting balance</strong>.</p>
-            <p>Please memo accordingly.</p>
-        </div>
-    </ng-template>
-</div>
-
-
-<form *ngIf="showForm" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-    <div *ngIf="isEnteringPayment">
-        <mat-form-field>
-            <input type=number step=0.01 matInput placeholder="{{category.val}} Payment" formControlName="amount">
-        </mat-form-field>
-    </div>
-    <div *ngIf="isEnteringCharge">
-        <mat-form-field>
-            <input type=number step=0.01 matInput placeholder="{{category.val}} Charge" formControlName="amount">
-        </mat-form-field>
-    </div>
-    <mat-form-field>
-        <input type=text matInput placeholder="Memo" formControlName="memo">
-    </mat-form-field>
-    <button mat-flat-button color="primary" *ngIf="showSubmitButton" [disabled]="!formGroup.valid" type="submit">Submit</button>
-</form> -->
 <app-history *ngIf="showHistory"></app-history>
