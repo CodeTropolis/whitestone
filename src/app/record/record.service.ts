@@ -33,6 +33,10 @@ export class RecordService {
     return this.theForm.get('fatherPhones') as FormArray;
   }
 
+  get phoneFormsMother() {
+    return this.theForm.get('motherPhones') as FormArray;
+  }
+
   get childrenForms() {
     return this.theForm.get('children') as FormArray;
   }
@@ -44,7 +48,7 @@ export class RecordService {
     this.currentRecordId$.next(record.realId);
     // Populate the form with record being edited
     this.theForm.patchValue({
-     // surname: record.surname,
+      surname: record.surname,
       fatherFname: record.fatherFname,
       fatherLname: record.fatherLname,
       fatherEmail: record.fatherEmail,
@@ -61,6 +65,15 @@ export class RecordService {
           type: p.type
         })
         this.phoneFormsFather.push(_fPhone);
+      });
+
+      const mp = this.dataService.convertMapToArray(record.motherPhones);
+      mp.forEach((p) => {
+        const _phone = this.fb.group({
+          number:p.number,
+          type: p.type
+        })
+        this.phoneFormsFather.push(_phone);
       });
 
 

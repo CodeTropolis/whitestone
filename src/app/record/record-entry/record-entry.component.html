@@ -12,7 +12,7 @@
 	<h3>Enter Family Record</h3>
 	<form [formGroup]="myForm" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
 		<table>
-			<!-- <tr>
+			<tr>
 				<mat-form-field>
 					<input matInput placeholder="Surname of Record" formControlName="surname">
 					<mat-error *ngIf="f.surname.invalid && (f.surname.dirty || f.surname.touched)">
@@ -21,7 +21,7 @@
 						</div>
 					</mat-error>
 				</mat-form-field>
-			</tr> -->
+			</tr>
 
 			<tr class="inset">
 				<mat-form-field>
@@ -61,6 +61,45 @@
 				</div>
 
 			</tr>
+
+			<tr class="inset">
+					<mat-form-field>
+						<input matInput placeholder="Mother's First Name" formControlName="motherFname">
+					</mat-form-field>
+					<mat-form-field>
+						<input matInput placeholder="Mother's Last Name" formControlName="motherLname">
+					</mat-form-field>
+					<mat-form-field>
+						<input matInput placeholder="Mother's Email" formControlName="motherEmail">
+						<mat-error *ngIf="f.motherEmail.invalid && (f.motherEmail.dirty || f.motherEmail.touched)">
+							<div *ngIf="f.motherEmail.errors.required"> Email address is required.</div>
+							<div *ngIf="f.motherEmail.errors.email">Email must be a valid email address</div>
+						</mat-error>
+					</mat-form-field>
+					<div class="phone" formArrayName="motherPhones">
+						<button type="button" mat-raised-button color="basic" (click)="addPhoneMother()">
+							<i class="material-icons">add_circle</i> Phone
+						</button>
+	
+						<div *ngFor="let phone of phoneFormMother.controls; let i=index" [formGroupName]="i">
+							<tr>
+								<mat-form-field>
+									<input type="tel" matInput placeholder="(555)555-5555" formControlName="number">
+								</mat-form-field>
+								<mat-form-field>
+									<mat-select placeholder="Type" formControlName="type">
+										<mat-option *ngFor="let type of phoneTypes" [value]="type.value">
+											{{ type.display }}
+										</mat-option>
+									</mat-select>
+								</mat-form-field>
+								<button type="button" mat-raised-button color="basic" (click)="deletePhoneMother(i)">
+									<i class="material-icons">remove_circle_outline</i> Phone</button>
+							</tr>
+						</div>
+					</div>
+	
+				</tr>
 
 			<!-- <tr>
 				<mat-card>

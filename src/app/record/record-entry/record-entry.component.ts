@@ -62,7 +62,7 @@ export class RecordEntryComponent implements OnInit {
   ngOnInit() {
 
     this.myForm = this.fb.group({
-      //surname: ['', Validators.required],
+      surname: ['', Validators.required],
       fatherFname: [''],
       fatherLname: [''],
       fatherEmail: [''],
@@ -113,6 +113,27 @@ export class RecordEntryComponent implements OnInit {
     this.phoneFormFather.removeAt(i);
   }
 
+  get phoneFormMother() {
+    return this.myForm.get('motherPhones') as FormArray;
+  }
+
+  addPhoneMother() {
+    const phone = this.fb.group({
+      number: ['', Validators.required],
+      type: ['', Validators.required],
+    })
+    this.phoneFormMother.push(phone);
+  }
+
+  deletePhoneMother(i) {
+    this.phoneFormMother.removeAt(i);
+  }
+
+
+
+
+
+
   get childrenForm() {
     return this.myForm.get('children') as FormArray;
   }
@@ -142,6 +163,7 @@ export class RecordEntryComponent implements OnInit {
     const data = {
       ...formValue,
       fatherPhones: this.convertArrayToMapWithUUid(formValue.fatherPhones),
+      motherPhones: this.convertArrayToMapWithUUid(formValue.motherPhones),
       children: this.convertArrayToMapWithUUid(formValue.children)
     }
 
