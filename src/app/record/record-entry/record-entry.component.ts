@@ -58,6 +58,12 @@ export class RecordEntryComponent implements OnInit {
 
     this.myForm = this.fb.group({
       surname: ['', Validators.required],
+      father: [''],
+      mother: [''],
+      street: ['', Validators.required],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      phone: this.fb.array([]),
       email: ['', [Validators.required, Validators.email]],
       secondaryEmail: ['', [Validators.email]],
       district: ['', Validators.required],
@@ -81,8 +87,24 @@ export class RecordEntryComponent implements OnInit {
     return this.myForm.controls;
   }
 
+  get phoneForms() {
+    return this.myForm.get('phone') as FormArray;
+  }
+
   get childrenForms() {
     return this.myForm.get('children') as FormArray;
+  }
+
+  addPhone() {
+    const child = this.fb.group({
+      number: ['', Validators.required],
+      type: ['', Validators.required],
+    })
+    this.phoneForms.push(child);
+  }
+
+  deletePhone(i) {
+    this.phoneForms.removeAt(i);
   }
 
   addChild() {
