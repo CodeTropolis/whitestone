@@ -5,7 +5,18 @@ button {margin: 1em 0.5em;}
 
 .form {margin-bottom: 2em;}
 
+.mat-card {margin-bottom: 0.5em;}
 mat-form-field {margin-right: 2em;}
-mat-form-field.email {width: 250px;}
+/* mat-form-field.email {width: 250px;} */
 
 mat-toolbar .info {font-size: 0.7em;}
+
+.phone {display: inline;}
+
+.inset {
+    border-radius: 15px;
+    border: 1px solid var(--ws-blue);
+    margin-bottom: 1em;
+    display: block;
+    padding: 1em;
+}

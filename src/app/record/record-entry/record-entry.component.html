@@ -12,16 +12,69 @@
 	<h3>Enter Family Record</h3>
 	<form [formGroup]="myForm" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
 		<table>
-			<tr>
+			<!-- <tr>
 				<mat-form-field>
-					<input matInput placeholder="Surname" formControlName="surname">
+					<input matInput placeholder="Surname of Record" formControlName="surname">
 					<mat-error *ngIf="f.surname.invalid && (f.surname.dirty || f.surname.touched)">
 						<div *ngIf="f.surname.errors.required">
-							Name is required.
+							Surnamame is required.
 						</div>
 					</mat-error>
 				</mat-form-field>
+			</tr> -->
 
+			<tr class="inset">
+				<mat-form-field>
+					<input matInput placeholder="Father's First Name" formControlName="fatherFname">
+				</mat-form-field>
+				<mat-form-field>
+					<input matInput placeholder="Father's Last Name" formControlName="fatherLname">
+				</mat-form-field>
+				<mat-form-field>
+					<input matInput placeholder="Father's Email" formControlName="fatherEmail">
+					<mat-error *ngIf="f.fatherEmail.invalid && (f.fatherEmail.dirty || f.fatherEmail.touched)">
+						<div *ngIf="f.fatherEmail.errors.required"> Email address is required.</div>
+						<div *ngIf="f.fatherEmail.errors.email">Email must be a valid email address</div>
+					</mat-error>
+				</mat-form-field>
+				<div class="phone" formArrayName="fatherPhones">
+					<button type="button" mat-raised-button color="basic" (click)="addPhoneFather()">
+						<i class="material-icons">add_circle</i> Phone
+					</button>
+
+					<div *ngFor="let phone of phoneFormFather.controls; let i=index" [formGroupName]="i">
+						<tr>
+							<mat-form-field>
+								<input type="tel" matInput placeholder="(area) 555-5555" formControlName="number">
+							</mat-form-field>
+							<mat-form-field>
+								<mat-select placeholder="Type" formControlName="type">
+									<mat-option *ngFor="let type of phoneTypes" [value]="type.value">
+										{{ type.display }}
+									</mat-option>
+								</mat-select>
+							</mat-form-field>
+							<button type="button" mat-raised-button color="basic" (click)="deletePhoneFather(i)">
+								<i class="material-icons">remove_circle_outline</i> Phone</button>
+						</tr>
+					</div>
+				</div>
+
+			</tr>
+
+			<!-- <tr>
+				<mat-card>
+					<mat-form-field>
+						<input matInput placeholder="Mother's First Name" formControlName="motherFname">
+					</mat-form-field>
+
+					<mat-form-field>
+						<input matInput placeholder="Mother's Last Name" formControlName="motherLname">
+					</mat-form-field>
+				</mat-card>
+			</tr> -->
+
+			<!-- <tr>
 				<mat-form-field class="email">
 					<input matInput placeholder="Email" formControlName="email">
 					<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
@@ -32,11 +85,11 @@
 				<mat-form-field class="email">
 					<input matInput placeholder="Secondary Email (For Alt Login)" formControlName="secondaryEmail">
 					<mat-error *ngIf="f.secondaryEmail.invalid && (f.secondaryEmail.dirty || f.secondaryEmail.touched)">
-						<!-- <div *ngIf="f.secondaryEmail.errors.required"> Email address is required.</div> -->
 						<div *ngIf="f.secondaryEmail.errors.email">Email must be a valid email address</div>
 					</mat-error>
 				</mat-form-field>
-			</tr> 
+			</tr> -->
+
 			<tr>
 				<mat-form-field>
 					<input matInput placeholder="School District" formControlName="district">
@@ -59,13 +112,10 @@
 			</tr>
 
 			<div formArrayName="children">
-
-				<h4>Children:
-					<button type="button" mat-raised-button color="basic" (click)="addChild()">
-						<i class="material-icons">add_circle</i> Add
-					</button>
-				</h4>
-				<div *ngFor="let child of childrenForms.controls; let i=index" [formGroupName]="i">
+				<button type="button" mat-raised-button color="basic" (click)="addChild()">
+					<i class="material-icons">add_circle</i>Child
+				</button>
+				<div *ngFor="let child of childrenForm.controls; let i=index" [formGroupName]="i">
 					<tr>
 						<mat-form-field>
 							<input matInput placeholder="First name" formControlName="fname">

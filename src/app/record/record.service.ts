@@ -29,6 +29,10 @@ export class RecordService {
     this.theForm = form;
   }
 
+  get phoneFormsFather() {
+    return this.theForm.get('fatherPhones') as FormArray;
+  }
+
   get childrenForms() {
     return this.theForm.get('children') as FormArray;
   }
@@ -40,16 +44,29 @@ export class RecordService {
     this.currentRecordId$.next(record.realId);
     // Populate the form with record being edited
     this.theForm.patchValue({
-      surname: record.surname,
-      email: record.email,
+     // surname: record.surname,
+      fatherFname: record.fatherFname,
+      fatherLname: record.fatherLname,
+      fatherEmail: record.fatherEmail,
+      motherEmail: record.motherEmail,
       district: record.district,
       catholic: record.catholic
     });
 
-    const children = this.dataService.convertMapToArray(record.children);
 
+      const fp = this.dataService.convertMapToArray(record.fatherPhones);
+      fp.forEach((p) => {
+        const _fPhone = this.fb.group({
+          number:p.number,
+          type: p.type
+        })
+        this.phoneFormsFather.push(_fPhone);
+      });
+
+
+    const children = this.dataService.convertMapToArray(record.children);
     children.forEach((child) => {
-      const revChild = this.fb.group({
+      const _child = this.fb.group({
         fname: child.fname,
         lname: child.lname,
         grade: child.grade,
@@ -57,15 +74,14 @@ export class RecordService {
         race: child.race,
         id: child.id
       })
-      this.childrenForms.push(revChild);
+      this.childrenForms.push(_child);
     });
+
   }
 
   public deleteRecord(record) {
     this.fs.recordCollection.doc(record.realId).delete()
-      .then(() => console.log("removed from DB"));
+      .then(_ => console.log("removed from DB"));
   }
-
-  
 
 }
