@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
-import { MatCardModule, MatButtonModule, MatFormFieldModule, MatProgressSpinnerModule, MatTableModule, MatSortModule, MatPaginatorModule, MatInputModule } from '@angular/material';
+import { MatCardModule, MatButtonModule, MatFormFieldModule, MatProgressSpinnerModule, MatTableModule, MatSortModule, MatPaginatorModule, MatInputModule, MatNativeDateModule } from '@angular/material';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   imports: [
@@ -19,6 +20,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatChipsModule,
     MatCheckboxModule,
     MatToolbarModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
   ],
   declarations: [],
   exports:[
@@ -34,6 +37,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatSortModule,
     MatPaginatorModule,
     MatToolbarModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
   ],
 })
 export class MaterialModule { }

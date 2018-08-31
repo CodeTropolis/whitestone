@@ -135,6 +135,7 @@ export class RecordEntryComponent implements OnInit {
     const child = this.fb.group({
       fname: ['', Validators.required],
       lname: ['', Validators.required],
+      dob: ['', Validators.required],
       grade: ['', Validators.required],
       gender: ['', Validators.required],
       race: ['', Validators.required],

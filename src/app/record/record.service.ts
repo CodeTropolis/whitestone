@@ -87,6 +87,7 @@ export class RecordService {
       const _child = this.fb.group({
         fname: child.fname,
         lname: child.lname,
+        dob: child.dob,
         grade: child.grade,
         gender: child.gender,
         race: child.race,

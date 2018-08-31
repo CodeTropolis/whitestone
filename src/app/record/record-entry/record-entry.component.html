@@ -201,15 +201,24 @@
 								</div>
 							</mat-error>
 						</mat-form-field>
+
 						<mat-form-field>
-							<input matInput placeholder="Grade" formControlName="grade">
-							<mat-error *ngIf="child.controls.grade.invalid && (child.controls.grade.dirty || child.controls.grade.touched)">
-								<div *ngIf="child.controls.grade.errors.required">
-									Grade is required.
-								</div>
-							</mat-error>
+							<input matInput [matDatepicker]="dobPicker" placeholder="Date of Birth" formControlName="dob">
+							<mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+							<mat-datepicker #dobPicker></mat-datepicker>
 						</mat-form-field>
+
 					</tr>
+
+					<mat-form-field>
+						<input matInput placeholder="Grade" formControlName="grade">
+						<mat-error *ngIf="child.controls.grade.invalid && (child.controls.grade.dirty || child.controls.grade.touched)">
+							<div *ngIf="child.controls.grade.errors.required">
+								Grade is required.
+							</div>
+						</mat-error>
+					</mat-form-field>
+
 					<tr>
 						<mat-form-field>
 							<mat-select placeholder="Gender" formControlName="gender">
