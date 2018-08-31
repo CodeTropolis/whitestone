@@ -53,14 +53,15 @@
 			</div>
 
 			<tr class="inset">
+				<h4>Father</h4>
 				<mat-form-field>
-					<input matInput placeholder="Father's First Name" formControlName="fatherFname">
+					<input matInput placeholder="First Name" formControlName="fatherFname">
 				</mat-form-field>
 				<mat-form-field>
-					<input matInput placeholder="Father's Last Name" formControlName="fatherLname">
+					<input matInput placeholder="Last Name" formControlName="fatherLname">
 				</mat-form-field>
 				<mat-form-field>
-					<input matInput placeholder="Father's Email" formControlName="fatherEmail">
+					<input matInput placeholder="Email" formControlName="fatherEmail">
 					<mat-error *ngIf="f.fatherEmail.invalid && (f.fatherEmail.dirty || f.fatherEmail.touched)">
 						<div *ngIf="f.fatherEmail.errors.required"> Email address is required.</div>
 						<div *ngIf="f.fatherEmail.errors.email">Email must be a valid email address</div>
@@ -92,14 +93,15 @@
 			</tr>
 
 			<tr class="inset">
+				<h4>Mother</h4>
 				<mat-form-field>
-					<input matInput placeholder="Mother's First Name" formControlName="motherFname">
+					<input matInput placeholder="First Name" formControlName="motherFname">
 				</mat-form-field>
 				<mat-form-field>
-					<input matInput placeholder="Mother's Last Name" formControlName="motherLname">
+					<input matInput placeholder="Last Name" formControlName="motherLname">
 				</mat-form-field>
 				<mat-form-field>
-					<input matInput placeholder="Mother's Email" formControlName="motherEmail">
+					<input matInput placeholder="Email" formControlName="motherEmail">
 					<mat-error *ngIf="f.motherEmail.invalid && (f.motherEmail.dirty || f.motherEmail.touched)">
 						<div *ngIf="f.motherEmail.errors.required"> Email address is required.</div>
 						<div *ngIf="f.motherEmail.errors.email">Email must be a valid email address</div>
@@ -130,33 +132,6 @@
 
 			</tr>
 
-			<!-- <tr>
-				<mat-card>
-					<mat-form-field>
-						<input matInput placeholder="Mother's First Name" formControlName="motherFname">
-					</mat-form-field>
-
-					<mat-form-field>
-						<input matInput placeholder="Mother's Last Name" formControlName="motherLname">
-					</mat-form-field>
-				</mat-card>
-			</tr> -->
-
-			<!-- <tr>
-				<mat-form-field class="email">
-					<input matInput placeholder="Email" formControlName="email">
-					<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
-						<div *ngIf="f.email.errors.required"> Email address is required.</div>
-						<div *ngIf="f.email.errors.email">Email must be a valid email address</div>
-					</mat-error>
-				</mat-form-field>
-				<mat-form-field class="email">
-					<input matInput placeholder="Secondary Email (For Alt Login)" formControlName="secondaryEmail">
-					<mat-error *ngIf="f.secondaryEmail.invalid && (f.secondaryEmail.dirty || f.secondaryEmail.touched)">
-						<div *ngIf="f.secondaryEmail.errors.email">Email must be a valid email address</div>
-					</mat-error>
-				</mat-form-field>
-			</tr> -->
 
 			<tr class="inset">
 				<mat-form-field>
