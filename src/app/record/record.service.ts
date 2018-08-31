@@ -49,32 +49,37 @@ export class RecordService {
     // Populate the form with record being edited
     this.theForm.patchValue({
       surname: record.surname,
+      address: record.address,
+      city: record.city,
+      state: record.state,
       fatherFname: record.fatherFname,
       fatherLname: record.fatherLname,
       fatherEmail: record.fatherEmail,
+      motherFname: record.motherFname,
+      motherLname: record.motherLname,
       motherEmail: record.motherEmail,
       district: record.district,
       catholic: record.catholic
     });
 
 
-      const fp = this.dataService.convertMapToArray(record.fatherPhones);
-      fp.forEach((p) => {
-        const _fPhone = this.fb.group({
-          number:p.number,
-          type: p.type
-        })
-        this.phoneFormsFather.push(_fPhone);
-      });
+    const fp = this.dataService.convertMapToArray(record.fatherPhones);
+    fp.forEach((p) => {
+      const phone = this.fb.group({
+        number: p.number,
+        type: p.type
+      })
+      this.phoneFormsFather.push(phone);
+    });
 
-      const mp = this.dataService.convertMapToArray(record.motherPhones);
-      mp.forEach((p) => {
-        const _phone = this.fb.group({
-          number:p.number,
-          type: p.type
-        })
-        this.phoneFormsFather.push(_phone);
-      });
+    const mp = this.dataService.convertMapToArray(record.motherPhones);
+    mp.forEach((p) => {
+      const phone = this.fb.group({
+        number: p.number,
+        type: p.type
+      })
+      this.phoneFormsMother.push(phone);
+    });
 
 
     const children = this.dataService.convertMapToArray(record.children);

@@ -71,11 +71,9 @@ export class RecordEntryComponent implements OnInit {
       motherLname: [''],
       motherEmail: [''],
       motherPhones: this.fb.array([]),
-      // street: ['', Validators.required],
-      // city: ['', Validators.required],
-      // state: ['', Validators.required],
-      // email: ['', [Validators.required, Validators.email]],
-      // secondaryEmail: ['', [Validators.email]],
+      address: ['', Validators.required],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
       district: ['', Validators.required],
       catholic: ['', Validators.required],
       children: this.fb.array([]),
@@ -128,11 +126,6 @@ export class RecordEntryComponent implements OnInit {
   deletePhoneMother(i) {
     this.phoneFormMother.removeAt(i);
   }
-
-
-
-
-
 
   get childrenForm() {
     return this.myForm.get('children') as FormArray;
@@ -218,6 +211,7 @@ export class RecordEntryComponent implements OnInit {
     this.myForm.reset();
     this.myForm.setControl('children', this.fb.array([]));
     this.myForm.setControl('fatherPhones', this.fb.array([]));
+    this.myForm.setControl('motherPhones', this.fb.array([]));
   }
 
   public logOut() {
