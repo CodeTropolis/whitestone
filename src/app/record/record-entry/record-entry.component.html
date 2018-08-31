@@ -186,6 +186,19 @@
 					</tr>
 
 					<mat-form-field>
+						<mat-select placeholder="Gender" formControlName="gender">
+							<mat-option *ngFor="let g of gender" [value]="g.value">
+								{{ g.display }}
+							</mat-option>
+						</mat-select>
+						<mat-error *ngIf="child.controls.gender.invalid && (child.controls.gender.dirty || child.controls.gender.touched)">
+							<div *ngIf="child.controls.gender.errors.required">
+								Gender is required.
+							</div>
+						</mat-error>
+					</mat-form-field>
+
+					<mat-form-field>
 						<input matInput placeholder="Grade" formControlName="grade">
 						<mat-error *ngIf="child.controls.grade.invalid && (child.controls.grade.dirty || child.controls.grade.touched)">
 							<div *ngIf="child.controls.grade.errors.required">
@@ -194,32 +207,20 @@
 						</mat-error>
 					</mat-form-field>
 
-					<tr>
-						<mat-form-field>
-							<mat-select placeholder="Gender" formControlName="gender">
-								<mat-option *ngFor="let g of gender" [value]="g.value">
-									{{ g.display }}
-								</mat-option>
-							</mat-select>
-							<mat-error *ngIf="child.controls.gender.invalid && (child.controls.gender.dirty || child.controls.gender.touched)">
-								<div *ngIf="child.controls.gender.errors.required">
-									Gender is required.
-								</div>
-							</mat-error>
-						</mat-form-field>
+					<mat-form-field>
+						<mat-select placeholder="Ethnicity" formControlName="race">
+							<mat-option *ngFor="let race of races" [value]="race.value">
+								{{ race.display }}
+							</mat-option>
+						</mat-select>
+						<mat-error *ngIf="child.controls.race.invalid && (child.controls.race.dirty || child.controls.race.touched)">
+							<div *ngIf="child.controls.race.errors.required">
+								Ethnicity is required.
+							</div>
+						</mat-error>
+					</mat-form-field>
 
-						<mat-form-field>
-							<mat-select placeholder="Ethnicity" formControlName="race">
-								<mat-option *ngFor="let race of races" [value]="race.value">
-									{{ race.display }}
-								</mat-option>
-							</mat-select>
-							<mat-error *ngIf="child.controls.race.invalid && (child.controls.race.dirty || child.controls.race.touched)">
-								<div *ngIf="child.controls.race.errors.required">
-									Ethnicity is required.
-								</div>
-							</mat-error>
-						</mat-form-field>
+					<tr>
 						<button type="button" mat-raised-button color="basic" (click)="deleteChild(i)"><i class="material-icons">remove_circle_outline</i>
 							Child</button>
 					</tr>
