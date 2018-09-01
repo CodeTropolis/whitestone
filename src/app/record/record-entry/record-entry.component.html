@@ -154,11 +154,16 @@
 				</mat-form-field>
 			</tr>
 
-			<div formArrayName="children">
-				<button type="button" mat-raised-button color="basic" (click)="addChild()">
+			<button type="button" mat-raised-button color="basic" (click)="addChild()">
 					<i class="material-icons">add_circle</i> Child
 				</button>
+
+			<div formArrayName="children">
+		
 				<div class="inset" *ngFor="let child of childrenForm.controls; let i=index" [formGroupName]="i">
+					<button class="remove-child" type="button" mat-raised-button color="warn" (click)="deleteChild(i)">
+						<i class="material-icons">remove_circle_outline</i>
+					</button>
 					<tr>
 						<mat-form-field>
 							<input matInput placeholder="First name" formControlName="fname">
@@ -221,8 +226,7 @@
 					</mat-form-field>
 
 					<tr>
-						<button type="button" mat-raised-button color="basic" (click)="deleteChild(i)"><i class="material-icons">remove_circle_outline</i>
-							Child</button>
+
 					</tr>
 				</div>
 			</div>

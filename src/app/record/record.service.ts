@@ -84,10 +84,19 @@ export class RecordService {
 
     const children = this.dataService.convertMapToArray(record.children);
     children.forEach((child) => {
+
+      // Need to convert date in order to show dob in form upon record update.
+      
+      // https://stackoverflow.com/a/847196
+      // Create a new JavaScript Date object based on the timestamp
+      // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+      const timestamp = child.dob.seconds;
+      const date = new Date(timestamp * 1000);
+
       const _child = this.fb.group({
         fname: child.fname,
         lname: child.lname,
-        dob: child.dob,
+        dob: date,
         grade: child.grade,
         gender: child.gender,
         race: child.race,

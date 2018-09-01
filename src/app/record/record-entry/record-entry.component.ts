@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { RecordService } from '../record.service';
 
@@ -141,7 +141,7 @@ export class RecordEntryComponent implements OnInit {
       race: ['', Validators.required],
       id: ['']
     })
-    this.childrenForm.push(child);
+    this.childrenForm.push(child,);
   }
 
   deleteChild(i) {

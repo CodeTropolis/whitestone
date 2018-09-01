@@ -1,10 +1,11 @@
 <div *ngIf="category">
+        <br> <br>
     <div *ngIf="!showInputForStartingBalance">
         <pre>Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}</pre>
         <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
         <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
         <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
-        <br> <br>
+        <br>
     </div>
     <form *ngIf="showForm" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
         <!-- check for falsy for startingBalance will not suffice for balance entry of zero -->

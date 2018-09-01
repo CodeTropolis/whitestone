@@ -4,6 +4,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatToolbarModule } from '@angular/material/toolbar';
+//import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
@@ -21,10 +22,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatCheckboxModule,
     MatToolbarModule,
     MatNativeDateModule,
+    //MatMomentDateModule,
     MatDatepickerModule,
   ],
   declarations: [],
-  exports:[
+  exports: [
     MatCardModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -38,6 +40,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatPaginatorModule,
     MatToolbarModule,
     MatNativeDateModule,
+    //MatMomentDateModule,
     MatDatepickerModule,
   ],
 })
