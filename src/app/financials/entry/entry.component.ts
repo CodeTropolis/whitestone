@@ -16,6 +16,7 @@ export class EntryComponent implements OnInit {
   public category: any;
 
   public startingBalanceKey: string;
+  public startingBalanceDateKey: string;
   public startingBalanceMemoKey: string;
   public startingBalance: number;
 
@@ -65,6 +66,7 @@ export class EntryComponent implements OnInit {
 
         // Set keys based on category selection.
         this.startingBalanceKey = this.category.key + 'StartingBalance';
+        this.startingBalanceDateKey = this.category.key + 'StartingBalanceDate';
         this.startingBalanceMemoKey = this.category.key + 'StartingBalanceMemo';
         this.balanceKey = this.category.key + 'Balance';
         this.paymentsCollection = this.category.key + 'Payments';
@@ -136,6 +138,7 @@ export class EntryComponent implements OnInit {
   private setFormControls() {
     this.formGroup = this.fb.group({
       amount: ['', Validators.required],
+      date: ['', Validators.required],
       memo: ['', Validators.required],
     });
   }
@@ -152,7 +155,9 @@ export class EntryComponent implements OnInit {
 
   private setBalance(fd) {
     // Starting balance set for history reference
-    this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true })
+    // Starting balance is not contained in collection - it sits in root of currentFinancialDoc, therefore, 
+    // starting balance elements must be identified by categeory i.e. lunchStartingBalanceDate, lunchStartingBalanceMemo, etc.
+    this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true })
     // Set the running balance which future Payment/Charges will calc against
     this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount }, { merge: true })
       .then(_ => {
@@ -169,12 +174,12 @@ export class EntryComponent implements OnInit {
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
 
-    collection.ref.doc().set({ amount: this.formValue.amount, memo: this.formValue.memo, date: new Date });
+    collection.ref.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo});
     // NOTE: Wrap formula in () and set input to type number or else + will concat. 
     this.isEnteringPayment ? this.balance -= this.formValue.amount : this.balance = (this.balance + this.formValue.amount);
     this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
       .then(_ => {
-        this.checkForSubCollections(); // This may be the first entry after balance set so check the subcollections so that this.payment<charges>Collection state for History button 
+        this.checkForSubCollections(); // This may be the first entry after balance set so check the subcollections to obtain this.payment<charges>Collection state for History button 
         this.resetForm(fd);
       });
   }

@@ -1,7 +1,7 @@
 <div *ngIf="category">
-        <br> <br>
+        <br>
     <div *ngIf="!showInputForStartingBalance">
-        <pre>Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}</pre>
+        <pre><strong>{{category.val}}</strong> Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}</pre>
         <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
         <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
         <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
@@ -24,6 +24,12 @@
 
         <mat-form-field *ngIf="isEnteringCharge">
             <input matInput type=number step=0.01 placeholder="{{category.val}} Charge" formControlName="amount">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput [matDatepicker]="transactionDatePicker" placeholder="Date" formControlName="date">
+            <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #transactionDatePicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field>
