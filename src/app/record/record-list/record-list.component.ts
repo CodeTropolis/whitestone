@@ -17,7 +17,7 @@ export class RecordListComponent implements OnInit {
   //public records: any[] = [];
   public isUpdating: boolean;
   public ds: MatTableDataSource<any>;
-  public displayedColumns = ['surname',  'email', 'secondaryEmail', 'district', 'catholic',];
+  public displayedColumns = ['surname',  'father', 'mother', 'district', 'catholic',];
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] =[];
 
@@ -41,7 +41,7 @@ export class RecordListComponent implements OnInit {
 
 
       this.ds.filterPredicate = (data, filter) => {
-        let dataStr = data.surname + data.email + data.seconaryEmail + data.district + data.catholic;
+        let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname + data.district + data.catholic;
         const children = this.dataService.convertMapToArray(data.children);
         children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
         dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches

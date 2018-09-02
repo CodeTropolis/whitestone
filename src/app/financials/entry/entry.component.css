@@ -15,7 +15,6 @@ button {
 h3 {margin-bottom: 0.5em;}
 h4 {margin-top: 0.5em;}
 
-mat-form-field {
-    margin-right: 1em;
-    margin-bottom: 1em;
-}
+mat-form-field {margin: 1em 1em 1em 0;}
+
+pre {margin-top:0;}

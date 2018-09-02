@@ -17,7 +17,7 @@ mat-toolbar .info {font-size: 0.7em;}
 
 .inset {
     border-radius: 15px;
-    border: 1px solid var(--ws-blue);
+    border: 1px solid var(--ws-hintblue);
     margin-bottom: 1em;
     display: block;
     padding: 1em;

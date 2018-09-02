@@ -12,14 +12,14 @@
 				<mat-cell *matCellDef="let row"> {{row.surname}} </mat-cell>
 			</ng-container>
 
-			<ng-container matColumnDef="email">
-				<mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
-				<mat-cell *matCellDef="let row"> {{row.email}}</mat-cell>
+			<ng-container matColumnDef="father">
+				<mat-header-cell *matHeaderCellDef mat-sort-header> Father / Guardian </mat-header-cell>
+				<mat-cell *matCellDef="let row">{{row.fatherFname}} {{row.fatherLname}}</mat-cell>
 			</ng-container>
 
-			<ng-container matColumnDef="secondaryEmail">
-				<mat-header-cell *matHeaderCellDef mat-sort-header> Secondary Email </mat-header-cell>
-				<mat-cell *matCellDef="let row"> {{row.secondaryEmail}}</mat-cell>
+			<ng-container matColumnDef="mother">
+				<mat-header-cell *matHeaderCellDef mat-sort-header> Mother / Guardian </mat-header-cell>
+				<mat-cell *matCellDef="let row"> {{row.motherFname}} {{row.motherLname}}</mat-cell>
 			</ng-container>
 
 			<ng-container matColumnDef="district">
