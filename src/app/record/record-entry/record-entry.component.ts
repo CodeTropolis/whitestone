@@ -74,6 +74,7 @@ export class RecordEntryComponent implements OnInit {
       address: ['', Validators.required],
       city: ['', Validators.required],
       state: ['', Validators.required],
+      zip: ['', Validators.required],
       district: ['', Validators.required],
       catholic: ['', Validators.required],
       children: this.fb.array([]),

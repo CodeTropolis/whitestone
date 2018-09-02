@@ -52,6 +52,7 @@ export class RecordService {
       address: record.address,
       city: record.city,
       state: record.state,
+      zip: record.zip,
       fatherFname: record.fatherFname,
       fatherLname: record.fatherLname,
       fatherEmail: record.fatherEmail,

@@ -49,6 +49,16 @@
 							</div>
 						</mat-error>
 					</mat-form-field>
+
+					<mat-form-field>
+						<input matInput placeholder="Zip" formControlName="zip">
+						<mat-error *ngIf="f.zip.invalid && (f.zip.dirty || f.zip.touched)">
+							<div *ngIf="f.zip.errors.required">
+								Zip is required.
+							</div>
+						</mat-error>
+					</mat-form-field>
+
 				</tr>
 			</div>
 
