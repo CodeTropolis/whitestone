@@ -13,18 +13,40 @@ export class DataService {
 
   public transactions: any[] = [];
 
+  public currentFinancialDoc$ = new BehaviorSubject<any>(null);
   public transactions$ = new BehaviorSubject<any>(null);
   public collectionExits$ = new BehaviorSubject<boolean>(false);
 
-  constructor(private fs: FirebaseService) { }
+  constructor(private fs: FirebaseService) {
+
+    this.currentFinancialDoc$.subscribe(payload => {
+      this.currentFinancialDoc = payload;
+      console.log(`currentFinancialDoc$ payload: ${payload}`);
+    })
+    
+   }
 
   public createFinancialRecord(child) {
-    this.currentFinancialDoc = this.fs.financialsCollection.doc(child.id);
+    
+   // this.currentFinancialDoc = this.fs.financialsCollection.doc(child.id);
+    
+    this.currentFinancialDoc$.next(this.fs.financialsCollection.doc(child.id));
+
     this.currentFinancialDoc.ref.get().then((snapshot) => {
       if (!snapshot.exists) {
         this.currentFinancialDoc.set({ dateCreated: new Date });
       }
     });
+
+    // this.currentFinancialDoc$.subscribe(payload => {
+    //   this.currentFinancialDoc = payload;
+    //   this.currentFinancialDoc.ref.get().then((snapshot) => {
+    //     if (!snapshot.exists) {
+    //       this.currentFinancialDoc.set({ dateCreated: new Date });
+    //     }
+    //   });
+    // })
+
 
     this.currentChild = child;
   }
@@ -33,19 +55,6 @@ export class DataService {
     const keys = Object.keys(map)
     return keys.map(key => map[`${key}`])
   }
-
-  // public checkForCollection(currentDoc: any, collection: string) {
-  //   currentDoc.collection(collection).ref.get().
-  //     then(sub => {
-  //       if (sub.docs.length > 0) {
-  //        console.log(`${collection} exists`);
-  //         this.collectionExits$.next(true);
-  //       } else {
-  //        console.log(`${collection} does not exist`);
-  //         this.collectionExits$.next(false);
-  //       }
-  //     });
-  // }
 
   public getTransactions(collection) {
     this.transactions = [];
@@ -61,17 +70,6 @@ export class DataService {
         )
 
       });
-
-      // this.currentFinancialDoc.collection(chargesCollection).ref.get()
-      // .then(snapshot => {
-      //   snapshot.forEach(
-      //     item => {
-      //       let date = item.data().date.toDate();
-      //       this.transactions.push({ amount: item.data().amount, type: "Charge", date: date, memo: item.data().memo });
-      //       this.transactions$.next(this.transactions);
-      //     }
-      //   )
-      // });
 
   }
 
