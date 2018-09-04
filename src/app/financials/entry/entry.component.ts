@@ -50,7 +50,10 @@ export class EntryComponent implements OnInit {
     this.showHistoryButton = false;
     this.showForm = false;
 
-    this.currentFinancialDoc = this.dataService.currentFinancialDoc;
+    // The student's financial doc sent to dataService by clicking the financials icon in the child table
+    // Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc;
+    //this.currentFinancialDoc = this.dataService.currentFinancialDoc;
+    this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
 
     // Listen for balance update
     this.financialService.runningBalanceForCurrentCategory$.subscribe(bal => this.balance = bal);
@@ -118,11 +121,11 @@ export class EntryComponent implements OnInit {
       then(sub => {
         this.readyToDisplayTransactionSection(); // ToDo: Indicate when each method that reaches out to DB has completed, then run this method.
         if (sub.docs.length > 0) {
-          console.log(`${this.paymentsCollection} exists`);
+          //console.log(`${this.paymentsCollection} exists`);
           this.paymentsCollectionExists = true; // Update the view to show history button
           this.dataService.getTransactions(this.paymentsCollection); 
         } else {
-          console.log(`${this.paymentsCollection} does not exist`);
+          //console.log(`${this.paymentsCollection} does not exist`);
           this.paymentsCollectionExists = false;
         }
       });
@@ -130,11 +133,11 @@ export class EntryComponent implements OnInit {
       then(sub => {
         this.readyToDisplayTransactionSection();
         if (sub.docs.length > 0) {
-          console.log(`${this.chargesCollection} exists`);
+          //console.log(`${this.chargesCollection} exists`);
           this.chargesCollectionExists = true;
           this.dataService.getTransactions(this.chargesCollection);
         } else {
-          console.log(`${this.chargesCollection} does not exist`);
+          //console.log(`${this.chargesCollection} does not exist`);
           this.chargesCollectionExists = false;
         }
       });
