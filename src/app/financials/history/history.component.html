@@ -25,6 +25,11 @@
     <mat-cell *matCellDef="let row"> {{row.memo}} </mat-cell>
   </ng-container>
 
+  <ng-container matColumnDef="delete">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Delete Transaction</mat-header-cell>
+    <mat-cell *matCellDef="let row"> <button (click)="deleteTransaction(row, row.type, row.amount)">Delete</button> </mat-cell>
+  </ng-container>
+
   <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
 </mat-table>

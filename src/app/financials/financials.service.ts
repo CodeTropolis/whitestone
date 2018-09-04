@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 export class FinancialsService {
 
     public currentCategory$ = new BehaviorSubject<string>(null);
+    public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null);
     public showAvatarSpinner$ = new BehaviorSubject<boolean>(false); // set to false so that avatar spinner on financials.component does not show initially
     public categories: any;
     

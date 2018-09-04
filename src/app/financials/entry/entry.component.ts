@@ -52,6 +52,9 @@ export class EntryComponent implements OnInit {
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
+    // Listen for balance update
+    this.financialService.runningBalanceForCurrentCategory$.subscribe(bal => this.balance = bal);
+
     // Listen for category selection from financials-main.component
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
@@ -98,7 +101,10 @@ export class EntryComponent implements OnInit {
         }
         // Check for running balance
         if (snapshot.data()[this.balanceKey] || snapshot.data()[this.balanceKey] === 0) {
-          this.balance = snapshot.data()[this.balanceKey];
+          // this.balance = snapshot.data()[this.balanceKey];
+          // Make balance available to other components i.e. history by passing it to financials.service
+          // And assign value to this.balance via payload from balance$ subject only (in init)
+          this.financialService.runningBalanceForCurrentCategory$.next(snapshot.data()[this.balanceKey]);
         } else {
           this.balance = null;
         }
