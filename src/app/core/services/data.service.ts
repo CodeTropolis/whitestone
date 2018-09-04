@@ -21,14 +21,11 @@ export class DataService {
 
     this.currentFinancialDoc$.subscribe(payload => {
       this.currentFinancialDoc = payload;
-      console.log(`currentFinancialDoc$ payload: ${payload}`);
     })
     
    }
 
   public createFinancialRecord(child) {
-    
-   // this.currentFinancialDoc = this.fs.financialsCollection.doc(child.id);
     
     this.currentFinancialDoc$.next(this.fs.financialsCollection.doc(child.id));
 
@@ -37,16 +34,6 @@ export class DataService {
         this.currentFinancialDoc.set({ dateCreated: new Date });
       }
     });
-
-    // this.currentFinancialDoc$.subscribe(payload => {
-    //   this.currentFinancialDoc = payload;
-    //   this.currentFinancialDoc.ref.get().then((snapshot) => {
-    //     if (!snapshot.exists) {
-    //       this.currentFinancialDoc.set({ dateCreated: new Date });
-    //     }
-    //   });
-    // })
-
 
     this.currentChild = child;
   }
