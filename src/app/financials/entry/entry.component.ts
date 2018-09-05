@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-entry',
@@ -55,7 +54,7 @@ export class EntryComponent implements OnInit {
     //this.currentFinancialDoc = this.dataService.currentFinancialDoc;
     this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
 
-    // Listen for balance update
+    // Listen for balance update.  An update could come from the history.component.
     this.financialService.runningBalanceForCurrentCategory$.subscribe(bal => this.balance = bal);
 
     // Listen for category selection from financials-main.component
@@ -178,7 +177,7 @@ export class EntryComponent implements OnInit {
   }
 
   private processTransaction(fd) {
-    let collection
+    let collection;
     this.isEnteringPayment ?
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
@@ -188,6 +187,7 @@ export class EntryComponent implements OnInit {
     this.isEnteringPayment ? this.balance -= this.formValue.amount : this.balance = (this.balance + this.formValue.amount);
     this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
       .then(_ => {
+        this.financialService.runningBalanceForCurrentCategory$.next(this.balance);
         this.checkForSubCollections(); // This may be the first entry after balance set so check the subcollections to obtain this.payment<charges>Collection state for History button 
         this.resetForm(fd);
       });

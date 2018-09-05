@@ -27,7 +27,10 @@
 
   <ng-container matColumnDef="delete">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Delete Transaction</mat-header-cell>
-    <mat-cell *matCellDef="let row"> <button (click)="deleteTransaction(row, row.type, row.amount)">Delete</button> </mat-cell>
+    <mat-cell *matCellDef="let row">
+       <button [disabled]="disableDelete[row.id]" (click)="deleteTransaction(row.id, row.type, row.amount)">Delete</button> 
+       <!-- ToDo: Add confirm delete -->
+      </mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>

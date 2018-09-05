@@ -44,14 +44,16 @@ export class DataService {
   }
 
   public getTransactions(collection) {
+    // console.log('TCL: publicgetTransactions -> collection', collection);
     this.transactions = [];
     this.currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
-          item => {
+          item => {     
+            // console.log('TCL: publicgetTransactions -> item', item);
             let date = item.data().date.toDate();
             const type = collection.includes('Payment') ? 'Payment' : 'Charge'
-            this.transactions.push({ amount: item.data().amount, type: type, date: date, memo: item.data().memo });
+            this.transactions.push({ id:item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
             this.transactions$.next(this.transactions);
           }
         )
