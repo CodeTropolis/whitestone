@@ -4,8 +4,8 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable()
 export class FinancialsService {
 
-    public currentCategory$ = new BehaviorSubject<string>(null);
-    public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null);
+    public currentCategory$ = new BehaviorSubject<string>(null); // Move to data.service
+    public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null); // Move to data.service
     public showAvatarSpinner$ = new BehaviorSubject<boolean>(false); // set to false so that avatar spinner on financials.component does not show initially
     public categories: any;
     

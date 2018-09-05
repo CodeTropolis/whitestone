@@ -34,6 +34,7 @@ export class EntryComponent implements OnInit {
   public showInputForStartingBalance: boolean;
   public showTransactionSection: boolean;
   public showHistoryButton: boolean;
+  public balanceIsNegative: boolean;
 
   public paymentsCollectionExists: boolean;
   public chargesCollectionExists: boolean;
@@ -55,7 +56,15 @@ export class EntryComponent implements OnInit {
     this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
 
     // Listen for balance update.  An update could come from the history.component.
-    this.financialService.runningBalanceForCurrentCategory$.subscribe(bal => this.balance = bal);
+    this.financialService.runningBalanceForCurrentCategory$.subscribe(bal => {
+      this.balance = bal;
+      if(Math.sign(this.balance) === -1){
+        console.log('balance is neg');
+        this.balanceIsNegative = true;
+      }else{
+        this.balanceIsNegative = false;
+      }
+    });
 
     // Listen for category selection from financials-main.component
     this.categorySubscription = this.financialService.currentCategory$

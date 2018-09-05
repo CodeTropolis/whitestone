@@ -8,6 +8,8 @@ button {
 
 .buttons {margin: 0.75em 0 0 1em;}
 
+.credit { color: var(--ws-green);}
+
 .transaction { display: flex;}
 
 .history {margin-top: 2em;}

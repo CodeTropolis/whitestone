@@ -33,7 +33,10 @@ export class HistoryComponent implements OnInit {
 
   ngOnInit() {
 
-    this.currentCategorySubscription = this.financialsService.currentCategory$.subscribe(cat => this.currentCatgory = cat);
+    this.currentCategorySubscription = this.financialsService.currentCategory$.subscribe(cat => {
+      this.currentCatgory = cat;
+     // console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
+    });
     this.currentfinancialDocSubscription = this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
     this.runningBalanceSubscription = this.financialsService.runningBalanceForCurrentCategory$.subscribe(x => {
       this.currentBalance = x;
