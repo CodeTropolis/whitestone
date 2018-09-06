@@ -8,7 +8,7 @@ button {
 
 .buttons {margin: 0.75em 0 0 1em;}
 
-.credit { color: var(--ws-green);}
+.credit { color: var(--ws-financial-green);}
 
 .transaction { display: flex;}
 
