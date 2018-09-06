@@ -59,7 +59,7 @@ export class EntryComponent implements OnInit {
     this.financialService.runningBalanceForCurrentCategory$.subscribe(bal => {
       this.balance = bal;
       if(Math.sign(this.balance) === -1){
-        console.log('balance is neg');
+        // console.log('balance is neg');
         this.balanceIsNegative = true;
       }else{
         this.balanceIsNegative = false;
