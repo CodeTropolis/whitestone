@@ -28,6 +28,7 @@ export class FinancialsService {
   }
 
   public getTransactions(collection) {
+    console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
     const transactions: any[] = [];
     this.currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {

@@ -33,22 +33,23 @@ export class HistoryComponent implements OnInit {
 
   ngOnInit() {
 
+    this.currentCategorySubscription = this.financialsService.currentCategory$
+      .subscribe(cat => {
+        this.currentCatgory = cat;
+        console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
+      });
+
+    this.currentfinancialDocSubscription = this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
+    this.runningBalanceSubscription = this.financialsService.runningBalanceForCurrentCategory$.subscribe(x => {
+      this.currentBalance = x;
+      // console.log('TCL: HistoryComponent -> ngOnInit -> currentBalance', this.currentBalance);
+    });
+
     this.transactionSubscription = this.financialsService.transactions$.subscribe(x => {
       console.log('TCL: HistoryComponent -> transactionSubscription -> x', x);
       this.tableData = new MatTableDataSource(x);
       // this.ds.paginator = this.paginator;
       this.tableData.sort = this.sort;
-    });
-
-    this.currentCategorySubscription = this.financialsService.currentCategory$
-      .subscribe(cat => {
-        this.currentCatgory = cat;
-        //console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
-      });
-    this.currentfinancialDocSubscription = this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
-    this.runningBalanceSubscription = this.financialsService.runningBalanceForCurrentCategory$.subscribe(x => {
-      this.currentBalance = x;
-      // console.log('TCL: HistoryComponent -> ngOnInit -> currentBalance', this.currentBalance);
     });
 
     this.balanceKey = this.currentCatgory.key + 'Balance';
