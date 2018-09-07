@@ -23,17 +23,18 @@ export class CategorySelectComponent implements OnInit {
 
   ngOnInit() {
 
+    //ToDo: Need reference to family record for UI showing other children of record.
+
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
 
-    //ToDo: Need reference to family record for UI showing other children of record.
-
-    this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
     this.categories = this.financialsService.categories;
+    this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
 
-  public setCategory(cat: string) {
+  public setCategory(cat: any) {
+    //console.log('TCL: CategorySelectComponent -> publicsetCategory -> cat', cat);
     this.financialsService.currentCategory$.next(cat);
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
     // beginning of entry.component to prevent  "Expression has changed after it was checked" err.

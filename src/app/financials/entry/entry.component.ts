@@ -12,9 +12,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class EntryComponent implements OnInit {
 
   private categorySubscription: any;
-  private paymentsCollection: string;
-  private chargesCollection: string;
-
   public currentFinancialDoc: any;
   public category: any;
 
@@ -22,10 +19,10 @@ export class EntryComponent implements OnInit {
   public startingBalanceDateKey: string;
   public startingBalanceMemoKey: string;
   public startingBalance: number;
-
-  // Balance will update upon transaction. 
-  // Memos given for transations (Payments and Charges) so no memo given on running balance.
   public balanceKey: string;
+
+  private paymentsCollection: string;
+  private chargesCollection: string;
   public balance: number;
 
   public formGroup: FormGroup;
@@ -43,6 +40,7 @@ export class EntryComponent implements OnInit {
   public chargesCollectionExists: boolean;
   public viewIsReady: boolean;
 
+  private subscriptions: any[] = [];
 
   constructor(private financialsService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -81,14 +79,16 @@ export class EntryComponent implements OnInit {
         this.paymentsCollectionExists = false;
         this.chargesCollectionExists = false;
         this.showHistory = false;
-        
-        // Set keys based on category selection.
-        this.startingBalanceKey = this.category.key + 'StartingBalance';
-        this.startingBalanceDateKey = this.category.key + 'StartingBalanceDate';
-        this.startingBalanceMemoKey = this.category.key + 'StartingBalanceMemo';
-        this.balanceKey = this.category.key + 'Balance';
-        this.paymentsCollection = this.category.key + 'Payments';
-        this.chargesCollection = this.category.key + 'Charges';
+
+        // Obtain keys and collection names (tuitionPayments, tuitionCharges, lunchPayments, etc) based on current category
+        // Keys and collections strings should always come from one source: financials.service.
+        this.subscriptions.push(this.financialsService.startingBalanceKey$.subscribe(key => this.startingBalanceKey = key));
+        this.subscriptions.push(this.financialsService.startingBalanceDateKey$.subscribe(key => this.startingBalanceDateKey = key));
+        this.subscriptions.push(this.financialsService.startingBalanceMemoKey$.subscribe(key => this.startingBalanceMemoKey = key));
+        this.subscriptions.push(this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key));
+
+        this.subscriptions.push(this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection));
+        this.subscriptions.push(this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection));
 
         this.isEnteringPayment = false;
         this.isEnteringCharge = false;
@@ -151,7 +151,7 @@ export class EntryComponent implements OnInit {
               console.log(`${this.chargesCollection} does not exist`);
               this.chargesCollectionExists = false;
             }
-            
+
             this.readyView();
 
           });
@@ -243,7 +243,12 @@ export class EntryComponent implements OnInit {
   ngOnDestroy() {
     if (this.categorySubscription) {
       this.categorySubscription.unsubscribe();
+      console.log('TCL: EntryComponent -> ngOnDestroy -> categorySubscription', this.categorySubscription);
     }
+    this.subscriptions.forEach(sub =>{ 
+      sub.unsubscribe();
+      console.log('TCL: EntryComponent -> ngOnDestroy -> sub', sub);
+    });
   }
 
 }
