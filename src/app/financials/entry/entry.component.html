@@ -1,5 +1,5 @@
-<div *ngIf="category">
-        <br>
+<div *ngIf="category && viewIsReady">
+    <br>
     <div *ngIf="!showInputForStartingBalance">
         <pre><strong>{{category.val}}</strong> Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}<span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></pre>
         <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
@@ -9,10 +9,8 @@
     </div>
     <form *ngIf="showForm" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
         <!-- check for falsy for startingBalance will not suffice for balance entry of zero -->
-        <!-- <div style="display:inline;" *ngIf="!startingBalance"> -->
         <div style="display:inline;" *ngIf="showInputForStartingBalance">
             <p><strong>Enter starting balance for {{category.val}}</strong></p>
-
             <mat-form-field>
                 <input matInput type=number step=0.01 placeholder="{{category.val}} Start Bal." formControlName="amount">
             </mat-form-field>

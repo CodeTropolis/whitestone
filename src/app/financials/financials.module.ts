@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CoreModule } from '../core/core.module';
 import { FinancialsRoutingModule } from './financials-routing.module';
-import { FinancialsMainComponent } from './financials-main/financials-main.component';
+import { CategorySelectComponent } from './category-select/category-select.component';
 import { EntryComponent } from './entry/entry.component';
 import { HistoryComponent } from './history/history.component';
 
@@ -12,7 +12,7 @@ import { HistoryComponent } from './history/history.component';
     FinancialsRoutingModule,
   ],
   declarations: [
-    FinancialsMainComponent, 
+    CategorySelectComponent, 
     EntryComponent, HistoryComponent,  
   ]
 })

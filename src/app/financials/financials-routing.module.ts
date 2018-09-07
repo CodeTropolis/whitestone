@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { FinancialsMainComponent } from './financials-main/financials-main.component'
+import { CategorySelectComponent } from './category-select/category-select.component'
 
 const routes: Routes = [
-  {path: '',component: FinancialsMainComponent},
+  {path: '',component: CategorySelectComponent},
 ];
 
 @NgModule({

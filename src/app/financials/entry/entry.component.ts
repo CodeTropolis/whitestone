@@ -41,6 +41,7 @@ export class EntryComponent implements OnInit {
 
   private paymentsCollection: string;
   private chargesCollection: string;
+  private viewIsReady:boolean;
 
   constructor(private financialService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
@@ -50,9 +51,7 @@ export class EntryComponent implements OnInit {
     this.showHistoryButton = false;
     this.showForm = false;
 
-    // The student's financial doc sent to dataService by clicking the financials icon in the child table
-    // Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc;
-    //this.currentFinancialDoc = this.dataService.currentFinancialDoc;
+    // Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc i.e. history table;
     this.financialService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
 
     // Listen for balance update.  An update could come from the history.component.
@@ -66,7 +65,7 @@ export class EntryComponent implements OnInit {
       }
     });
 
-    // Listen for category selection from financials-main.component
+    // Listen for category selection from category-select.component
     this.categorySubscription = this.financialService.currentCategory$
       .subscribe(x => {
 
@@ -112,7 +111,6 @@ export class EntryComponent implements OnInit {
         }
         // Check for running balance
         if (snapshot.data()[this.balanceKey] || snapshot.data()[this.balanceKey] === 0) {
-          // this.balance = snapshot.data()[this.balanceKey];
           // Make balance available to other components i.e. history by passing it to financials.service
           // And assign value to this.balance via payload from balance$ subject only (in init)
           this.financialService.runningBalanceForCurrentCategory$.next(snapshot.data()[this.balanceKey]);
@@ -120,6 +118,7 @@ export class EntryComponent implements OnInit {
           this.balance = null;
         }
         this.resetForm();
+        this.viewIsReady = true;
       });
   }
 
@@ -129,11 +128,11 @@ export class EntryComponent implements OnInit {
       then(sub => {
         this.readyToDisplayTransactionSection(); // ToDo: Indicate when each method that reaches out to DB has completed, then run this method.
         if (sub.docs.length > 0) {
-          //console.log(`${this.paymentsCollection} exists`);
+          console.log(`${this.paymentsCollection} exists`);
           this.paymentsCollectionExists = true; // Update the view to show history button
           this.financialService.getTransactions(this.paymentsCollection); 
         } else {
-          //console.log(`${this.paymentsCollection} does not exist`);
+          console.log(`${this.paymentsCollection} does not exist`);
           this.paymentsCollectionExists = false;
         }
       });
@@ -141,11 +140,11 @@ export class EntryComponent implements OnInit {
       then(sub => {
         this.readyToDisplayTransactionSection();
         if (sub.docs.length > 0) {
-          //console.log(`${this.chargesCollection} exists`);
+          console.log(`${this.chargesCollection} exists`);
           this.chargesCollectionExists = true;
           this.financialService.getTransactions(this.chargesCollection);
         } else {
-          //console.log(`${this.chargesCollection} does not exist`);
+          console.log(`${this.chargesCollection} does not exist`);
           this.chargesCollectionExists = false;
         }
       });

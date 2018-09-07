@@ -59,7 +59,6 @@ export class FinancialsService {
             this.transactions$.next(transactions);
           }
         )
-
       });
 
   }

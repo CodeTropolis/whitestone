@@ -4,16 +4,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-financials-main',
-  templateUrl: './financials-main.component.html',
-  styleUrls: ['./financials-main.component.css']
+  selector: 'app-category-select',
+  templateUrl: './category-select.component.html',
+  styleUrls: ['./category-select.component.css']
 })
-export class FinancialsMainComponent implements OnInit {
+export class CategorySelectComponent implements OnInit {
 
   public currentUser$: Observable<any>;
   public currentChild: any;
-  //public currentSurname$: Observable<any>;
-  //public currentSurname: string;
   public currentChildSubscription: any;
   public categories: any;
   public showAvatarSpinner: boolean;
@@ -30,8 +28,6 @@ export class FinancialsMainComponent implements OnInit {
     //ToDo: Need reference to family record for UI showing other children of record.
 
     this.currentChildSubscription = this.financialsService.currentChild$.subscribe(child => this.currentChild = child);
-
-    console.log('TCL: FinancialsMainComponent -> ngOnInit -> this.currentChild', this.currentChild);
     this.categories = this.financialsService.categories;
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
