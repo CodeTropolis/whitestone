@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FinancialsService } from '../financials.service';
+import { FinancialsService } from '../../core/services/financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from '../../core/services/data.service';
 
@@ -53,7 +53,7 @@ export class EntryComponent implements OnInit {
     // The student's financial doc sent to dataService by clicking the financials icon in the child table
     // Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc;
     //this.currentFinancialDoc = this.dataService.currentFinancialDoc;
-    this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
+    this.financialService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
 
     // Listen for balance update.  An update could come from the history.component.
     this.financialService.runningBalanceForCurrentCategory$.subscribe(bal => {
@@ -131,7 +131,7 @@ export class EntryComponent implements OnInit {
         if (sub.docs.length > 0) {
           //console.log(`${this.paymentsCollection} exists`);
           this.paymentsCollectionExists = true; // Update the view to show history button
-          this.dataService.getTransactions(this.paymentsCollection); 
+          this.financialService.getTransactions(this.paymentsCollection); 
         } else {
           //console.log(`${this.paymentsCollection} does not exist`);
           this.paymentsCollectionExists = false;
@@ -143,7 +143,7 @@ export class EntryComponent implements OnInit {
         if (sub.docs.length > 0) {
           //console.log(`${this.chargesCollection} exists`);
           this.chargesCollectionExists = true;
-          this.dataService.getTransactions(this.chargesCollection);
+          this.financialService.getTransactions(this.chargesCollection);
         } else {
           //console.log(`${this.chargesCollection} does not exist`);
           this.chargesCollectionExists = false;

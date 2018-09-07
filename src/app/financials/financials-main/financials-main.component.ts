@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../../core/services/data.service';
-import { FinancialsService } from '../financials.service';
+import { FinancialsService } from '../../core/services/financials.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
 
@@ -12,28 +11,27 @@ import { Observable } from 'rxjs';
 export class FinancialsMainComponent implements OnInit {
 
   public currentUser$: Observable<any>;
-  public currentSurname: string;
-  public currentEmail: string;
   public currentChild: any;
+  //public currentSurname$: Observable<any>;
+  //public currentSurname: string;
+  public currentChildSubscription: any;
   public categories: any;
   public showAvatarSpinner: boolean;
 
   private spinnerSubscribe: any;
 
-  constructor(
-    private ds: DataService,
-    private financialsService: FinancialsService,
-    private authService: AuthService
-  ) { }
+  constructor(private financialsService: FinancialsService,private authService: AuthService) { }
 
   ngOnInit() {
 
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
 
-    this.currentSurname = this.ds.currentRecord.surname;
-    this.currentEmail = this.ds.currentRecord.email;
-    this.currentChild = this.ds.currentChild;
+    //ToDo: Need reference to family record for UI showing other children of record.
+
+    this.currentChildSubscription = this.financialsService.currentChild$.subscribe(child => this.currentChild = child);
+
+    console.log('TCL: FinancialsMainComponent -> ngOnInit -> this.currentChild', this.currentChild);
     this.categories = this.financialsService.categories;
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
@@ -55,6 +53,7 @@ export class FinancialsMainComponent implements OnInit {
     if(this.spinnerSubscribe){
       this.spinnerSubscribe.unsubscribe();
     }
+    this.currentChildSubscription.unsubscribe();
     this.financialsService.currentCategory$.next(null); // Clear out the current category else next selected child's financials will start out with previously selected category.
     
   }

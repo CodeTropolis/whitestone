@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '../core/core.module';
 import { FinancialsRoutingModule } from './financials-routing.module';
 import { FinancialsMainComponent } from './financials-main/financials-main.component';
-import { FinancialsService } from './financials.service';
 import { EntryComponent } from './entry/entry.component';
 import { HistoryComponent } from './history/history.component';
 
@@ -15,7 +14,6 @@ import { HistoryComponent } from './history/history.component';
   declarations: [
     FinancialsMainComponent, 
     EntryComponent, HistoryComponent,  
-  ],
-  providers:[FinancialsService]
+  ]
 })
 export class FinancialsModule { }

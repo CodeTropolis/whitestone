@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort, MatTableDataSource } from '@angular/material';
-import { DataService } from '../../core/services/data.service';
-import { FinancialsService } from '../financials.service';
+//import { DataService } from '../../core/services/data.service';
+import { FinancialsService } from '../../core/services/financials.service';
 
 @Component({
   selector: 'app-history',
@@ -29,7 +29,7 @@ export class HistoryComponent implements OnInit {
   public currentCatgory: any;
   public disableDelete: boolean[] = [];
 
-  constructor(private dataService: DataService, private financialsService: FinancialsService) { }
+  constructor(private financialsService: FinancialsService) { }
 
   ngOnInit() {
 
@@ -38,13 +38,13 @@ export class HistoryComponent implements OnInit {
         this.currentCatgory = cat;
         // console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
       });
-    this.currentfinancialDocSubscription = this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
+    this.currentfinancialDocSubscription = this.financialsService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
     this.runningBalanceSubscription = this.financialsService.runningBalanceForCurrentCategory$.subscribe(x => {
       this.currentBalance = x;
       // console.log('TCL: HistoryComponent -> ngOnInit -> currentBalance', this.currentBalance);
     });
     
-    this.transactionSubscription = this.dataService.transactions$.subscribe(x => {
+    this.transactionSubscription = this.financialsService.transactions$.subscribe(x => {
       // console.log('TCL: HistoryComponent -> transactionSubscription -> x', x);
       this.tableData = new MatTableDataSource(x);
       // this.ds.paginator = this.paginator;
@@ -61,8 +61,6 @@ export class HistoryComponent implements OnInit {
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
     type === 'Payment' ? this.updatedBalance = (this.currentBalance + amount) : this.updatedBalance = (this.currentBalance - amount);
 
-    //this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
-
     if (this.updatedBalance) {
       // Are we dealing with the payments or charges subcollection?
       let collection: string;
@@ -75,8 +73,8 @@ export class HistoryComponent implements OnInit {
             .then(_ => { // update views
               this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
               // Run through collection to update history table data.
-              this.dataService.getTransactions(this.paymentsCollection);
-              this.dataService.getTransactions(this.chargesCollection);
+              this.financialsService.getTransactions(this.paymentsCollection);
+              this.financialsService.getTransactions(this.chargesCollection);
             }) // Would work without placing in .then()
         });
     }

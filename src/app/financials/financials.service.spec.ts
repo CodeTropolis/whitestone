@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { FinancialsService } from './financials.service';
+import { FinancialsService } from '../core/services/financials.service';
 
 describe('FinancialsService', () => {
   beforeEach(() => {

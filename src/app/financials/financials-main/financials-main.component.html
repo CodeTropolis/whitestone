@@ -23,13 +23,11 @@
       <mat-card-title>
         <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
       </mat-card-title>
-      <mat-card-subtitle>Surname on Record:
-        <strong>{{currentSurname}}</strong>
-      </mat-card-subtitle>
-      <mat-card-subtitle>
-        <strong>{{currentEmail}}</strong>
 
-      </mat-card-subtitle>
+      <!-- <mat-card-subtitle>Surname on Record:
+        <strong>{{currentSurname}}</strong>
+      </mat-card-subtitle> -->
+
 
       <div class="buttons">
         <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
