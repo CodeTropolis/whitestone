@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { MatSort, MatTableDataSource } from '@angular/material';
 import { DataService } from '../../core/services/data.service';
-import { FinancialsService } from '../../core/services/financials.service'
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,7 +15,7 @@ export class ChildTableComponent implements OnInit {
   public data: MatTableDataSource<any>;
   public displayedColumnsChildren = ['fname', 'lname', 'grade', 'gender', 'race', 'financials'];
 
-  constructor(private dataService: DataService, private financialsService: FinancialsService, private router: Router) { }
+  constructor(private dataService: DataService, private router: Router) { }
 
   ngOnInit() {
     this.data = new MatTableDataSource(this.dataService.convertMapToArray(this.record.children));
@@ -24,9 +23,9 @@ export class ChildTableComponent implements OnInit {
   }
 
   financials(child) {
-    this.financialsService.currentRecord = this.record;
-    this.financialsService.createFinancialRecord(child.id);
-    this.financialsService.setCurrentChild(child);
+    this.dataService.currentRecord = this.record;
+    this.dataService.createFinancialRecord(child.id);
+    this.dataService.setCurrentChild(child);
     this.router.navigate(['/financials']);
   }
 

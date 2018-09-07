@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FinancialsService } from '../../core/services/financials.service';
+import { DataService } from '../../core/services/data.service';
+import { FinancialsService } from '../financials.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
 
@@ -18,7 +19,7 @@ export class CategorySelectComponent implements OnInit {
 
   private spinnerSubscribe: any;
 
-  constructor(private financialsService: FinancialsService,private authService: AuthService) { }
+  constructor(private dataService: DataService, private financialsService: FinancialsService, private authService: AuthService) { }
 
   ngOnInit() {
 
@@ -27,14 +28,13 @@ export class CategorySelectComponent implements OnInit {
 
     //ToDo: Need reference to family record for UI showing other children of record.
 
-    this.currentChildSubscription = this.financialsService.currentChild$.subscribe(child => this.currentChild = child);
+    this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
     this.categories = this.financialsService.categories;
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
 
   public setCategory(cat: string) {
     this.financialsService.currentCategory$.next(cat);
-
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
     // beginning of entry.component to prevent  "Expression has changed after it was checked" err.
     this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup 

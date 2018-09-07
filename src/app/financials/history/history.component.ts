@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort, MatTableDataSource } from '@angular/material';
-//import { DataService } from '../../core/services/data.service';
-import { FinancialsService } from '../../core/services/financials.service';
+import { DataService } from '../../core/services/data.service';
+import { FinancialsService } from '../financials.service';
 
 @Component({
   selector: 'app-history',
@@ -29,26 +29,26 @@ export class HistoryComponent implements OnInit {
   public currentCatgory: any;
   public disableDelete: boolean[] = [];
 
-  constructor(private financialsService: FinancialsService) { }
+  constructor(private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
+
+    this.transactionSubscription = this.financialsService.transactions$.subscribe(x => {
+      console.log('TCL: HistoryComponent -> transactionSubscription -> x', x);
+      this.tableData = new MatTableDataSource(x);
+      // this.ds.paginator = this.paginator;
+      this.tableData.sort = this.sort;
+    });
 
     this.currentCategorySubscription = this.financialsService.currentCategory$
       .subscribe(cat => {
         this.currentCatgory = cat;
-        // console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
+        //console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
       });
-    this.currentfinancialDocSubscription = this.financialsService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
+    this.currentfinancialDocSubscription = this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
     this.runningBalanceSubscription = this.financialsService.runningBalanceForCurrentCategory$.subscribe(x => {
       this.currentBalance = x;
       // console.log('TCL: HistoryComponent -> ngOnInit -> currentBalance', this.currentBalance);
-    });
-    
-    this.transactionSubscription = this.financialsService.transactions$.subscribe(x => {
-      // console.log('TCL: HistoryComponent -> transactionSubscription -> x', x);
-      this.tableData = new MatTableDataSource(x);
-      // this.ds.paginator = this.paginator;
-      this.tableData.sort = this.sort;
     });
 
     this.balanceKey = this.currentCatgory.key + 'Balance';
