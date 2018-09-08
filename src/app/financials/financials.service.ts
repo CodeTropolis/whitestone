@@ -30,6 +30,7 @@ export class FinancialsService {
       extendedCare: 'Extended Care',
       misc: 'Misc',
     }
+    
     this.subscriptions.push(
       this.currentCategory$.subscribe(cat => { // This gets set from category-select.component.
         if (cat == null) { return; }
@@ -60,7 +61,7 @@ export class FinancialsService {
 
   public getTransactions(collection) {
    // let unique = [];
-    console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
+    //console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
     this.currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
@@ -68,7 +69,7 @@ export class FinancialsService {
             let date = item.data().date.toDate();
             const type = collection.includes('Payment') ? 'Payment' : 'Charge'
             this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
-            console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
+           // console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
           }
         )
         // Filter out duplicates

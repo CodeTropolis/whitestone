@@ -52,7 +52,7 @@ export class HistoryComponent implements OnInit {
   }
 
   deleteTransaction(id: string, type: string, amount: number) {
-    //console.log('TCL: HistoryComponent -> deleteTransaction -> id', id);
+    console.log('TCL: HistoryComponent -> deleteTransaction -> id', id);
 
     // this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
     // type === 'Payment' ? this.updatedBalance = (this.currentBalance + amount) : this.updatedBalance = (this.currentBalance - amount);

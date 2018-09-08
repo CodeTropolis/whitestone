@@ -23,8 +23,8 @@ export class ChildTableComponent implements OnInit {
   }
 
   financials(child) {
-    this.dataService.currentRecord = this.record;
-    this.dataService.createFinancialRecord(child.id);
+    this.dataService.currentRecord = this.record; // The parent record which contains the children. 
+    this.dataService.createFinancialDoc(child.id);
     this.dataService.setCurrentChild(child);
     this.router.navigate(['/financials']);
   }

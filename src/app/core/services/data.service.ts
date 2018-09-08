@@ -30,10 +30,10 @@ export class DataService {
   public setCurrentChild(child){
     this.currentChild$.next(child);
   }
-
-  public createFinancialRecord(id) {
+  // Creates the base doc for all the child's financials
+  public createFinancialDoc(id) {
     this.currentFinancialDoc$.next(this.firebaseService.financialsCollection.doc(id));
-    this.currentFinancialDoc.ref.get().then((snapshot) => {
+    this.currentFinancialDoc.ref.get().then(snapshot => {
       if (!snapshot.exists) {
         this.currentFinancialDoc.set({ dateCreated: new Date });
       }

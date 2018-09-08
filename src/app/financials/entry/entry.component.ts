@@ -200,6 +200,7 @@ export class EntryComponent implements OnInit {
     this.isEnteringPayment ?
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
+      console.log('TCL: EntryComponent -> privateprocessTransaction -> collection', collection.ref.id);
 
     collection.ref.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
     // NOTE: Wrap formula in () and set input to type number or else + will concat. 
@@ -210,6 +211,7 @@ export class EntryComponent implements OnInit {
        // this.checkForSubCollections(); // This may be the first entry after balance set so check the subcollections to obtain this.payment<charges>Collection state for History button 
         this.resetForm(fd);
         this.showHistoryButton = true;
+        this.financialsService.getTransactions(collection.ref.id); // Run through getTransactions in order to update history table after a payment or charge has been entered.
       });
   }
 
