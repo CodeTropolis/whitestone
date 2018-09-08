@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { RecordEntryComponent } from './record-entry/record-entry.component'
+import { RecordListComponent } from './record-list/record-list.component'
 
 const routes: Routes = [
-  {path: '',component: RecordEntryComponent},
+  {path: '',component: RecordListComponent},
 ];
 
 @NgModule({

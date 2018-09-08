@@ -18,6 +18,7 @@ export class RecordListComponent implements OnInit {
   public displayedColumns = ['surname', 'father', 'mother', 'district', 'catholic',];
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] = [];
+  public showForm: boolean;
 
   private subscriptions: any[] = [];
 
@@ -81,6 +82,10 @@ export class RecordListComponent implements OnInit {
 
   onRowClicked(row) {
     this.showChildren[row.realId] = !this.showChildren[row.realId];
+  }
+
+  toggleForm(){
+    this.showForm = !this.showForm;
   }
 
   ngOnDestroy() {

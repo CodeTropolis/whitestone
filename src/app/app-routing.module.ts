@@ -7,7 +7,7 @@ import { RecordResolverService } from './core/services/record-resolver.service';
 const routes: Routes = [
   {path: '', component: LoginComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'record-entry', loadChildren: './record/record.module#RecordModule', 
+  {path: 'record-list', loadChildren: './record/record.module#RecordModule', 
   canLoad:[AuthGuard],
   resolve: {records: RecordResolverService}
   },
