@@ -123,41 +123,42 @@ export class EntryComponent implements OnInit {
           this.balance = null;
         }
         this.resetForm();
-        this.checkForSubCollections();
+        this.readyView();
+       // this.checkForSubCollections();
       });
   }
 
   // Check for transactions (payments/charges) in order to set state of payments<charges>CollectionExists truty state to determine show history button.
-  private checkForSubCollections() {
-    this.currentFinancialDoc.collection(this.paymentsCollection).ref.get().
-      then(sub => {
-        //this.readyToDisplayTransactionSection(); // ToDo: Indicate when each method that reaches out to DB has completed, then run this method.
-        if (sub.docs.length > 0) {
-          console.log(`${this.paymentsCollection} exists`);
-          this.paymentsCollectionExists = true; // Update the view to show history button
-          this.financialsService.getTransactions(this.paymentsCollection);
-        } else {
-          console.log(`${this.paymentsCollection} does not exist`);
-          this.paymentsCollectionExists = false;
-        }
+  // private checkForSubCollections() {
+  //   this.currentFinancialDoc.collection(this.paymentsCollection).ref.get().
+  //     then(sub => {
+  //       //this.readyToDisplayTransactionSection(); // ToDo: Indicate when each method that reaches out to DB has completed, then run this method.
+  //       if (sub.docs.length > 0) {
+  //         console.log(`${this.paymentsCollection} exists`);
+  //         this.paymentsCollectionExists = true; // Update the view to show history button
+  //         this.financialsService.getTransactions(this.paymentsCollection);
+  //       } else {
+  //         console.log(`${this.paymentsCollection} does not exist`);
+  //         this.paymentsCollectionExists = false;
+  //       }
 
-        this.currentFinancialDoc.collection(this.chargesCollection).ref.get().
-          then(sub => {
-            if (sub.docs.length > 0) {
-              console.log(`${this.chargesCollection} exists`);
-              this.chargesCollectionExists = true;
-              this.financialsService.getTransactions(this.chargesCollection);
-            } else {
-              console.log(`${this.chargesCollection} does not exist`);
-              this.chargesCollectionExists = false;
-            }
+  //       this.currentFinancialDoc.collection(this.chargesCollection).ref.get().
+  //         then(sub => {
+  //           if (sub.docs.length > 0) {
+  //             console.log(`${this.chargesCollection} exists`);
+  //             this.chargesCollectionExists = true;
+  //             this.financialsService.getTransactions(this.chargesCollection);
+  //           } else {
+  //             console.log(`${this.chargesCollection} does not exist`);
+  //             this.chargesCollectionExists = false;
+  //           }
 
-            this.readyView();
+  //           // this.readyView();
 
-          });
+  //         });
 
-      });
-  }
+  //     });
+  // }
 
   private setFormControls() {
     this.formGroup = this.fb.group({
@@ -193,7 +194,9 @@ export class EntryComponent implements OnInit {
   }
 
   private processTransaction(fd) {
+    
     let collection;
+
     this.isEnteringPayment ?
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
@@ -204,8 +207,9 @@ export class EntryComponent implements OnInit {
     this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
       .then(_ => {
         this.financialsService.runningBalanceForCurrentCategory$.next(this.balance);
-        this.checkForSubCollections(); // This may be the first entry after balance set so check the subcollections to obtain this.payment<charges>Collection state for History button 
+       // this.checkForSubCollections(); // This may be the first entry after balance set so check the subcollections to obtain this.payment<charges>Collection state for History button 
         this.resetForm(fd);
+        this.showHistoryButton = true;
       });
   }
 
@@ -247,7 +251,7 @@ export class EntryComponent implements OnInit {
     }
     this.subscriptions.forEach(sub =>{ 
       sub.unsubscribe();
-      console.log('TCL: EntryComponent -> ngOnDestroy -> sub', sub);
+      //console.log('TCL: EntryComponent -> ngOnDestroy -> sub', sub);
     });
   }
 

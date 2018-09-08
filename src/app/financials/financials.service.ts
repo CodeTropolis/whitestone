@@ -19,6 +19,7 @@ export class FinancialsService {
   public transactions$ = new BehaviorSubject<any>(null);
   public showAvatarSpinner$ = new BehaviorSubject<boolean>(false); // set to false so that avatar spinner on category-select.component does not show initially
 
+  private transactions: any[] = [];
   private subscriptions: any[] = []
 
   constructor(private dataService: DataService) {
@@ -58,19 +59,31 @@ export class FinancialsService {
   }
 
   public getTransactions(collection) {
-    //console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
-    const transactions: any[] = [];
+   // let unique = [];
+    console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
     this.currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
             const type = collection.includes('Payment') ? 'Payment' : 'Charge'
-            transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
-            this.transactions$.next(transactions);
+            this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
+            console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
           }
         )
+        // Filter out duplicates
+       let unique = this.transactions.filter((e, i) => {
+          return this.transactions.findIndex((x) => {
+            return x.id == e.id;
+          }) == i;
+        });
+       // console.log('TCL: FinancialsService -> publicgetTransactions -> unique', unique);
+        this.transactions$.next(unique);
       });
+  }
+
+  public clearTransactions(){
+    this.transactions = [];
   }
 
   // ngOnDestroy() {

@@ -12,54 +12,48 @@ export class HistoryComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  // private currentCategorySubscription: any;
-  // private currentfinancialDocSubscription: any;
-  // private runningBalanceSubscription: any;
-  // private transactionSubscription: any;
+  private subscriptions: any[] = [];
+  private chargesCollection: string;
+  private paymentsCollection: string;
+
   // private balanceKey: string;
   // private currentFinancialDoc: any;
-  // private paymentsCollection: string;
-  // private chargesCollection: string;
   // private currentBalance: number;
   // private updatedBalance: number;
 
   public tableData: MatTableDataSource<any>;
   public tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
-
-  // public currentCatgory: any;
   public disableDelete: boolean[] = [];
 
   constructor(private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
+    // init fires each time history component is shown on entry.component via: <app-history *ngIf="showHistory"></app-history>
+    // console.log('TCL: HistoryComponent -> ngOnInit -> ngOnInit');
 
-    // this.currentCategorySubscription = this.financialsService.currentCategory$
-    //   .subscribe(cat => {
-    //     this.currentCatgory = cat;
-    //     console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
-    //   });
+    this.subscriptions.push(
+      this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
+    );
 
-    // this.currentfinancialDocSubscription = this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
-    // this.runningBalanceSubscription = this.financialsService.runningBalanceForCurrentCategory$.subscribe(x => {
-    //   this.currentBalance = x;
-    //   // console.log('TCL: HistoryComponent -> ngOnInit -> currentBalance', this.currentBalance);
-    // });
+    this.subscriptions.push(
+      this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection)
+    );
+ 
+    this.financialsService.transactions$.subscribe(x => {
+      this.tableData = new MatTableDataSource(x);
+      // this.ds.paginator = this.paginator;
+      this.tableData.sort = this.sort;
+    });
 
-    // this.transactionSubscription = this.financialsService.transactions$.subscribe(x => {
-    //   console.log('TCL: HistoryComponent -> transactionSubscription -> x', x);
-    //   this.tableData = new MatTableDataSource(x);
-    //   // this.ds.paginator = this.paginator;
-    //   this.tableData.sort = this.sort;
-    // });
-
-    // this.balanceKey = this.currentCatgory.key + 'Balance';
-    // this.paymentsCollection = this.currentCatgory.key + 'Payments';
-    // this.chargesCollection = this.currentCatgory.key + 'Charges';
+    this.financialsService.clearTransactions(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
+    this.financialsService.getTransactions(this.chargesCollection);
+    this.financialsService.getTransactions(this.paymentsCollection);
 
   }
 
   deleteTransaction(id: string, type: string, amount: number) {
-    
+    //console.log('TCL: HistoryComponent -> deleteTransaction -> id', id);
+
     // this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
     // type === 'Payment' ? this.updatedBalance = (this.currentBalance + amount) : this.updatedBalance = (this.currentBalance - amount);
 
@@ -83,10 +77,6 @@ export class HistoryComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    // this.currentCategorySubscription.unsubscribe();
-    // this.currentfinancialDocSubscription.unsubscribe();
-    // this.runningBalanceSubscription.unsubscribe();
-    // this.transactionSubscription.unsubscribe();
-
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

@@ -12,7 +12,6 @@ export class DataService {
 
   public currentFinancialDoc$ = new BehaviorSubject<any>(null);
   public currentChild$ = new BehaviorSubject<any>(null);
-  
   public currentFinancialDoc: any;
   public currentRecord: any;
 
