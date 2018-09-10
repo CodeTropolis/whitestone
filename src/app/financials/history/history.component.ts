@@ -33,7 +33,7 @@ export class HistoryComponent implements OnInit {
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
-    console.log('TCL: HistoryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id:', this.currentFinancialDoc.ref.id);
+    //console.log('TCL: HistoryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id:', this.currentFinancialDoc.ref.id);
 
     this.subscriptions.push(
       this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
@@ -53,7 +53,7 @@ export class HistoryComponent implements OnInit {
 
     this.financialsService.transactions$.subscribe(x => {
       this.tableData = new MatTableDataSource(x);
-      console.log('TCL: HistoryComponent -> ngOnInit -> this.tableData', this.tableData);
+      //console.log('TCL: HistoryComponent -> ngOnInit -> this.tableData', this.tableData);
       // this.ds.paginator = this.paginator;
       this.tableData.sort = this.sort;
     });
@@ -76,6 +76,9 @@ export class HistoryComponent implements OnInit {
       type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
      // console.log('TCL: HistoryComponent -> deleteTransaction -> collection', collection);
      // Delete the transaction document from the respective collection
+
+     console.log('TCL: HistoryComponent -> deleteTransaction -> this.currentFinancialDoc', this.currentFinancialDoc.ref.id);
+
       this.currentFinancialDoc.collection(collection).doc(id).delete()
         .then(_ => {
           // Update the DB
