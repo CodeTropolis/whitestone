@@ -12,81 +12,79 @@ export class HistoryComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  private currentCategorySubscription: any;
-  private currentfinancialDocSubscription: any;
-  private runningBalanceSubscription: any;
-  private transactionSubscription: any;
-  private balanceKey: string;
-  private currentFinancialDoc: any;
-  private paymentsCollection: string;
+  private subscriptions: any[] = [];
   private chargesCollection: string;
+  private paymentsCollection: string;
+
+  private currentFinancialDoc: any;
   private currentBalance: number;
   private updatedBalance: number;
+  private balanceKey: string;
 
   public tableData: MatTableDataSource<any>;
   public tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
-  public transactions: any[] = [];
-  public currentCatgory: any;
   public disableDelete: boolean[] = [];
 
   constructor(private dataService: DataService, private financialsService: FinancialsService) { }
 
+  // init fires each time history component is shown on 
+  // entry.component via: <app-history *ngIf="showHistory"></app-history>
   ngOnInit() {
 
-    this.currentCategorySubscription = this.financialsService.currentCategory$
-      .subscribe(cat => {
-        this.currentCatgory = cat;
-        // console.log('TCL: HistoryComponent -> ngOnInit -> this.currentCatgory', this.currentCatgory);
-      });
-    this.currentfinancialDocSubscription = this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
-    this.runningBalanceSubscription = this.financialsService.runningBalanceForCurrentCategory$.subscribe(x => {
-      this.currentBalance = x;
-      // console.log('TCL: HistoryComponent -> ngOnInit -> currentBalance', this.currentBalance);
-    });
-    
-    this.transactionSubscription = this.dataService.transactions$.subscribe(x => {
-      // console.log('TCL: HistoryComponent -> transactionSubscription -> x', x);
-      this.tableData = new MatTableDataSource(x);
-      // this.ds.paginator = this.paginator;
-      this.tableData.sort = this.sort;
-    });
+    this.currentFinancialDoc = this.dataService.currentFinancialDoc;
 
-    this.balanceKey = this.currentCatgory.key + 'Balance';
-    this.paymentsCollection = this.currentCatgory.key + 'Payments';
-    this.chargesCollection = this.currentCatgory.key + 'Charges';
+    this.subscriptions.push(
+      this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
+    );
+    this.subscriptions.push(
+      this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection)
+    );
+    this.subscriptions.push(
+      this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => this.currentBalance = bal)
+    );
+    this.subscriptions.push(
+      this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key)
+    );
 
+    this.financialsService.clearTransactionsObservableAndArray(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
+    this.financialsService.getTransactions(this.chargesCollection);
+    this.financialsService.getTransactions(this.paymentsCollection);
+
+    this.financialsService.transactions$.subscribe(x => {
+      if (x) {
+        this.tableData = new MatTableDataSource(x);
+        this.tableData.sort = this.sort;
+      } else {
+        console.log(`transactions$ payload must be null`);
+        this.tableData = null; // Set tableData to null in order to meet conditional in history view: <mat-table *ngIf="tableData" [dataSource]="tableData" matSort>
+      }
+
+    });
   }
 
   deleteTransaction(id: string, type: string, amount: number) {
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
     type === 'Payment' ? this.updatedBalance = (this.currentBalance + amount) : this.updatedBalance = (this.currentBalance - amount);
-
-    //this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
-
     if (this.updatedBalance) {
       // Are we dealing with the payments or charges subcollection?
       let collection: string;
       type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
-      // Delete the transaction document from the respective collection
       this.currentFinancialDoc.collection(collection).doc(id).delete()
         .then(_ => {
           // Update the DB
           this.currentFinancialDoc.set({ [this.balanceKey]: this.updatedBalance }, { merge: true })
             .then(_ => { // update views
-              this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
+              this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
               // Run through collection to update history table data.
-              this.dataService.getTransactions(this.paymentsCollection);
-              this.dataService.getTransactions(this.chargesCollection);
-            }) // Would work without placing in .then()
+              this.financialsService.clearTransactionsObservableAndArray();
+              this.financialsService.getTransactions(this.paymentsCollection);
+              this.financialsService.getTransactions(this.chargesCollection);
+            })
         });
     }
   }
 
   ngOnDestroy() {
-    this.currentCategorySubscription.unsubscribe();
-    this.currentfinancialDocSubscription.unsubscribe();
-    this.runningBalanceSubscription.unsubscribe();
-    this.transactionSubscription.unsubscribe();
-
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

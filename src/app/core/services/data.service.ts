@@ -1,3 +1,5 @@
+// data.service for methods used across modules i.e. child.table from record module uses setCurrentChild() and createFinancialRecord()
+
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { BehaviorSubject } from 'rxjs';
@@ -5,37 +7,19 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
+
 export class DataService {
 
-  public currentFinancialDoc: any;
+  //public currentFinancialDoc$ = new BehaviorSubject<any>(null);
+  public currentChild$ = new BehaviorSubject<any>(null);
+  public currentFinancialDoc: any; //Set in child-table.component.  financials/entry and history will get this upon init
   public currentRecord: any;
-  public currentChild: any;
 
-  public transactions: any[] = [];
+  constructor(private firebaseService: FirebaseService) {
 
-  public currentFinancialDoc$ = new BehaviorSubject<any>(null);
-  public transactions$ = new BehaviorSubject<any>(null);
-  public collectionExits$ = new BehaviorSubject<boolean>(false);
-
-  constructor(private fs: FirebaseService) {
-
-    this.currentFinancialDoc$.subscribe(payload => {
-      this.currentFinancialDoc = payload;
-    })
-    
-   }
-
-  public createFinancialRecord(child) {
-    
-    this.currentFinancialDoc$.next(this.fs.financialsCollection.doc(child.id));
-
-    this.currentFinancialDoc.ref.get().then((snapshot) => {
-      if (!snapshot.exists) {
-        this.currentFinancialDoc.set({ dateCreated: new Date });
-      }
-    });
-
-    this.currentChild = child;
+    // this.currentFinancialDoc$.subscribe(payload => {
+    //   this.currentFinancialDoc = payload;
+    // })
   }
 
   public convertMapToArray(map: {}) {
@@ -43,21 +27,18 @@ export class DataService {
     return keys.map(key => map[`${key}`])
   }
 
-  public getTransactions(collection) {
-    this.transactions = [];
-    this.currentFinancialDoc.collection(collection).ref.get()
-      .then(snapshot => {
-        snapshot.forEach(
-          item => {     
-            let date = item.data().date.toDate();
-            const type = collection.includes('Payment') ? 'Payment' : 'Charge'
-            this.transactions.push({ id:item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
-            this.transactions$.next(this.transactions);
-          }
-        )
-
-      });
-
+  public setCurrentChild(child){
+    this.currentChild$.next(child); // Another UI may select other child
+  }
+  // Creates the base doc for all the child's financials
+  public createFinancialDoc(id) {
+    //this.currentFinancialDoc$.next(this.firebaseService.financialsCollection.doc(id));
+    this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(id);
+    this.currentFinancialDoc.ref.get().then(snapshot => {
+      if (!snapshot.exists) {
+        this.currentFinancialDoc.set({ dateCreated: new Date });
+      }
+    });
   }
 
 }

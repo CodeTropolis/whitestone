@@ -1,3 +1,8 @@
+.btn-add-record  {
+  float: right;
+  margin-top: -3.5em;
+}
+
 .expanded {
     background: #f5fafc;
     border: 1px solid #cdd0d2;
@@ -15,6 +20,5 @@
   
   ng-container.admin {margin-bottom: 5em;}
   
-  /* button[color=warn] {float:right;} */
   .delete-buttons {float:right;}
   .delete-buttons button {margin-left: 1em;}

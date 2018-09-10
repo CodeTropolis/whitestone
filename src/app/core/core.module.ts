@@ -7,8 +7,11 @@ import { AngularFireStorageModule } from 'angularfire2/storage';
 import { MaterialModule } from './material.module';
 import { ReactiveFormsModule }   from '@angular/forms';
 import { ProgressSpinnerComponent } from '../progress-spinner/progress-spinner.component';
+import { HeaderComponent } from '../header/header.component';
 import { MapToIterablePipe } from './pipes/map-to-iterable.pipe';
 import { environment } from '../../environments/environment';
+
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
@@ -19,15 +22,18 @@ import { environment } from '../../environments/environment';
     AngularFireStorageModule, // imports firebase/storage only needed for storage features
     MaterialModule,
     ReactiveFormsModule,
+    RouterModule, // For app-header only at this point 9/10/18
   ],
   providers: [],
   declarations: [
     ProgressSpinnerComponent, 
+    HeaderComponent,
     MapToIterablePipe,
   ],
   exports:[
     CommonModule,
     ProgressSpinnerComponent,   
+    HeaderComponent,
     MapToIterablePipe,
     MaterialModule,
     ReactiveFormsModule,

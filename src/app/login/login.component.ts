@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../core/services/auth.service';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FirebaseService } from '../core/services/firebase.service';
 import { Subject } from 'rxjs';
 
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   public emailLogin() { 
     const e = this.emailLoginForm.value.email;
     const p = this.emailLoginForm.value.password;
-    this.auth.emailLogin(e, p, 'record-entry');
+    this.auth.emailLogin(e, p, 'record-list');
   }
 
   public signUp() {

@@ -5,56 +5,50 @@ import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-financials-main',
-  templateUrl: './financials-main.component.html',
-  styleUrls: ['./financials-main.component.css']
+  selector: 'app-category-select',
+  templateUrl: './category-select.component.html',
+  styleUrls: ['./category-select.component.css']
 })
-export class FinancialsMainComponent implements OnInit {
+export class CategorySelectComponent implements OnInit {
 
-  public currentUser$: Observable<any>;
-  public currentSurname: string;
-  public currentEmail: string;
+  // public currentUser$: Observable<any>;
   public currentChild: any;
+  public currentChildSubscription: any;
   public categories: any;
   public showAvatarSpinner: boolean;
 
   private spinnerSubscribe: any;
 
-  constructor(
-    private ds: DataService,
-    private financialsService: FinancialsService,
-    private authService: AuthService
-  ) { }
+  constructor(private dataService: DataService, private financialsService: FinancialsService, private authService: AuthService) { }
 
   ngOnInit() {
 
-    // Get the current user from the service and set to async in view
-    this.currentUser$ = this.authService.authState;
+    //ToDo: Need reference to family record for UI showing other children of record.
 
-    this.currentSurname = this.ds.currentRecord.surname;
-    this.currentEmail = this.ds.currentRecord.email;
-    this.currentChild = this.ds.currentChild;
     this.categories = this.financialsService.categories;
+    this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
 
-  public setCategory(cat: string) {
-    this.financialsService.currentCategory$.next(cat);
-
+  public setCategory(cat: any) {
+    //console.log('TCL: CategorySelectComponent -> publicsetCategory -> cat', cat);
+    //this.financialsService.currentCategory$.next(cat);
+    this.financialsService.setCategoryAndStrings(cat);
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
     // beginning of entry.component to prevent  "Expression has changed after it was checked" err.
     this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup 
     // entry.component will set this to false at some point.
   }
 
-  public logOut() {
-    this.authService.logOut('');
-  }
+  // public logOut() {
+  //   this.authService.logOut('');
+  // }
 
   ngOnDestroy() {
     if(this.spinnerSubscribe){
       this.spinnerSubscribe.unsubscribe();
     }
+    this.currentChildSubscription.unsubscribe();
     this.financialsService.currentCategory$.next(null); // Clear out the current category else next selected child's financials will start out with previously selected category.
     
   }

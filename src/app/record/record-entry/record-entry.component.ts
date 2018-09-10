@@ -20,6 +20,8 @@ export class RecordEntryComponent implements OnInit {
   public currentUser$: Observable<any>;
   public isUpdating: boolean = false;
 
+  private subscriptions: any[] = [];
+
   private isUpdatingSubscription: any;
   private currentIdSubscription: any;
 
@@ -83,9 +85,9 @@ export class RecordEntryComponent implements OnInit {
     // be performed on the form in the record-entry.service
     this.rs.theForm = this.myForm;
     // State of isUpdated set by the service
-    this.isUpdatingSubscription = this.rs.isUpdating$.subscribe(x => this.isUpdating = x);
+    this.subscriptions.push(this.isUpdatingSubscription = this.rs.isUpdating$.subscribe(x => this.isUpdating = x));
     // Subscribe to the currentId$ subject so that it is available to submit handler
-    this.currentIdSubscription = this.rs.currentRecordId$.subscribe(x => this.currentRecordId = x);
+    this.subscriptions.push(this.currentIdSubscription = this.rs.currentRecordId$.subscribe(x => this.currentRecordId = x));
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
 
@@ -221,7 +223,9 @@ export class RecordEntryComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.isUpdatingSubscription.unsubscribe();
-    this.currentIdSubscription.unsubscribe();
+    this.subscriptions.forEach(sub =>{
+      sub.unsubscribe();
+     // console.log('TCL: RecordEntryComponent -> ngOnDestroy -> sub', sub);
+    });
   }
 }

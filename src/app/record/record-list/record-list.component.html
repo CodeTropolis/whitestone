@@ -1,6 +1,10 @@
+<app-header title="Record Admin"></app-header>
+
+<app-record-entry *ngIf="showForm"></app-record-entry>
 <div class="mat-elevation-z8">
 	<mat-card>
 		<h3>Available Records</h3>
+		<button class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i> Family Record</button>
 		<mat-form-field>
 			<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
 		</mat-form-field>
@@ -63,3 +67,4 @@
 		<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 	</mat-card>
 </div>
+
