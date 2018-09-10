@@ -47,15 +47,14 @@ export class HistoryComponent implements OnInit {
     );
 
     this.financialsService.clearTransactionsObservableAndArray(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
-    this.financialsService.getTransactions(this.chargesCollection);
-    this.financialsService.getTransactions(this.paymentsCollection);
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
 
     this.financialsService.transactions$.subscribe(x => {
       if (x) {
         this.tableData = new MatTableDataSource(x);
         this.tableData.sort = this.sort;
       } else {
-        //console.log(`transactions$ payload must be null`);
         this.tableData = null; // Set tableData to null in order to meet conditional in history view: <mat-table *ngIf="tableData" [dataSource]="tableData" matSort>
       }
 
@@ -77,8 +76,8 @@ export class HistoryComponent implements OnInit {
               this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
               // Run through collection to update history table data.
               this.financialsService.clearTransactionsObservableAndArray();
-              this.financialsService.getTransactions(this.paymentsCollection);
-              this.financialsService.getTransactions(this.chargesCollection);
+              this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
+              this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
             })
         });
     }

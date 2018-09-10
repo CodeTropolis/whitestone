@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { DataService } from '../core/services/data.service';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class FinancialsService {
   public categories: any;
-  private currentFinancialDoc: any;
   public currentCategory$ = new BehaviorSubject<string>(null);
   public startingBalanceKey$ = new BehaviorSubject<string>(null);
   public startingBalanceDateKey$ = new BehaviorSubject<string>(null);
@@ -19,7 +17,7 @@ export class FinancialsService {
   public showAvatarSpinner$ = new BehaviorSubject<boolean>(false); 
   private transactions: any[] = [];
 
-  constructor(private dataService: DataService) {
+  constructor() {
     console.log('TCL: FinancialsService -> constructor');
     this.categories = {
       tuition: 'Tuition',
@@ -27,7 +25,6 @@ export class FinancialsService {
       extendedCare: 'Extended Care',
       misc: 'Misc',
     }
-    this.currentFinancialDoc = this.dataService.currentFinancialDoc
   }
 
   public setCategoryAndStrings(cat: any) {
@@ -42,23 +39,25 @@ export class FinancialsService {
 
   }
 
-  public getTransactions(collection) {
+  public clearTransactionsObservableAndArray() {
+    this.transactions = [];
+    this.transactions$.next(0);
+  }
+
+  public getTransactions(currentFinancialDoc, collection) {
+    console.log('TCL: FinancialsService -> publicgetTransactions -> this.currentFinancialDoc', currentFinancialDoc.ref.id);
+    //console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
     const type = collection.includes('Payment') ? 'Payment' : 'Charge'
-    this.currentFinancialDoc.collection(collection).ref.get()
+    currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
           item => {
             let date = item.data().date.toDate();
             this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
+            //console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
             this.transactions$.next(this.transactions);
           }
         )
       });
-  }
-
-  public clearTransactionsObservableAndArray() {
-    this.transactions = [];
-    this.transactions$.next(0);
-    
   }
 }
