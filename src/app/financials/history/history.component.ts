@@ -27,57 +27,48 @@ export class HistoryComponent implements OnInit {
 
   constructor(private dataService: DataService, private financialsService: FinancialsService) { }
 
+  // init fires each time history component is shown on 
+  // entry.component via: <app-history *ngIf="showHistory"></app-history>
   ngOnInit() {
-    // init fires each time history component is shown on entry.component via: <app-history *ngIf="showHistory"></app-history>
-    // console.log('TCL: HistoryComponent -> ngOnInit -> ngOnInit');
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
-
-    //console.log('TCL: HistoryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id:', this.currentFinancialDoc.ref.id);
 
     this.subscriptions.push(
       this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
     );
-
     this.subscriptions.push(
       this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection)
     );
-
     this.subscriptions.push(
       this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => this.currentBalance = bal)
     );
-
     this.subscriptions.push(
       this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key)
     );
 
-    this.financialsService.clearTransactions(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
+    this.financialsService.clearTransactionsObservableAndArray(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
     this.financialsService.getTransactions(this.chargesCollection);
     this.financialsService.getTransactions(this.paymentsCollection);
 
     this.financialsService.transactions$.subscribe(x => {
-      this.tableData = new MatTableDataSource(x);
-      //console.log('TCL: HistoryComponent -> ngOnInit -> this.tableData', this.tableData);
-      // this.ds.paginator = this.paginator;
-      this.tableData.sort = this.sort;
+      if (x) {
+        this.tableData = new MatTableDataSource(x);
+        this.tableData.sort = this.sort;
+      } else {
+        console.log(`transactions$ payload must be null`);
+        this.tableData = null; // Set tableData to null in order to meet conditional in history view: <mat-table *ngIf="tableData" [dataSource]="tableData" matSort>
+      }
+
     });
   }
 
   deleteTransaction(id: string, type: string, amount: number) {
-    //console.log('TCL: HistoryComponent -> deleteTransaction -> id', id);
-
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
     type === 'Payment' ? this.updatedBalance = (this.currentBalance + amount) : this.updatedBalance = (this.currentBalance - amount);
-   
     if (this.updatedBalance) {
       // Are we dealing with the payments or charges subcollection?
       let collection: string;
       type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
-     // console.log('TCL: HistoryComponent -> deleteTransaction -> collection', collection);
-     // Delete the transaction document from the respective collection
-
-     //console.log('TCL: HistoryComponent -> deleteTransaction -> this.currentFinancialDoc', this.currentFinancialDoc.ref.id);
-
       this.currentFinancialDoc.collection(collection).doc(id).delete()
         .then(_ => {
           // Update the DB
@@ -85,9 +76,10 @@ export class HistoryComponent implements OnInit {
             .then(_ => { // update views
               this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
               // Run through collection to update history table data.
+              this.financialsService.clearTransactionsObservableAndArray();
               this.financialsService.getTransactions(this.paymentsCollection);
               this.financialsService.getTransactions(this.chargesCollection);
-            }) 
+            })
         });
     }
   }
