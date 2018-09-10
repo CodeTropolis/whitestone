@@ -4,14 +4,7 @@
 
 <ng-template #ready>
 
-  <mat-toolbar color="primary">
-    <span class="fill-space"></span>
-    <span class="info">
-      <div *ngIf="currentUser$ | async as user">{{user.email}} |
-        <a [routerLink]="['/record-entry']">Back to Record Entry</a>
-      </div>
-    </span>
-  </mat-toolbar>
+  <app-header title="Financial Entry"></app-header>
 
   <mat-card>
     <mat-card-header>

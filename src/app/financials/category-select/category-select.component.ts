@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 })
 export class CategorySelectComponent implements OnInit {
 
-  public currentUser$: Observable<any>;
+  // public currentUser$: Observable<any>;
   public currentChild: any;
   public currentChildSubscription: any;
   public categories: any;
@@ -24,9 +24,6 @@ export class CategorySelectComponent implements OnInit {
   ngOnInit() {
 
     //ToDo: Need reference to family record for UI showing other children of record.
-
-    // Get the current user from the service and set to async in view
-    this.currentUser$ = this.authService.authState;
 
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
@@ -43,9 +40,9 @@ export class CategorySelectComponent implements OnInit {
     // entry.component will set this to false at some point.
   }
 
-  public logOut() {
-    this.authService.logOut('');
-  }
+  // public logOut() {
+  //   this.authService.logOut('');
+  // }
 
   ngOnDestroy() {
     if(this.spinnerSubscribe){

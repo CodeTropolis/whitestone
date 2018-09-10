@@ -1,13 +1,5 @@
-<!-- ToDo: Make header its own component -->
-<!-- <mat-toolbar color="primary">
-	<span>Record Administration</span>
-	<span class="fill-space"></span>
-	<span class="info">
-		<div *ngIf="currentUser$ | async as user">{{user.email}} |
-			<a [routerLink]="" (click)="logOut()">Logout</a>
-		</div>
-	</span>
-</mat-toolbar> -->
+<app-header title="Record Admin" link=""></app-header>
+
 <app-record-entry *ngIf="showForm"></app-record-entry>
 <div class="mat-elevation-z8">
 	<mat-card>

@@ -20,6 +20,5 @@
   
   ng-container.admin {margin-bottom: 5em;}
   
-  /* button[color=warn] {float:right;} */
   .delete-buttons {float:right;}
   .delete-buttons button {margin-left: 1em;}

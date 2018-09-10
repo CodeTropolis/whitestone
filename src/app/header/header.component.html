@@ -1,0 +1,9 @@
+<mat-toolbar color="primary">
+	<span>{{title}}</span>
+	<span class="fill-space"></span>
+	<span class="info">
+		<div *ngIf="currentUser$ | async as user"> 
+      {{user.email}} | <a [routerLink]=link (click)="logOut()">Logout</a>
+    </div>
+	</span>
+</mat-toolbar>

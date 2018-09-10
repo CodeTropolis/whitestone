@@ -1,17 +1,13 @@
 
 button {margin: 1em 0.5em;}
 
-.fill-space {flex: 1 1 auto;}
-
 .form {margin-bottom: 2em;}
 
 h4 {margin: 0.5em 0;}
 
 .mat-card {margin-bottom: 0.5em;}
-mat-form-field {margin-right: 2em;}
-/* mat-form-field.email {width: 250px;} */
 
-mat-toolbar .info {font-size: 0.7em;}
+mat-form-field {margin-right: 2em;}
 
 .phone {display: inline;}
 
