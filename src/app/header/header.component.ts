@@ -10,8 +10,8 @@ import { AuthService } from '../core/services/auth.service';
 export class HeaderComponent implements OnInit {
 
   @Input() title = 'Header...';
-  @Input() showLogOut: boolean = false;
   @Input() link;
+  @Input() linkName;
 
   public currentUser$: Observable<any>;
 
@@ -20,6 +20,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
+    
   }
 
   public logOut() {

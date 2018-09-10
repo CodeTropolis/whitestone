@@ -4,7 +4,7 @@
 
 <ng-template #ready>
 
-  <app-header title="Financial Entry"></app-header>
+  <app-header title="Financial Entry" link = "/record-list" linkName="Back to Record List"></app-header>
 
   <mat-card>
     <mat-card-header>
@@ -15,11 +15,6 @@
       <mat-card-title>
         <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
       </mat-card-title>
-
-      <!-- <mat-card-subtitle>Surname on Record:
-        <strong>{{currentSurname}}</strong>
-      </mat-card-subtitle> -->
-
 
       <div class="buttons">
         <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
