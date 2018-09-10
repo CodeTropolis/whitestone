@@ -35,7 +35,8 @@ export class CategorySelectComponent implements OnInit {
 
   public setCategory(cat: any) {
     //console.log('TCL: CategorySelectComponent -> publicsetCategory -> cat', cat);
-    this.financialsService.currentCategory$.next(cat);
+    //this.financialsService.currentCategory$.next(cat);
+    this.financialsService.setCategoryAndStrings(cat);
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
     // beginning of entry.component to prevent  "Expression has changed after it was checked" err.
     this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup 
