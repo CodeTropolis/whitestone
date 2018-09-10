@@ -55,7 +55,7 @@ export class HistoryComponent implements OnInit {
         this.tableData = new MatTableDataSource(x);
         this.tableData.sort = this.sort;
       } else {
-        console.log(`transactions$ payload must be null`);
+        //console.log(`transactions$ payload must be null`);
         this.tableData = null; // Set tableData to null in order to meet conditional in history view: <mat-table *ngIf="tableData" [dataSource]="tableData" matSort>
       }
 

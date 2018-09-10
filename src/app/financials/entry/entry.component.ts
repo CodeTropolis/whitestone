@@ -203,7 +203,7 @@ export class EntryComponent implements OnInit {
   ngOnDestroy() {
     if (this.categorySubscription) {
       this.categorySubscription.unsubscribe();
-      console.log('TCL: EntryComponent -> ngOnDestroy -> categorySubscription', this.categorySubscription);
+     // console.log('TCL: EntryComponent -> ngOnDestroy -> categorySubscription', this.categorySubscription);
     }
     this.subscriptions.forEach(sub =>{ 
       sub.unsubscribe();
