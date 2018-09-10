@@ -20,7 +20,7 @@ export class FinancialsService {
   public showAvatarSpinner$ = new BehaviorSubject<boolean>(false); // set to false so that avatar spinner on category-select.component does not show initially
 
   private transactions: any[] = [];
-  private unique: any[] = [];
+  //private unique: any[] = [];
   private subscriptions: any[] = []
 
   constructor(private dataService: DataService) {
@@ -58,32 +58,48 @@ export class FinancialsService {
     );
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc
+    console.log('TCL: FinancialsService -> constructor ->  this.currentFinancialDoc',  this.currentFinancialDoc);
   }
 
   public getTransactions(collection) {
+    //this.transactions = [];
+    const type = collection.includes('Payment') ? 'Payment' : 'Charge'
     this.currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
-          item => {
+          item => {     
             let date = item.data().date.toDate();
-            const type = collection.includes('Payment') ? 'Payment' : 'Charge'
-            this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
+            this.transactions.push({ id:item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
+            this.transactions$.next(this.transactions);
           }
         )
-        // Filter out duplicates
-       this.unique = this.transactions.filter((e, i) => {
-          return this.transactions.findIndex((x) => {
-            return x.id == e.id;
-          }) == i;
-        });
-       console.log('TCL: FinancialsService -> publicgetTransactions -> unique', this.unique);
-        this.transactions$.next(this.unique);
       });
   }
 
+  // public getTransactions(collection) {
+  //   this.currentFinancialDoc.collection(collection).ref.get()
+  //     .then(snapshot => {
+  //       snapshot.forEach(
+  //         item => {
+  //           let date = item.data().date.toDate();
+  //           const type = collection.includes('Payment') ? 'Payment' : 'Charge'
+  //           this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
+  //         }
+  //       )
+  //       // Filter out duplicates
+  //      this.unique = this.transactions.filter((e, i) => {
+  //         return this.transactions.findIndex((x) => {
+  //           return x.id == e.id;
+  //         }) == i;
+  //       });
+  //      console.log('TCL: FinancialsService -> publicgetTransactions -> unique', this.unique);
+  //       this.transactions$.next(this.unique);
+  //     });
+  // }
+
   public clearTransactions(){
     this.transactions = [];
-    this.unique = [];
+    //this.unique = [];
   }
 
   // ngOnDestroy() {

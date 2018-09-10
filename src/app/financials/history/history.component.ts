@@ -51,17 +51,16 @@ export class HistoryComponent implements OnInit {
       this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key)
     );
 
+    this.financialsService.clearTransactions(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
+    this.financialsService.getTransactions(this.chargesCollection);
+    this.financialsService.getTransactions(this.paymentsCollection);
+
     this.financialsService.transactions$.subscribe(x => {
       this.tableData = new MatTableDataSource(x);
       //console.log('TCL: HistoryComponent -> ngOnInit -> this.tableData', this.tableData);
       // this.ds.paginator = this.paginator;
       this.tableData.sort = this.sort;
     });
-
-    this.financialsService.clearTransactions(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
-    this.financialsService.getTransactions(this.chargesCollection);
-    this.financialsService.getTransactions(this.paymentsCollection);
-    console.log('bottom of history.component init')
   }
 
   deleteTransaction(id: string, type: string, amount: number) {
@@ -77,7 +76,7 @@ export class HistoryComponent implements OnInit {
      // console.log('TCL: HistoryComponent -> deleteTransaction -> collection', collection);
      // Delete the transaction document from the respective collection
 
-     console.log('TCL: HistoryComponent -> deleteTransaction -> this.currentFinancialDoc', this.currentFinancialDoc.ref.id);
+     //console.log('TCL: HistoryComponent -> deleteTransaction -> this.currentFinancialDoc', this.currentFinancialDoc.ref.id);
 
       this.currentFinancialDoc.collection(collection).doc(id).delete()
         .then(_ => {
