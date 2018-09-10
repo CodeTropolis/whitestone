@@ -7,7 +7,7 @@ export class FinancialsService {
 
   public categories: any;
   public currentCategory: any;
-  public currentFinancialDoc: any;
+  private currentFinancialDoc: any;
   public currentCategory$ = new BehaviorSubject<string>(null);
   public startingBalanceKey$ = new BehaviorSubject<string>(null);
   public startingBalanceDateKey$ = new BehaviorSubject<string>(null);
@@ -20,6 +20,7 @@ export class FinancialsService {
   public showAvatarSpinner$ = new BehaviorSubject<boolean>(false); // set to false so that avatar spinner on category-select.component does not show initially
 
   private transactions: any[] = [];
+  private unique: any[] = [];
   private subscriptions: any[] = []
 
   constructor(private dataService: DataService) {
@@ -34,7 +35,7 @@ export class FinancialsService {
     this.subscriptions.push(
       this.currentCategory$.subscribe(cat => { // This gets set from category-select.component.
         if (cat == null) { return; }
-        console.log('TCL: FinancialsService -> constructor -> cat', cat);
+       // console.log('TCL: FinancialsService -> constructor -> cat', cat);
         this.currentCategory = cat;
         // Set keys based on category selection and "next" them to an observable for other components to subscribe to i.e entry and history.
         this.startingBalanceKey$.next(this.currentCategory.key + 'StartingBalance');
@@ -60,8 +61,6 @@ export class FinancialsService {
   }
 
   public getTransactions(collection) {
-   // let unique = [];
-    //console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
     this.currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
         snapshot.forEach(
@@ -69,22 +68,22 @@ export class FinancialsService {
             let date = item.data().date.toDate();
             const type = collection.includes('Payment') ? 'Payment' : 'Charge'
             this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
-           // console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
           }
         )
         // Filter out duplicates
-       let unique = this.transactions.filter((e, i) => {
+       this.unique = this.transactions.filter((e, i) => {
           return this.transactions.findIndex((x) => {
             return x.id == e.id;
           }) == i;
         });
-       // console.log('TCL: FinancialsService -> publicgetTransactions -> unique', unique);
-        this.transactions$.next(unique);
+       console.log('TCL: FinancialsService -> publicgetTransactions -> unique', this.unique);
+        this.transactions$.next(this.unique);
       });
   }
 
   public clearTransactions(){
     this.transactions = [];
+    this.unique = [];
   }
 
   // ngOnDestroy() {

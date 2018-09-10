@@ -10,16 +10,16 @@ import { BehaviorSubject } from 'rxjs';
 
 export class DataService {
 
-  public currentFinancialDoc$ = new BehaviorSubject<any>(null);
+  //public currentFinancialDoc$ = new BehaviorSubject<any>(null);
   public currentChild$ = new BehaviorSubject<any>(null);
-  public currentFinancialDoc: any;
+  public currentFinancialDoc: any; //Set in child-table.component.  financials/entry and history will get this upon init
   public currentRecord: any;
 
   constructor(private firebaseService: FirebaseService) {
 
-    this.currentFinancialDoc$.subscribe(payload => {
-      this.currentFinancialDoc = payload;
-    })
+    // this.currentFinancialDoc$.subscribe(payload => {
+    //   this.currentFinancialDoc = payload;
+    // })
   }
 
   public convertMapToArray(map: {}) {
@@ -28,11 +28,12 @@ export class DataService {
   }
 
   public setCurrentChild(child){
-    this.currentChild$.next(child);
+    this.currentChild$.next(child); // Another UI may select other child
   }
   // Creates the base doc for all the child's financials
   public createFinancialDoc(id) {
-    this.currentFinancialDoc$.next(this.firebaseService.financialsCollection.doc(id));
+    //this.currentFinancialDoc$.next(this.firebaseService.financialsCollection.doc(id));
+    this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(id);
     this.currentFinancialDoc.ref.get().then(snapshot => {
       if (!snapshot.exists) {
         this.currentFinancialDoc.set({ dateCreated: new Date });

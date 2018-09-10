@@ -24,6 +24,8 @@ export class ChildTableComponent implements OnInit {
 
   financials(child) {
     this.dataService.currentRecord = this.record; // The parent record which contains the children. 
+    // Why are these services in data.service instead of financial.service?
+    // A: Doesn't really need to be here but because the child-table.component, which is outside of the financials module, sets these values.
     this.dataService.createFinancialDoc(child.id);
     this.dataService.setCurrentChild(child);
     this.router.navigate(['/financials']);

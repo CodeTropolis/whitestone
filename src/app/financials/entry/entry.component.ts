@@ -51,8 +51,9 @@ export class EntryComponent implements OnInit {
     this.showForm = false;
 
     // Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc i.e. history table;
-    this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
-
+    // this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
+    this.currentFinancialDoc = this.dataService.currentFinancialDoc;
+    
     // Listen for balance update.  An update could come from the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
       this.balance = bal;
