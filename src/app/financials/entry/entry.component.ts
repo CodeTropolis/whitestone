@@ -50,7 +50,7 @@ export class EntryComponent implements OnInit {
     this.showHistoryButton = false;
     this.showForm = false;
 
-    // Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc i.e. history table;
+    // ToDo: Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc i.e. history table;
     // this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
     
@@ -68,36 +68,26 @@ export class EntryComponent implements OnInit {
     // Listen for category selection from category-select.component
     this.categorySubscription = this.financialsService.currentCategory$
       .subscribe(x => {
-
         this.category = x;
-
         if (this.category == null) { return; } // Because the body of the subscribe is ran on init, make sure nothing happens until a category is selected.
-
         this.viewIsReady = false;
         this.showHistoryButton = false;
         this.showForm = false; // Make sure form is hidden upon category selection until ready as determined in getBlance(), enterPayment(), and enterCharge()
-
         this.paymentsCollectionExists = false;
         this.chargesCollectionExists = false;
         this.showHistory = false;
-
         // Obtain keys and collection names (tuitionPayments, tuitionCharges, lunchPayments, etc) based on current category
         // Keys and collections strings should always come from one source: financials.service.
         this.subscriptions.push(this.financialsService.startingBalanceKey$.subscribe(key => this.startingBalanceKey = key));
         this.subscriptions.push(this.financialsService.startingBalanceDateKey$.subscribe(key => this.startingBalanceDateKey = key));
         this.subscriptions.push(this.financialsService.startingBalanceMemoKey$.subscribe(key => this.startingBalanceMemoKey = key));
         this.subscriptions.push(this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key));
-
         this.subscriptions.push(this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection));
         this.subscriptions.push(this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection));
-
         this.isEnteringPayment = false;
         this.isEnteringCharge = false;
-
-        this.getBalance();              // Need this to run on category select.
-        // this.checkForSubCollections();  // Transactions may already be present for this.category.
+        this.getBalance();             
         this.setFormControls();
-
       });
   }
 
@@ -125,41 +115,8 @@ export class EntryComponent implements OnInit {
         }
         this.resetForm();
         this.readyView();
-       // this.checkForSubCollections();
       });
   }
-
-  // Check for transactions (payments/charges) in order to set state of payments<charges>CollectionExists truty state to determine show history button.
-  // private checkForSubCollections() {
-  //   this.currentFinancialDoc.collection(this.paymentsCollection).ref.get().
-  //     then(sub => {
-  //       //this.readyToDisplayTransactionSection(); // ToDo: Indicate when each method that reaches out to DB has completed, then run this method.
-  //       if (sub.docs.length > 0) {
-  //         console.log(`${this.paymentsCollection} exists`);
-  //         this.paymentsCollectionExists = true; // Update the view to show history button
-  //         this.financialsService.getTransactions(this.paymentsCollection);
-  //       } else {
-  //         console.log(`${this.paymentsCollection} does not exist`);
-  //         this.paymentsCollectionExists = false;
-  //       }
-
-  //       this.currentFinancialDoc.collection(this.chargesCollection).ref.get().
-  //         then(sub => {
-  //           if (sub.docs.length > 0) {
-  //             console.log(`${this.chargesCollection} exists`);
-  //             this.chargesCollectionExists = true;
-  //             this.financialsService.getTransactions(this.chargesCollection);
-  //           } else {
-  //             console.log(`${this.chargesCollection} does not exist`);
-  //             this.chargesCollectionExists = false;
-  //           }
-
-  //           // this.readyView();
-
-  //         });
-
-  //     });
-  // }
 
   private setFormControls() {
     this.formGroup = this.fb.group({
@@ -180,7 +137,6 @@ export class EntryComponent implements OnInit {
   }
 
   private setBalance(fd) {
-    // Starting balance set for history reference
     // Starting balance is not contained in collection - it sits in root of currentFinancialDoc, therefore, 
     // starting balance elements must be identified by categeory i.e. lunchStartingBalanceDate, lunchStartingBalanceMemo, etc.
     this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true })
@@ -195,9 +151,7 @@ export class EntryComponent implements OnInit {
   }
 
   private processTransaction(fd) {
-    
     let collection;
-
     this.isEnteringPayment ?
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
@@ -209,7 +163,6 @@ export class EntryComponent implements OnInit {
     this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
       .then(_ => {
         this.financialsService.runningBalanceForCurrentCategory$.next(this.balance);
-       // this.checkForSubCollections(); // This may be the first entry after balance set so check the subcollections to obtain this.payment<charges>Collection state for History button 
         this.resetForm(fd);
         this.showHistoryButton = true;
         this.financialsService.getTransactions(collection.ref.id); // Run through getTransactions in order to update history table after a payment or charge has been entered.
@@ -254,7 +207,6 @@ export class EntryComponent implements OnInit {
     }
     this.subscriptions.forEach(sub =>{ 
       sub.unsubscribe();
-      //console.log('TCL: EntryComponent -> ngOnDestroy -> sub', sub);
     });
   }
 
