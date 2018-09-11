@@ -73,7 +73,7 @@ export class HistoryComponent implements OnInit {
             .then(_ => { // update views
               this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
               // Run through collection to update history table data.
-              this.financialsService.clearTransactionsObservableAndArray();
+              this.financialsService.clearTransactionsObservableAndArray(); // This needs to happen prior to getTransactions - cannot place this functionality in getTransactions else only one collecton will be 'nexted' to the observable.
               this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
               this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
             })

@@ -52,7 +52,7 @@ export class EntryComponent implements OnInit {
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
     console.log('TCL: EntryComponent -> ngOnInit -> this.currentFinancialDoc', this.currentFinancialDoc.ref.id);
-    
+
     // Listen for balance update.  An update could come from the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
       this.balance = bal;
@@ -84,7 +84,7 @@ export class EntryComponent implements OnInit {
         this.subscriptions.push(this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection));
         this.isEnteringPayment = false;
         this.isEnteringCharge = false;
-        this.getBalance();             
+        this.getBalance();
         this.setFormControls();
       });
   }
@@ -153,7 +153,7 @@ export class EntryComponent implements OnInit {
     this.isEnteringPayment ?
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
-      console.log('TCL: EntryComponent -> privateprocessTransaction -> collection', collection.ref.id);
+    //console.log('TCL: EntryComponent -> privateprocessTransaction -> collection', collection.ref.id);
 
     collection.ref.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
     // NOTE: Wrap formula in () and set input to type number or else + will concat. 
@@ -164,7 +164,8 @@ export class EntryComponent implements OnInit {
         this.resetForm(fd);
         this.showHistoryButton = true;
         // Run through getTransactions in order to update history table after a payment or charge has been entered.
-        this.financialsService.getTransactions(this.currentFinancialDoc, collection.ref.id); 
+        this.financialsService.clearTransactionsObservableAndArray();
+        this.financialsService.getTransactions(this.currentFinancialDoc, collection.ref.id);
       });
   }
 
@@ -203,7 +204,7 @@ export class EntryComponent implements OnInit {
     if (this.categorySubscription) {
       this.categorySubscription.unsubscribe();
     }
-    this.subscriptions.forEach(sub =>{ 
+    this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });
   }
