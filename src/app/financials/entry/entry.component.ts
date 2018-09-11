@@ -165,7 +165,9 @@ export class EntryComponent implements OnInit {
         this.showHistoryButton = true;
         // Run through getTransactions in order to update history table after a payment or charge has been entered.
         this.financialsService.clearTransactionsObservableAndArray();
-        this.financialsService.getTransactions(this.currentFinancialDoc, collection.ref.id);
+        //this.financialsService.getTransactions(this.currentFinancialDoc, collection.ref.id);
+        this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+        this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
       });
   }
 
