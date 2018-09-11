@@ -69,7 +69,8 @@ export class RecordListComponent implements OnInit {
   }
 
   public prepFormToUpdate(record) {
-    this.res.prepFormToUpdate(record);
+    this.showForm = true;
+    setTimeout(() => this.res.prepFormToUpdate(record), 500); // Give form a chance to load prior to populating
   }
 
   public aboutToDelete(row) {
@@ -84,12 +85,12 @@ export class RecordListComponent implements OnInit {
     this.showChildren[row.realId] = !this.showChildren[row.realId];
   }
 
-  toggleForm(){
+  toggleForm() {
     this.showForm = !this.showForm;
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub =>{ 
+    this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });
   }

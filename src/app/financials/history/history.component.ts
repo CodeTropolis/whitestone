@@ -27,8 +27,6 @@ export class HistoryComponent implements OnInit {
 
   constructor(private dataService: DataService, private financialsService: FinancialsService) { }
 
-  // init fires each time history component is shown on 
-  // entry.component via: <app-history *ngIf="showHistory"></app-history>
   ngOnInit() {
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;

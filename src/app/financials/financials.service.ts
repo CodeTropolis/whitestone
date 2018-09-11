@@ -46,7 +46,6 @@ export class FinancialsService {
 
   public getTransactions(currentFinancialDoc, collection) {
     console.log('TCL: FinancialsService -> publicgetTransactions -> this.currentFinancialDoc', currentFinancialDoc.ref.id);
-    //console.log('TCL: FinancialsService -> publicgetTransactions -> collection', collection);
     const type = collection.includes('Payment') ? 'Payment' : 'Charge'
     currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
