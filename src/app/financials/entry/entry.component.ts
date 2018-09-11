@@ -50,15 +50,13 @@ export class EntryComponent implements OnInit {
     this.showHistoryButton = false;
     this.showForm = false;
 
-    // ToDo: Make this a subscription in the event another UI updates this.dataService.currentFinancialDoc i.e. history table;
-    // this.dataService.currentFinancialDoc$.subscribe(payload => this.currentFinancialDoc = payload);
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
+    console.log('TCL: EntryComponent -> ngOnInit -> this.currentFinancialDoc', this.currentFinancialDoc.ref.id);
     
     // Listen for balance update.  An update could come from the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
       this.balance = bal;
       if (Math.sign(this.balance) === -1) {
-        // console.log('balance is neg');
         this.balanceIsNegative = true;
       } else {
         this.balanceIsNegative = false;
@@ -137,7 +135,7 @@ export class EntryComponent implements OnInit {
   }
 
   private setBalance(fd) {
-    // Starting balance is not contained in collection - it sits in root of currentFinancialDoc, therefore, 
+    // Starting balance in root of currentFinancialDoc, therefore, 
     // starting balance elements must be identified by categeory i.e. lunchStartingBalanceDate, lunchStartingBalanceMemo, etc.
     this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true })
     // Set the running balance which future Payment/Charges will calc against
@@ -165,7 +163,8 @@ export class EntryComponent implements OnInit {
         this.financialsService.runningBalanceForCurrentCategory$.next(this.balance);
         this.resetForm(fd);
         this.showHistoryButton = true;
-        this.financialsService.getTransactions(collection.ref.id); // Run through getTransactions in order to update history table after a payment or charge has been entered.
+        // Run through getTransactions in order to update history table after a payment or charge has been entered.
+        this.financialsService.getTransactions(this.currentFinancialDoc, collection.ref.id); 
       });
   }
 
@@ -203,7 +202,6 @@ export class EntryComponent implements OnInit {
   ngOnDestroy() {
     if (this.categorySubscription) {
       this.categorySubscription.unsubscribe();
-     // console.log('TCL: EntryComponent -> ngOnDestroy -> categorySubscription', this.categorySubscription);
     }
     this.subscriptions.forEach(sub =>{ 
       sub.unsubscribe();

@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
-import { AuthService } from '../../core/services/auth.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-category-select',
@@ -11,38 +9,28 @@ import { Observable } from 'rxjs';
 })
 export class CategorySelectComponent implements OnInit {
 
-  // public currentUser$: Observable<any>;
   public currentChild: any;
   public currentChildSubscription: any;
   public categories: any;
-  public showAvatarSpinner: boolean;
+ // public showAvatarSpinner: boolean;
 
   private spinnerSubscribe: any;
 
-  constructor(private dataService: DataService, private financialsService: FinancialsService, private authService: AuthService) { }
+  constructor(private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
-
-    //ToDo: Need reference to family record for UI showing other children of record.
-
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
-    this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
+    //this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
 
   public setCategory(cat: any) {
-    //console.log('TCL: CategorySelectComponent -> publicsetCategory -> cat', cat);
-    //this.financialsService.currentCategory$.next(cat);
     this.financialsService.setCategoryAndStrings(cat);
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
-    // beginning of entry.component to prevent  "Expression has changed after it was checked" err.
+    // beginning of entry.component to prevent "Expression has changed after it was checked" err.
     this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup 
     // entry.component will set this to false at some point.
   }
-
-  // public logOut() {
-  //   this.authService.logOut('');
-  // }
 
   ngOnDestroy() {
     if(this.spinnerSubscribe){

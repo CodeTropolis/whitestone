@@ -18,7 +18,6 @@ export class FinancialsService {
   private transactions: any[] = [];
 
   constructor() {
-    console.log('TCL: FinancialsService -> constructor');
     this.categories = {
       tuition: 'Tuition',
       lunch: 'Lunch',
