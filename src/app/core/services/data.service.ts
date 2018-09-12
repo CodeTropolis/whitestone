@@ -10,17 +10,11 @@ import { BehaviorSubject } from 'rxjs';
 
 export class DataService {
 
-  //public currentFinancialDoc$ = new BehaviorSubject<any>(null);
   public currentChild$ = new BehaviorSubject<any>(null);
   public currentFinancialDoc: any; //Set in child-table.component.  financials/entry and history will get this upon init
   public currentRecord: any;
 
-  constructor(private firebaseService: FirebaseService) {
-
-    // this.currentFinancialDoc$.subscribe(payload => {
-    //   this.currentFinancialDoc = payload;
-    // })
-  }
+  constructor(private firebaseService: FirebaseService) {}
 
   public convertMapToArray(map: {}) {
     const keys = Object.keys(map)
