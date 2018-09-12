@@ -2,18 +2,13 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { firebase } from '@firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(
-    private afAuth: AngularFireAuth,
-    private router: Router,
-    private fs: FirebaseService,
-  ) { }
+  constructor(private afAuth: AngularFireAuth, private router: Router) { }
 
   public googleLogin(link: string) {
     const provider = new firebase.auth.GoogleAuthProvider();

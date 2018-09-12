@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 
 // export interface Record {
@@ -35,7 +35,7 @@ export class FirebaseService {
   public records$: Observable<any[]>;
 
   public financialsCollection: AngularFirestoreCollection<any[]>;
-  public financials$: Observable<any[]>;
+ // public financials$: Observable<any[]>;
 
   // app.component sets this value to determine if show prog spinner.  See login component
   public loading = new Subject<boolean>();
@@ -53,14 +53,19 @@ export class FirebaseService {
     // You can't use ( … ) => { … } because it'll be interpreted as a block. The solution is to use parentheses.
 
     this.financialsCollection = this.db.collection<any[]>('financials');
-    this.financials$ = this.financialsCollection.snapshotChanges()
-      .pipe(
-        map(actions => actions.map(a => {
-          const data = a.payload.doc.data() as any;
-          const realId = a.payload.doc.id;
-          return { realId, ...data };
-        }))
-      );
+
+    this.financialsCollection.valueChanges().pipe(tap(arr => console.log(`read ${arr.length} docs`)))
+
+    // this.financials$ = this.financialsCollection.valueChanges().pipe(tap(arr => console.log(`read ${arr.length} docs`)))
+
+    // this.financials$ = this.financialsCollection.snapshotChanges()
+    //   .pipe(
+    //     map(actions => actions.map(a => {
+    //       const data = a.payload.doc.data() as any;
+    //       const realId = a.payload.doc.id;
+    //       return { realId, ...data };
+    //     }))
+    //   );
 
   }
 
