@@ -25,6 +25,8 @@ export class FirebaseService {
     this.records$ = this.recordCollection.snapshotChanges()
       .pipe(map(changes => changes.map(a => ({ realId: a.payload.doc.id, ...a.payload.doc.data() }))), shareReplay(1)); 
 
+    // Added financials$ observable property and shareReplay in an attempt to reduce DB read counts.  
+    // Subcribed to in data.service.ts.  Effect Unproven.
     this.financialsCollection = this.db.collection<any[]>('financials');
     this.financials$ = this.financialsCollection.snapshotChanges().pipe(shareReplay(1));
     

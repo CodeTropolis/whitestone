@@ -44,7 +44,6 @@ export class FinancialsService {
   }
 
   public getTransactions(currentFinancialDoc, collection) {
-    //console.log('TCL: FinancialsService -> publicgetTransactions -> this.currentFinancialDoc', currentFinancialDoc.ref.id);
     const type = collection.includes('Payment') ? 'Payment' : 'Charge'
     currentFinancialDoc.collection(collection).ref.get()
       .then(snapshot => {
@@ -52,7 +51,6 @@ export class FinancialsService {
           item => {
             let date = item.data().date.toDate();
             this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
-            //console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
             this.transactions$.next(this.transactions);
           }
         )

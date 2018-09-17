@@ -15,7 +15,18 @@ export class DataService {
   public currentFinancialDoc: any; //Set in child-table.component.  financials/entry and history will get this upon init
   public currentRecord: any;
 
-  constructor(private firebaseService: FirebaseService) { }
+  //private financialDocs: any[] = [];
+
+  constructor(private firebaseService: FirebaseService) {
+
+    this.firebaseService.financials$.subscribe(docs => {
+      docs.forEach(doc => {
+        // console.log('TCL: DataService -> constructor -> doc', doc);
+        // this.financialDocs.push(doc);
+      });
+    });
+
+   }
 
   public convertMapToArray(map: {}) {
     const keys = Object.keys(map)
@@ -28,12 +39,19 @@ export class DataService {
   // Creates the base doc for all the child's financials
   public createFinancialDoc(id) {
 
-    //this.currentFinancialDoc$.next(this.firebaseService.financialsCollection.doc(id));
-
     // Possible issue: every time the financials button is clicked in child-table, a read is being executed on currentFinancialDoc.
-    this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(id);
+    
+    // Array populated from subscription.  Grab doc from array based on id. - What about the first time where there aren't any docs present?
+    
+    // this.financialDocs.forEach(doc =>{  
+    //  // console.log(`financialDocs.forEach -> doc: ${doc.ref}`);
+    //   console.log(Object.values(doc));
+    // })
+
+    this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(id); // do this if no docs
+    console.log('TCL: publiccreateFinancialDoc -> this.currentFinancialDoc', this.currentFinancialDoc);
+
     this.currentFinancialDoc.ref.get().then(snapshot => {
-      console.log('TCL: publiccreateFinancialDoc -> currentFinancialDoc read', this.currentFinancialDoc.ref.id);
       if (!snapshot.exists) {
         this.currentFinancialDoc.set({ dateCreated: new Date });
       }
