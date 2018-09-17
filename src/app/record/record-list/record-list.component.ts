@@ -37,10 +37,7 @@ export class RecordListComponent implements OnInit {
     this.subscriptions.push(
       this.fs.records$.subscribe(x => {
 
-        // this.records = x;
-        // this.ds = new MatTableDataSource(this.records);
         this.ds = new MatTableDataSource(x);
-
 
         this.ds.filterPredicate = (data, filter) => {
           let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname + data.district + data.catholic;

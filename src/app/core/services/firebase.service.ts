@@ -12,6 +12,7 @@ export class FirebaseService {
   public records$: Observable<any[]>;
 
   public financialsCollection: AngularFirestoreCollection<any[]>;
+  public financials$: Observable<any[]>;
 
   // app.component sets this value to determine if show prog spinner.  See login component
   public loading = new Subject<boolean>();
@@ -21,14 +22,12 @@ export class FirebaseService {
     this.loading.next(false);
 
     this.recordCollection = this.db.collection<any[]>('records');
-    this.records$ = this.recordCollection.snapshotChanges().pipe(map(changes => changes.map(a => ({ realId: a.payload.doc.id, ...a.payload.doc.data() }))), shareReplay(1)); 
+    this.records$ = this.recordCollection.snapshotChanges()
+      .pipe(map(changes => changes.map(a => ({ realId: a.payload.doc.id, ...a.payload.doc.data() }))), shareReplay(1)); 
 
     this.financialsCollection = this.db.collection<any[]>('financials');
+    this.financials$ = this.financialsCollection.snapshotChanges().pipe(shareReplay(1));
     
-    // this.financialsCollection.valueChanges().pipe(
-    //   tap(x => console.log(`tap payload: ${x}`))
-    // )
-
   }
 
 }
