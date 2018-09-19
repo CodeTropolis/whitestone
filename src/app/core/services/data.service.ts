@@ -17,7 +17,7 @@ export class DataService {
 
   constructor(private firebaseService: FirebaseService) {
 
-    this.firebaseService.financials$.subscribe(docs => {
+    this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
       // docs.forEach(doc => {
 
       // });
@@ -36,10 +36,12 @@ export class DataService {
 
   // Creates the base doc for all the child's financials
   public createFinancialDoc(id) {
+    // this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(child.id); 
     this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(id); 
     console.log('TCL: publiccreateFinancialDoc -> this.currentFinancialDoc.ref.id', this.currentFinancialDoc.ref.id);
     this.currentFinancialDoc.ref.get().then(snapshot => {
       if (!snapshot.exists) {
+        // this.currentFinancialDoc.set({ dateCreated: new Date, childFname: child.fname, childLname: child.lname });
         this.currentFinancialDoc.set({ dateCreated: new Date });
       }
     });
