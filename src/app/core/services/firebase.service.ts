@@ -26,7 +26,10 @@ export class FirebaseService {
       .pipe(map(changes => changes.map(a => ({ realId: a.payload.doc.id, ...a.payload.doc.data() }))), shareReplay(1)); 
 
     // Added financials$ observable property and shareReplay in an attempt to reduce DB read counts.  
-    // Subscribed to in data.service.ts. Not utilizing payload from subscription. Effect Unproven.
+    // Subscribed to in data.service.ts, however, not utilizing payload from subscription. 
+    
+    // According to client as of 9/18/18 entries: 350, per db reads: 4500 yields 12.9 reads per entry
+    // an entry is considered a submission for tuition/lunch/extcare or misc balance, a payment or a  charge. 
     this.financialsCollection = this.db.collection<any[]>('financials');
     this.financials$ = this.financialsCollection.snapshotChanges().pipe(shareReplay(1));
     

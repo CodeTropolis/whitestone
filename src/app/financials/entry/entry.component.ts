@@ -96,7 +96,7 @@ export class EntryComponent implements OnInit {
     this.currentFinancialDoc.ref.get().then(
       snapshot => {
         if (snapshot.data()[this.startingBalanceKey] || snapshot.data()[this.startingBalanceKey] === 0) { // Important to check for a balance value of zero.
-          this.startingBalance = snapshot.data()[this.startingBalanceKey]; // Step A) 
+          this.startingBalance = snapshot.data()[this.startingBalanceKey]; 
           this.showInputForStartingBalance = false;
           this.showForm = false;  // Hide the form else memo input and submit button will show.
         } else {
@@ -135,11 +135,13 @@ export class EntryComponent implements OnInit {
   }
 
   private setBalance(fd) {
+
     // Starting balance in root of currentFinancialDoc, therefore, 
     // starting balance elements must be identified by categeory i.e. lunchStartingBalanceDate, lunchStartingBalanceMemo, etc.
-    this.currentFinancialDoc.set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date, [this.startingBalanceMemoKey]: this.formValue.memo }, { merge: true })
-    // Set the running balance which future Payment/Charges will calc against
-    this.currentFinancialDoc.set({ [this.balanceKey]: this.formValue.amount }, { merge: true })
+    // Also set the running balance which future Payment/Charges will calc against
+    this.currentFinancialDoc
+      .set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date, 
+        [this.startingBalanceMemoKey]: this.formValue.memo , [this.balanceKey]: this.formValue.amount }, { merge: true })
       .then(_ => {
         this.getBalance(); //   Run getBalance to:
         // 1) get state of this.startingBalance to determine submitHandler flow on next submission and;
@@ -153,7 +155,6 @@ export class EntryComponent implements OnInit {
     this.isEnteringPayment ?
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
-    //console.log('TCL: EntryComponent -> privateprocessTransaction -> collection', collection.ref.id);
 
     collection.ref.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
     // NOTE: Wrap formula in () and set input to type number or else + will concat. 
@@ -165,7 +166,6 @@ export class EntryComponent implements OnInit {
         this.showHistoryButton = true;
         // Run through getTransactions in order to update history table after a payment or charge has been entered.
         this.financialsService.clearTransactionsObservableAndArray();
-        //this.financialsService.getTransactions(this.currentFinancialDoc, collection.ref.id);
         this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
         this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
       });
