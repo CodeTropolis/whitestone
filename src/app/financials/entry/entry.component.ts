@@ -51,7 +51,8 @@ export class EntryComponent implements OnInit {
     this.showForm = false;
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
-    console.log('TCL: ngOnInit -> this.currentFinancialDoc.ref.id:', this.currentFinancialDoc.ref.id);
+    console.log('TCL: EntryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id', this.currentFinancialDoc.ref.id);
+   
     
     // Listen for balance update.  An update could come from the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {

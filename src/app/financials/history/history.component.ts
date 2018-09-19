@@ -30,6 +30,7 @@ export class HistoryComponent implements OnInit {
   ngOnInit() {
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
+    console.log('TCL: HistoryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id', this.currentFinancialDoc.ref.id);
 
     this.subscriptions.push(
       this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
