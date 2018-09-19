@@ -51,8 +51,8 @@ export class EntryComponent implements OnInit {
     this.showForm = false;
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
-    //console.log('TCL: EntryComponent -> ngOnInit -> this.currentFinancialDoc', this.currentFinancialDoc.ref.id);
-
+    console.log('TCL: ngOnInit -> this.currentFinancialDoc.ref.id:', this.currentFinancialDoc.ref.id);
+    
     // Listen for balance update.  An update could come from the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
       this.balance = bal;
@@ -128,9 +128,9 @@ export class EntryComponent implements OnInit {
     this.showSubmitButton = false; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
     this.formValue = this.formGroup.value;
     if (this.showInputForStartingBalance) {
-      this.setBalance(formDirective); // Step B)
+      this.setBalance(formDirective); 
     } else { // Balance present.  Next submission will either be for a payement or charge.
-      this.processTransaction(formDirective); // Step C)
+      this.processTransaction(formDirective); 
     }
   }
 
