@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
-import { FirebaseService } from '../../core/services/firebase.service';
-import { map, tap } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-category-select',
@@ -18,7 +17,7 @@ export class CategorySelectComponent implements OnInit {
 
   private spinnerSubscribe: any;
 
-  constructor(private dataService: DataService, private firebaseService: FirebaseService, private financialsService: FinancialsService) { }
+  constructor(private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
     this.categories = this.financialsService.categories;
@@ -29,8 +28,6 @@ export class CategorySelectComponent implements OnInit {
   public setCategory(cat: any) {
 
     this.financialsService.setCategoryAndStrings(cat);
-
-   // this.firebaseService.financialsCollection.valueChanges().pipe(tap(arr => console.log(`read ${arr.length} docs`)));
 
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
     // beginning of entry.component to prevent "Expression has changed after it was checked" err.
@@ -43,7 +40,8 @@ export class CategorySelectComponent implements OnInit {
       this.spinnerSubscribe.unsubscribe();
     }
     this.currentChildSubscription.unsubscribe();
-    this.financialsService.currentCategory$.next(null); // Clear out the current category else next selected child's financials will start out with previously selected category.
+    // Clear out the current category else next selected child's financials will start out with previously selected category.
+    this.financialsService.currentCategory$.next(null); 
     
   }
 

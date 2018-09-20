@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class EntryComponent implements OnInit {
 
-  private categorySubscription: any;
+ // private categorySubscription: any;
   public currentFinancialDoc: any;
   public category: any;
 
@@ -23,12 +23,19 @@ export class EntryComponent implements OnInit {
 
   private paymentsCollection: string;
   private chargesCollection: string;
+  private subscriptions: any[] = [];
+
   public balance: number;
 
   public formGroup: FormGroup;
+
   public formValue: any;
   public showForm: boolean;
-  public showSubmitButton: boolean;
+
+   // disableSubmitButton to true upon submission to prevent duplicate entries. 
+   // Set to true on submission,  Set to true on formReset. 
+  public disableSubmitButton: boolean = false;
+
   public showHistory: boolean;
   public isEnteringPayment: boolean;
   public isEnteringCharge: boolean;
@@ -38,21 +45,19 @@ export class EntryComponent implements OnInit {
 
   public paymentsCollectionExists: boolean;
   public chargesCollectionExists: boolean;
-  public viewIsReady: boolean;
+  public viewIsReady: boolean = false;
 
-  private subscriptions: any[] = [];
+
 
   constructor(private financialsService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
-
-    this.viewIsReady = false;
+    
     this.showHistoryButton = false;
     this.showForm = false;
 
     this.currentFinancialDoc = this.dataService.currentFinancialDoc;
     console.log('TCL: EntryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id', this.currentFinancialDoc.ref.id);
-   
     
     // Listen for balance update.  An update could come from the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
@@ -65,11 +70,18 @@ export class EntryComponent implements OnInit {
     });
 
     // Listen for category selection from category-select.component
-    this.categorySubscription = this.financialsService.currentCategory$
+    this.subscriptions.push( 
+      this.financialsService.currentCategory$
       .subscribe(x => {
+
         this.category = x;
         if (this.category == null) { return; } // Because the body of the subscribe is ran on init, make sure nothing happens until a category is selected.
-        this.viewIsReady = false;
+        this.viewIsReady = false; // Set to false again upon category select.
+
+         // User may switch categories without submitting.  
+         // resetForm upon submission is what sets this back to false. Change to false here if resetForm isn't hit.
+        this.disableSubmitButton = false;
+
         this.showHistoryButton = false;
         this.showForm = false; // Make sure form is hidden upon category selection until ready as determined in getBlance(), enterPayment(), and enterCharge()
         this.paymentsCollectionExists = false;
@@ -87,7 +99,8 @@ export class EntryComponent implements OnInit {
         this.isEnteringCharge = false;
         this.getBalance();
         this.setFormControls();
-      });
+      })
+    )
   }
 
   //  getBalance() run this:
@@ -126,7 +139,7 @@ export class EntryComponent implements OnInit {
   }
 
   public submitHandler(formDirective) {
-    this.showSubmitButton = false; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
+    this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
     this.formValue = this.formGroup.value;
     if (this.showInputForStartingBalance) {
       this.setBalance(formDirective); 
@@ -153,6 +166,7 @@ export class EntryComponent implements OnInit {
 
   private processTransaction(fd) {
     let collection;
+    
     this.isEnteringPayment ?
       collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
       collection = this.currentFinancialDoc.collection(this.chargesCollection);
@@ -196,7 +210,7 @@ export class EntryComponent implements OnInit {
       formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
     }
     this.formGroup.reset();
-    this.showSubmitButton = true;
+    this.disableSubmitButton = false;
   }
 
   public toggleHistory() {
@@ -204,9 +218,9 @@ export class EntryComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.categorySubscription) {
-      this.categorySubscription.unsubscribe();
-    }
+    // if (this.categorySubscription) {
+    //   this.categorySubscription.unsubscribe();
+    // }
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });

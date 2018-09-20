@@ -35,7 +35,7 @@
             <input matInput type=text placeholder="Memo" formControlName="memo">
         </mat-form-field>
 
-        <button *ngIf="showSubmitButton" mat-flat-button color="basic" [disabled]="!formGroup.valid" type="submit">Submit</button>
+        <button mat-flat-button color="primary" [disabled]="!formGroup.valid || disableSubmitButton" type="submit">Submit</button>
     </form>
 </div>
 <app-history *ngIf="showHistory"></app-history>
