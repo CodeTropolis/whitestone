@@ -1,4 +1,3 @@
-
 <!-- History Table | Current finanical doc: {{currentFinancialDoc.ref.id}} -->
 <mat-table *ngIf="tableData" [dataSource]="tableData" matSort>
   <ng-container matColumnDef="amount">
@@ -28,9 +27,9 @@
   <ng-container matColumnDef="delete">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Delete Transaction</mat-header-cell>
     <mat-cell *matCellDef="let row">
-       <button [disabled]="disableDelete[row.id]" (click)="deleteTransaction(row.id, row.type, row.amount)">Delete</button> 
-       <!-- ToDo: Add confirm delete -->
-      </mat-cell>
+      <button [disabled]="disableDelete[row.id]" (click)="deleteTransaction(row.id, row.type, row.amount)">Delete</button>
+      <!-- ToDo: Add confirm delete -->
+    </mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>

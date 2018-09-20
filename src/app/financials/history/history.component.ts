@@ -44,8 +44,8 @@ export class HistoryComponent implements OnInit {
     this.subscriptions.push(
       this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key)
     );
-
-    this.financialsService.clearTransactionsObservableAndArray(); // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
+    // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
+    this.financialsService.clearTransactionsObservableAndArray(); 
     this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
     this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
 
@@ -59,16 +59,20 @@ export class HistoryComponent implements OnInit {
 
     });
   }
-
+  // Issue 9/20/18: User not able to delete last entry in history table.
+  // Works locally with aot compilation set to true or false.
+  // Works live after adding console.log.  Unknown as to why.
   deleteTransaction(id: string, type: string, amount: number) {
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
+
     type === 'Payment' ? this.updatedBalance = (this.currentBalance + amount) : this.updatedBalance = (this.currentBalance - amount);
-    if (this.updatedBalance) {
+ 
       // Are we dealing with the payments or charges subcollection?
       let collection: string;
       type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
       this.currentFinancialDoc.collection(collection).doc(id).delete()
-        .then(_ => {
+        .then( _ => {
+          console.log('TCL: HistoryComponent -> deleteTransaction -> id', id, 'Amount:', amount);
           // Update the DB
           this.currentFinancialDoc.set({ [this.balanceKey]: this.updatedBalance }, { merge: true })
             .then(_ => { // update views
@@ -79,7 +83,7 @@ export class HistoryComponent implements OnInit {
               this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
             })
         });
-    }
+    
   }
 
   ngOnDestroy() {
