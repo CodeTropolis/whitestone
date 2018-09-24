@@ -45,7 +45,7 @@ export class HistoryComponent implements OnInit {
       this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key)
     );
     // Clear out transactions from previously selected category i.e. prevent tuition payments/charges from showing in history for lunch
-    this.financialsService.clearTransactionsObservableAndArray(); 
+    this.financialsService.clearTransactionsObservableAndArray();
     this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
     this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
 
@@ -66,24 +66,24 @@ export class HistoryComponent implements OnInit {
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
 
     type === 'Payment' ? this.updatedBalance = (this.currentBalance + amount) : this.updatedBalance = (this.currentBalance - amount);
- 
-      // Are we dealing with the payments or charges subcollection?
-      let collection: string;
-      type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
-      this.currentFinancialDoc.collection(collection).doc(id).delete()
-        .then( _ => {
-          console.log('TCL: HistoryComponent -> deleteTransaction -> id', id, 'Amount:', amount);
-          // Update the DB
-          this.currentFinancialDoc.set({ [this.balanceKey]: this.updatedBalance }, { merge: true })
-            .then(_ => { // update views
-              this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
-              // Run through collection to update history table data.
-              this.financialsService.clearTransactionsObservableAndArray(); // This needs to happen prior to getTransactions - cannot place this functionality in getTransactions else only one collecton will be 'nexted' to the observable.
-              this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
-              this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
-            })
-        });
-    
+
+    // Are we dealing with the payments or charges subcollection?
+    let collection: string;
+    type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
+    this.currentFinancialDoc.collection(collection).doc(id).delete()
+      .then(_ => {
+        console.log('TCL: HistoryComponent -> deleteTransaction -> id', id, 'Amount:', amount);
+        // Update the DB
+        this.currentFinancialDoc.set({ [this.balanceKey]: this.updatedBalance }, { merge: true })
+          .then(_ => { // update views
+            this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
+            // Run through collection to update history table data.
+            this.financialsService.clearTransactionsObservableAndArray(); // This needs to happen prior to getTransactions - cannot place this functionality in getTransactions else only one collecton will be 'nexted' to the observable.
+            this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
+            this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+          })
+      });
+
   }
 
   ngOnDestroy() {
