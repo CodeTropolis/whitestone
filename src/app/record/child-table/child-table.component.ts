@@ -20,6 +20,7 @@ export class ChildTableComponent implements OnInit {
   ngOnInit() {
     this.data = new MatTableDataSource(this.dataService.convertMapToArray(this.record.children));
     this.data.sort = this.sort;
+
   }
 
   financials(child) {

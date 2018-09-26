@@ -11,18 +11,20 @@ import { BehaviorSubject } from 'rxjs';
 export class DataService {
 
   public currentChild$ = new BehaviorSubject<any>(null);
-
-  public currentFinancialDoc: any; //Set in child-table.component.  financials/entry and history will get this upon init
   public currentRecord: any;
+  public financialDocs: any[] =[];
+
+  private currentDocId: string;
+
+  public currentFinancialDoc:any;
 
   constructor(private firebaseService: FirebaseService) {
 
-    this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
-      // docs.forEach(doc => {
-
-      // });
-    });
-
+    // this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
+    //   docs.forEach(doc => {
+    //   //this.financialDocs.push(doc);
+    //   });
+    // });
    }
 
   public convertMapToArray(map: {}) {
@@ -36,16 +38,23 @@ export class DataService {
 
   // Creates the base doc for all the child's financials
   public createFinancialDoc(id) {
-    // this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(child.id); 
     this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(id); 
-    console.log('TCL: publiccreateFinancialDoc -> this.currentFinancialDoc.ref.id', this.currentFinancialDoc.ref.id);
     this.currentFinancialDoc.ref.get().then(snapshot => {
       if (!snapshot.exists) {
-        // this.currentFinancialDoc.set({ dateCreated: new Date, childFname: child.fname, childLname: child.lname });
         this.currentFinancialDoc.set({ dateCreated: new Date });
+        // this.currentFinancialDoc.set({ dateCreated: new Date, childFname: child.fname, childLname: child.lname });
       }
     });
-
+    // this.currentDocId = id;
+    // let doc;
+    // doc = this.firebaseService.financialsCollection.doc(id); 
+    // this.currentFinancialDoc = doc;
+    // doc.ref.get().then(snapshot => {
+    //   if (!snapshot.exists) {
+    //     doc.set({ dateCreated: new Date });
+    //     // this.currentFinancialDoc.set({ dateCreated: new Date, childFname: child.fname, childLname: child.lname });
+    //   }
+    // });
   }
 
 }
