@@ -2,29 +2,16 @@
 // `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-// Prod DB - Set in environment.prod.ts:
-// export const environment = {
-//   production: false,
-//   firebase: {
-//     apiKey: "AIzaSyB5edtPdugpbEgUR0BltaWCa1FWdrFh3zc",
-//     authDomain: "whitestone-5433a.firebaseapp.com",
-//     databaseURL: "https://whitestone-5433a.firebaseio.com",
-//     projectId: "whitestone-5433a",
-//     storageBucket: "",
-//     messagingSenderId: "512131240408"
-//   }
-// };
-
 // Dev DB:
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyBgRe4SH2Jge-Yy2Mn-JOoCk8j4Qj7YhhU",
-    authDomain: "projx-e0882.firebaseapp.com",
-    databaseURL: "https://projx-e0882.firebaseio.com",
-    projectId: "projx-e0882",
-    storageBucket: "projx-e0882.appspot.com",
-    messagingSenderId: "740695221633"
+    apiKey: "AIzaSyBuWI9F7DY-DlESWPn4jrR3JAiwy-cjO8s",
+    authDomain: "stackblitz-e7240.firebaseapp.com",
+    databaseURL: "https://stackblitz-e7240.firebaseio.com",
+    projectId: "stackblitz-e7240",
+    storageBucket: "stackblitz-e7240.appspot.com",
+    messagingSenderId: "548688526365"
   }
 };
 
