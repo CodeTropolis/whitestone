@@ -13,18 +13,13 @@ export class DataService {
   public currentChild$ = new BehaviorSubject<any>(null);
   public currentRecord: any;
   public financialDocs: any[] =[];
-
-  private currentDocId: string;
-
   public currentFinancialDoc:any;
 
   constructor(private firebaseService: FirebaseService) {
 
-    // this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
-    //   docs.forEach(doc => {
-    //   //this.financialDocs.push(doc);
-    //   });
-    // });
+    this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
+      //docs.forEach(doc => {});
+    });
    }
 
   public convertMapToArray(map: {}) {
@@ -45,16 +40,6 @@ export class DataService {
         // this.currentFinancialDoc.set({ dateCreated: new Date, childFname: child.fname, childLname: child.lname });
       }
     });
-    // this.currentDocId = id;
-    // let doc;
-    // doc = this.firebaseService.financialsCollection.doc(id); 
-    // this.currentFinancialDoc = doc;
-    // doc.ref.get().then(snapshot => {
-    //   if (!snapshot.exists) {
-    //     doc.set({ dateCreated: new Date });
-    //     // this.currentFinancialDoc.set({ dateCreated: new Date, childFname: child.fname, childLname: child.lname });
-    //   }
-    // });
   }
 
 }
