@@ -17,9 +17,9 @@ export class DataService {
 
   constructor(private firebaseService: FirebaseService) {
 
-    this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
-      //docs.forEach(doc => {});
-    });
+    // this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
+    //   //docs.forEach(doc => {});
+    // });
    }
 
   public convertMapToArray(map: {}) {
