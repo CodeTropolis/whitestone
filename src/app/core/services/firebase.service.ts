@@ -22,17 +22,23 @@ export class FirebaseService {
     this.loading.next(false);
 
     this.recordCollection = this.db.collection<any[]>('records');
-    this.records$ = this.recordCollection.snapshotChanges()
-      .pipe(map(changes => changes.map(a => ({ realId: a.payload.doc.id, ...a.payload.doc.data() }))), shareReplay(1)); 
-
+    this.records$ = this.mapAndReplayCollection(this.recordCollection);
 
     this.financialsCollection = this.db.collection<any[]>('financials');
-    // this.financials$ = this.financialsCollection.snapshotChanges()
-    //   .pipe(map( a => {
-    //     console.log('TCL: this.financialsCollection.snapshotChanges() pipe map a: ', a);
-    //      return a;
-    //   }),
-    //     shareReplay(1));
+    this.financials$ = this.mapAndReplayCollection(this.financialsCollection);
+   
+  }
+  private mapAndReplayCollection(collection: AngularFirestoreCollection<any[]>): any {
+    return collection.snapshotChanges()
+      .pipe(
+        tap((arr => console.log(`${collection.ref.id} read ${arr.length} docs`))),
+        map(changes => {
+          return changes.map(a => {
+            return { realId: a.payload.doc.id, ...a.payload.doc.data() }
+          })
+        }),
+       shareReplay(1) // Apparently a bug with shareReplay() causes <observable>$ to not unsubscribe despite unsubscribing.
+      );
   }
 
 }
