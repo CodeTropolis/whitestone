@@ -29,8 +29,10 @@ export class HistoryComponent implements OnInit {
 
   ngOnInit() {
 
-    this.currentFinancialDoc = this.dataService.currentFinancialDoc;
-    console.log('TCL: HistoryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id', this.currentFinancialDoc.ref.id);
+    this.dataService.currentFinancialDoc$.subscribe(doc => {
+      this.currentFinancialDoc = doc;
+      console.log('TCL: HistoryComponent -> ngOnInit -> this.dataService.currentFinancialDoc$', this.currentFinancialDoc);
+    });
 
     this.subscriptions.push(
       this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
@@ -59,9 +61,7 @@ export class HistoryComponent implements OnInit {
 
     });
   }
-  // Issue 9/20/18: User not able to delete last entry in history table.
-  // Works locally with aot compilation set to true or false.
-  // Works live after adding console.log.  Unknown as to why.
+
   deleteTransaction(id: string, type: string, amount: number) {
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
 

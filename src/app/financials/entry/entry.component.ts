@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AngularFirestoreDocument } from 'angularfire2/firestore';
 
 
 @Component({
@@ -11,7 +12,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class EntryComponent implements OnInit {
 
- // private categorySubscription: any;
+  // private categorySubscription: any;
   public currentFinancialDoc: any;
   public category: any;
 
@@ -32,8 +33,8 @@ export class EntryComponent implements OnInit {
   public formValue: any;
   public showForm: boolean;
 
-   // disableSubmitButton to true upon submission to prevent duplicate entries. 
-   // Set to true on submission,  Set to true on formReset. 
+  // disableSubmitButton to true upon submission to prevent duplicate entries. 
+  // Set to true on submission,  Set to true on formReset. 
   public disableSubmitButton: boolean = false;
 
   public showHistory: boolean;
@@ -52,13 +53,55 @@ export class EntryComponent implements OnInit {
   constructor(private financialsService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
-    
+
     this.showHistoryButton = false;
     this.showForm = false;
 
-    this.currentFinancialDoc = this.dataService.currentFinancialDoc;
-    console.log('TCL: EntryComponent -> ngOnInit -> this.currentFinancialDoc.ref.id', this.currentFinancialDoc.ref.id);
-    
+    this.dataService.currentFinancialDoc$.subscribe(doc => {
+      console.log('TCL: ngOnInit -> doc', doc.payload.ref);
+      this.currentFinancialDoc = doc;
+    });
+
+    // Listen for category selection from category-select.component
+    this.subscriptions.push(
+      this.financialsService.currentCategory$
+        .subscribe(x => {
+
+          if (x != null) {  // Because the body of the subscribe is ran on init, make sure nothing happens until a category is selected.
+
+            this.category = x;
+
+            this.viewIsReady = false; // Set to false again upon category select.
+
+            // User may switch categories without submitting.  
+            // resetForm upon submission is what sets this back to false. 
+            // Change to false here if resetForm isn't hit.
+            this.disableSubmitButton = false;
+
+            this.showHistoryButton = false;
+            this.showForm = false; // Make sure form is hidden upon category selection until ready as determined in getBlance(), enterPayment(), and enterCharge()
+            this.paymentsCollectionExists = false;
+            this.chargesCollectionExists = false;
+            this.showHistory = false;
+            // Obtain keys and collection names (tuitionPayments, tuitionCharges, lunchPayments, etc) based on current category
+            // Keys and collections strings should always come from one source: financials.service.
+            this.subscriptions.push(this.financialsService.startingBalanceKey$.subscribe(key => this.startingBalanceKey = key));
+            this.subscriptions.push(this.financialsService.startingBalanceDateKey$.subscribe(key => this.startingBalanceDateKey = key));
+            this.subscriptions.push(this.financialsService.startingBalanceMemoKey$.subscribe(key => this.startingBalanceMemoKey = key));
+            this.subscriptions.push(this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key));
+            this.subscriptions.push(this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection));
+            this.subscriptions.push(this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection));
+            this.isEnteringPayment = false;
+            this.isEnteringCharge = false;
+            this.getBalance();
+            this.setFormControls();
+
+          }else{
+            console.log('currentCategory$ payload is null');
+          }
+        })
+    );
+
     // Listen for balance update.  An update could come from the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
       this.balance = bal;
@@ -69,48 +112,16 @@ export class EntryComponent implements OnInit {
       }
     });
 
-    // Listen for category selection from category-select.component
-    this.subscriptions.push( 
-      this.financialsService.currentCategory$
-      .subscribe(x => {
-
-        this.category = x;
-        if (this.category == null) { return; } // Because the body of the subscribe is ran on init, make sure nothing happens until a category is selected.
-        this.viewIsReady = false; // Set to false again upon category select.
-
-         // User may switch categories without submitting.  
-         // resetForm upon submission is what sets this back to false. Change to false here if resetForm isn't hit.
-        this.disableSubmitButton = false;
-
-        this.showHistoryButton = false;
-        this.showForm = false; // Make sure form is hidden upon category selection until ready as determined in getBlance(), enterPayment(), and enterCharge()
-        this.paymentsCollectionExists = false;
-        this.chargesCollectionExists = false;
-        this.showHistory = false;
-        // Obtain keys and collection names (tuitionPayments, tuitionCharges, lunchPayments, etc) based on current category
-        // Keys and collections strings should always come from one source: financials.service.
-        this.subscriptions.push(this.financialsService.startingBalanceKey$.subscribe(key => this.startingBalanceKey = key));
-        this.subscriptions.push(this.financialsService.startingBalanceDateKey$.subscribe(key => this.startingBalanceDateKey = key));
-        this.subscriptions.push(this.financialsService.startingBalanceMemoKey$.subscribe(key => this.startingBalanceMemoKey = key));
-        this.subscriptions.push(this.financialsService.balanceKey$.subscribe(key => this.balanceKey = key));
-        this.subscriptions.push(this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection));
-        this.subscriptions.push(this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection));
-        this.isEnteringPayment = false;
-        this.isEnteringCharge = false;
-        this.getBalance();
-        this.setFormControls();
-      })
-    )
   }
 
   //  getBalance() run this:
   //  - Each time a category is selected by user
   //  - After submission of startingBalance
   private getBalance() {
-    this.currentFinancialDoc.ref.get().then(
+    this.currentFinancialDoc.payload.ref.get().then(
       snapshot => {
         if (snapshot.data()[this.startingBalanceKey] || snapshot.data()[this.startingBalanceKey] === 0) { // Important to check for a balance value of zero.
-          this.startingBalance = snapshot.data()[this.startingBalanceKey]; 
+          this.startingBalance = snapshot.data()[this.startingBalanceKey];
           this.showInputForStartingBalance = false;
           this.showForm = false;  // Hide the form else memo input and submit button will show.
         } else {
@@ -142,9 +153,9 @@ export class EntryComponent implements OnInit {
     this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
     this.formValue = this.formGroup.value;
     if (this.showInputForStartingBalance) {
-      this.setBalance(formDirective); 
+      this.setBalance(formDirective);
     } else { // Balance present.  Next submission will either be for a payement or charge.
-      this.processTransaction(formDirective); 
+      this.processTransaction(formDirective);
     }
   }
 
@@ -154,8 +165,10 @@ export class EntryComponent implements OnInit {
     // starting balance elements must be identified by categeory i.e. lunchStartingBalanceDate, lunchStartingBalanceMemo, etc.
     // Also set the running balance which future Payment/Charges will calc against
     this.currentFinancialDoc
-      .set({ [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date, 
-        [this.startingBalanceMemoKey]: this.formValue.memo , [this.balanceKey]: this.formValue.amount }, { merge: true })
+      .set({
+        [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date,
+        [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount
+      }, { merge: true })
       .then(_ => {
         this.getBalance(); //   Run getBalance to:
         // 1) get state of this.startingBalance to determine submitHandler flow on next submission and;
@@ -166,15 +179,15 @@ export class EntryComponent implements OnInit {
 
   private processTransaction(fd) {
     let collection;
-    
-    this.isEnteringPayment ?
-      collection = this.currentFinancialDoc.collection(this.paymentsCollection) :
-      collection = this.currentFinancialDoc.collection(this.chargesCollection);
 
-    collection.ref.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
+    this.isEnteringPayment ?
+      collection = this.currentFinancialDoc.payload.ref.collection(this.paymentsCollection) :
+      collection = this.currentFinancialDoc.payload.ref.collection(this.chargesCollection);
+
+    collection.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
     // NOTE: Wrap formula in () and set input to type number or else + will concat. 
     this.isEnteringPayment ? this.balance -= this.formValue.amount : this.balance = (this.balance + this.formValue.amount);
-    this.currentFinancialDoc.set({ [this.balanceKey]: this.balance }, { merge: true })
+    this.currentFinancialDoc.payload.ref.set({ [this.balanceKey]: this.balance }, { merge: true })
       .then(_ => {
         this.financialsService.runningBalanceForCurrentCategory$.next(this.balance);
         this.resetForm(fd);

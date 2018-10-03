@@ -2,7 +2,9 @@
 
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
-import { BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap, shareReplay } from 'rxjs/operators';
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +15,9 @@ export class DataService {
   public currentChild$ = new BehaviorSubject<any>(null);
   public currentRecord: any;
   public financialDocs: any[] =[];
-  public currentFinancialDoc:any;
+  public currentFinancialDoc$: Observable<any>;
 
-  constructor(private firebaseService: FirebaseService) {
-
-    // this.firebaseService.financials$.subscribe(docs => { // Subscribing to observable which incorporates shareReplay()
-    //   //docs.forEach(doc => {});
-    // });
-   }
+  constructor(private firebaseService: FirebaseService) {}
 
   public convertMapToArray(map: {}) {
     const keys = Object.keys(map)
@@ -31,15 +28,22 @@ export class DataService {
     this.currentChild$.next(child); // Another UI may select other child
   }
 
-  // Creates the base doc for all the child's financials
+  // Creates the base doc (as an observable) for all the student's financials
+
   public createFinancialDoc(id) {
-    this.currentFinancialDoc = this.firebaseService.financialsCollection.doc(id); 
-    this.currentFinancialDoc.ref.get().then(snapshot => {
-      if (!snapshot.exists) {
-        this.currentFinancialDoc.set({ dateCreated: new Date });
-        // this.currentFinancialDoc.set({ dateCreated: new Date, childFname: child.fname, childLname: child.lname });
-      }
-    });
+    this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(id).snapshotChanges()
+      .pipe(
+        tap((doc => {
+          console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // Alerts us that there is a subscriber
+          doc.payload.ref.get().then(snapshot => {
+            if (!snapshot.exists) {
+              doc.payload.ref.set({ dateCreated: new Date });
+            }
+          });
+        }),
+        ),
+        shareReplay(1),
+      );
   }
 
 }
