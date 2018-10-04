@@ -16,13 +16,7 @@ export class DataService {
   public currentRecord: any;
   public currentFinancialDoc$: Observable<any>;
 
-  constructor(private firebaseService: FirebaseService) {
-
-    // this.firebaseService.financials$.subscribe(doc => {
-    //   console.log(doc);
-    // })
-
-  }
+  constructor(private firebaseService: FirebaseService) {}
 
   public convertMapToArray(map: {}) {
     const keys = Object.keys(map)
