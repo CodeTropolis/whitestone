@@ -19,8 +19,11 @@ export class DataService {
   constructor(private firebaseService: FirebaseService) {
     // Only subscribing to make observable hot so that I can see the 
     // reads per mapAndReplayCollection in firebase.service.ts
+    // Could be causing even more reads because of anytime something changes with the
+    // financials collection, snapshotChanges in the mapAndReplayCollection will log,
+    // which may cause a read on the collection.
     this.firebaseService.financials$.subscribe(doc => { 
-      console.log(`financials$ payload: ${JSON.stringify(doc)}`);
+      //console.log(`financials$ payload: ${JSON.stringify(doc)}`);
     })
   }
 
@@ -33,8 +36,8 @@ export class DataService {
     this.currentChild$.next(child); // Another UI may select other child
   }
 
-  // Creates the base doc (as an observable) for all the student's financials
-  public createFinancialDoc(id) {
+  // Creates the base doc (as an observable) for all the selected student's financials
+  public setFinancialDoc(id) {
     this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(id).snapshotChanges()
       .pipe(
         tap((doc => {
