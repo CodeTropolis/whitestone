@@ -16,7 +16,13 @@ export class DataService {
   public currentRecord: any;
   public currentFinancialDoc$: Observable<any>;
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService) {
+    // Only subscribing to make observable hot so that I can see the 
+    // reads per mapAndReplayCollection in firebase.service.ts
+    this.firebaseService.financials$.subscribe(doc => { 
+      console.log(`financials$ payload: ${JSON.stringify(doc)}`);
+    })
+  }
 
   public convertMapToArray(map: {}) {
     const keys = Object.keys(map)
