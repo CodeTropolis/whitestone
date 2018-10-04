@@ -70,11 +70,11 @@ export class HistoryComponent implements OnInit {
     // Are we dealing with the payments or charges subcollection?
     let collection: string;
     type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
-    this.currentFinancialDoc.collection(collection).doc(id).delete()
+    this.currentFinancialDoc.payload.ref.collection(collection).doc(id).delete()
       .then(_ => {
         console.log('TCL: HistoryComponent -> deleteTransaction -> id', id, 'Amount:', amount);
         // Update the DB
-        this.currentFinancialDoc.set({ [this.balanceKey]: this.updatedBalance }, { merge: true })
+        this.currentFinancialDoc.payload.ref.set({ [this.balanceKey]: this.updatedBalance }, { merge: true })
           .then(_ => { // update views
             this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
             // Run through collection to update history table data.

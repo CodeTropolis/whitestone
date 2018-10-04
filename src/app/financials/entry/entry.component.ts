@@ -164,7 +164,7 @@ export class EntryComponent implements OnInit {
     // Starting balance in root of currentFinancialDoc, therefore, 
     // starting balance elements must be identified by categeory i.e. lunchStartingBalanceDate, lunchStartingBalanceMemo, etc.
     // Also set the running balance which future Payment/Charges will calc against
-    this.currentFinancialDoc
+    this.currentFinancialDoc.payload.ref
       .set({
         [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date,
         [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount
@@ -231,9 +231,6 @@ export class EntryComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    // if (this.categorySubscription) {
-    //   this.categorySubscription.unsubscribe();
-    // }
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });

@@ -14,10 +14,15 @@ export class DataService {
 
   public currentChild$ = new BehaviorSubject<any>(null);
   public currentRecord: any;
-  public financialDocs: any[] =[];
   public currentFinancialDoc$: Observable<any>;
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService) {
+
+    // this.firebaseService.financials$.subscribe(doc => {
+    //   console.log(doc);
+    // })
+
+  }
 
   public convertMapToArray(map: {}) {
     const keys = Object.keys(map)
@@ -29,12 +34,11 @@ export class DataService {
   }
 
   // Creates the base doc (as an observable) for all the student's financials
-
   public createFinancialDoc(id) {
     this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(id).snapshotChanges()
       .pipe(
         tap((doc => {
-          console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // Alerts us that there is a subscriber
+          console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
           doc.payload.ref.get().then(snapshot => {
             if (!snapshot.exists) {
               doc.payload.ref.set({ dateCreated: new Date });
@@ -42,7 +46,7 @@ export class DataService {
           });
         }),
         ),
-        shareReplay(1),
+        shareReplay(1), // Give all subscribers a cached version of the doc which I'm thinking should be refreshed on snapshotChanges.
       );
   }
 

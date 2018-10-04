@@ -28,6 +28,7 @@ export class FirebaseService {
     //this.financials$ = this.mapAndReplayCollection(this.financialsCollection);
    
   }
+
   private mapAndReplayCollection(collection: AngularFirestoreCollection<any[]>): any {
     return collection.snapshotChanges()
       .pipe(
