@@ -25,7 +25,7 @@ export class FirebaseService {
     this.records$ = this.mapAndReplayCollection(this.recordCollection);
 
     this.financialsCollection = this.db.collection<any[]>('financials');
-    this.financials$ = this.mapAndReplayCollection(this.financialsCollection);
+    //this.financials$ = this.mapAndReplayCollection(this.financialsCollection);
    
   }
 

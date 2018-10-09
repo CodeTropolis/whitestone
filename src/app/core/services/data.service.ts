@@ -22,9 +22,10 @@ export class DataService {
     // Could be causing even more reads because of anytime something changes with the
     // financials collection, snapshotChanges in the mapAndReplayCollection will log,
     // which may cause a read on the collection.
-    this.firebaseService.financials$.subscribe(doc => { 
-      //console.log(`financials$ payload: ${JSON.stringify(doc)}`);
-    })
+    
+    // this.firebaseService.financials$.subscribe(doc => { 
+    //   //console.log(`financials$ payload: ${JSON.stringify(doc)}`);
+    // })
   }
 
   public convertMapToArray(map: {}) {
