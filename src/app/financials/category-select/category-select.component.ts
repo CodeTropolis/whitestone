@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
-
+import { AuthService } from '../../core/services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-category-select',
@@ -14,12 +15,20 @@ export class CategorySelectComponent implements OnInit {
   public currentChildSubscription: any;
   public categories: any;
   public showAvatarSpinner: boolean;
+  public user$: Observable<any>;
 
   private spinnerSubscribe: any;
 
-  constructor(private dataService: DataService, private financialsService: FinancialsService) { }
+  constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
+
+    this.user$ = this.authService.user$;
+
+    // this.authService.user$.subscribe(user =>{
+
+    // })
+
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)

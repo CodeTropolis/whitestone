@@ -1,13 +1,18 @@
 
+a {color: var(--ws-blue);}
+
 button {
     display: block;
     margin: auto;
 }
 
+.create-acct {text-align: center;}
+
 form {
     margin: 0 auto;
     width: 90%;
 }
+
 
 .login-icon {
     font-size: 100px;
@@ -27,3 +32,5 @@ p.brand {
     text-align: center;
     text-transform: uppercase;
 }
+
+.status {text-align: center;}

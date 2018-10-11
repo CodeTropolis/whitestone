@@ -1,7 +1,7 @@
 <mat-card>
-	
+
 	<p class="brand">WhiteStone</p>
-	
+
 	<div *ngIf="loading | async; else logo">
 		<app-progress-spinner></app-progress-spinner>
 	</div>
@@ -9,21 +9,37 @@
 		<i class="material-icons login-icon">supervised_user_circle</i>
 	</ng-template>
 
-    <!-- <button mat-raised-button color="primary" (click)="logIn()">Login Using Google</button> -->
-    <!-- <form [formGroup]="emailLoginForm" #formDirective="ngForm" (ngSubmit)="emailLogin(formDirective)"> -->
-	<form [formGroup]="emailLoginForm" (ngSubmit)="emailLogin()">
+	<div class="status">
+		<p *ngIf="status$ | async as status">{{status}}</p>
+		<mat-error *ngIf="error$ | async as error">{{error}}</mat-error>
+	</div>
+
+
+	<!-- <button mat-raised-button color="primary" (click)="logIn()">Login Using Google</button> -->
+	<!-- <form [formGroup]="emailLoginForm" #formDirective="ngForm" (ngSubmit)="emailLogin(formDirective)"> -->
+	<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="creatingAccount ? signUp() : emailLogin()">
 		<mat-form-field>
 			<input matInput placeholder="Email" formControlName="email">
+			<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
+				<div *ngIf="f.email.errors.required">
+					A valid email address is required.
+				</div>
+			</mat-error>
 		</mat-form-field>
 		<mat-form-field>
 			<input type="password" matInput placeholder="Password" formControlName="password">
 		</mat-form-field>
+
 		<div class="button-group">
-            <button type="submit" mat-flat-button color="primary">Login</button>
-            <br>
-            <!-- Don't have an account?<a [routerLink]="" (click)="signUp()">  Sign Up</a>   -->
+			<button *ngIf="creatingAccount; else login" [disabled]="!form.valid" type="submit" mat-flat-button color="primary">Create Account</button>
+			<ng-template #login>
+				<button type="submit" [disabled]="!form.valid" mat-flat-button color="primary">Login</button>
+			</ng-template>
+			<p *ngIf="!creatingAccount" class="create-acct"><a [routerLink]="" (click)="createAccount(formDirective)">Or create an
+					account</a> </p>
 			<!-- <button type="button" mat-button color="basic" (click)="signUp()"> Sign Up</button> -->
 		</div>
+
 	</form>
 	<p class="legal">&copy; 2018 CodeTropolis</p>
 	<p class="legal">Release Branch</p>
