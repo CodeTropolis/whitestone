@@ -43,6 +43,8 @@ export class LoginComponent implements OnInit {
   
 
   public emailLogin() {
+    this.auth.error$.next('');
+    this.auth.status$.next('');
     const e = this.form.value.email;
     const p = this.form.value.password;
     this.auth.emailLogin(e, p, 'record-list');
@@ -57,7 +59,7 @@ export class LoginComponent implements OnInit {
   public createAccount(formDirective) {
     this.resetForm(formDirective);
    this.auth.creatingAccount$.next(true);
-    // Clear out errors may occur if user attempted to login without first creating an account
+    // Clear out errors that occur if user attempted to login without first creating an account
     this.auth.error$.next('');
     this.auth.status$.next('');
   }

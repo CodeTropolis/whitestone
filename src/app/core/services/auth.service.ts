@@ -58,8 +58,8 @@ export class AuthService {
     promise.then(credential => {
       if (this.afAuth.auth.currentUser.emailVerified) {
         //console.log(`credential: ${JSON.stringify(credential)}`);
-        this.updateUserData(credential.user);
-        this.router.navigate([link]);
+        this.updateUserData(credential.user, link); 
+        // this.router.navigate([link]);
       } else {
         this.error$.next('Email not verfied. If you have already signed up, please visit your inbox and verify your email.  Once verified, you may return to the app and login.');
       }
@@ -102,8 +102,7 @@ export class AuthService {
     return this.afAuth.authState;
   }
 
-  private updateUserData(user) {
-    // Sets user data to firestore on login
+  private updateUserData(user, link) {
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
     const data: User = {
       uid: user.uid,
@@ -113,6 +112,9 @@ export class AuthService {
       }
     }
       userRef.set(data, { merge: true })
+      .then(_ => {
+        this.router.navigate([link]);
+      })
   }
   
 }
