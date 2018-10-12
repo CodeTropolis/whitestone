@@ -1,11 +1,11 @@
 <app-header title="Record Admin"></app-header>
 
 <app-record-entry *ngIf="showForm"></app-record-entry>
-<div class="mat-elevation-z8">
+<div *ngIf="recordMatch || userIsAdmin; else noRecords" class="mat-elevation-z8">
 	<mat-card>
 		<h3>Available Records</h3>
-		<button class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i> Family Record</button>
-		<mat-form-field>
+		<button *ngIf="userIsAdmin" class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i> Family Record</button>
+		<mat-form-field  *ngIf="userIsAdmin"> 
 			<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
 		</mat-form-field>
 
@@ -45,9 +45,9 @@
 					<app-child-table *ngIf="showChildren[row.realId]" [record]="row"></app-child-table>
 
 					<div *ngIf="showChildren[row.realId]" class="actions">
-						<button [disabled]="isUpdating" mat-flat-button color="primary" (click)="prepFormToUpdate(row)">Update</button>
+						<button *ngIf="userIsAdmin" [disabled]="isUpdating" mat-flat-button color="primary" (click)="prepFormToUpdate(row)">Update</button>
 
-						<div class="delete-buttons">
+						<div *ngIf="userIsAdmin" class="delete-buttons">
 
 							<button *ngIf="!isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="warn" (click)="aboutToDelete(row)">
 								<i class="material-icons">delete_forever</i>
@@ -67,4 +67,8 @@
 		<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 	</mat-card>
 </div>
+<ng-template #noRecords>
+	<h3>No records found for this user.</h3>
+	Please contact Michelle Miller for further inquiry. 618.233.3500
+</ng-template>
 

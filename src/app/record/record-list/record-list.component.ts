@@ -4,7 +4,8 @@ import { RecordService } from '../record.service';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../core/services/data.service';
-
+import { AuthService } from '../../core/services/auth.service';
+import { User } from '../../core/user';
 
 @Component({
   selector: 'app-record-list',
@@ -20,7 +21,13 @@ export class RecordListComponent implements OnInit {
   public isDeleting: boolean[] = [];
   public showForm: boolean;
 
+  public user: User;
+  public userIsAdmin: boolean = false;
+  public userIsSubcriber: boolean = false;
+  public recordMatch: boolean;
+
   private subscriptions: any[] = [];
+  private matchingRecords: any[] = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -30,25 +37,63 @@ export class RecordListComponent implements OnInit {
     private res: RecordService,
     private route: ActivatedRoute,
     private dataService: DataService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit() {
 
     this.subscriptions.push(
+       this.authService.userIsAdmin$.subscribe(x => {
+        this.userIsAdmin = x;
+      } )
+    );
+
+    this.subscriptions.push(
+      this.authService.userIsSubcriber$.subscribe(x => {
+        this.userIsSubcriber = x;
+      })
+    )
+    
+    this.subscriptions.push(
       this.fs.records$.subscribe(x => {
 
-        this.ds = new MatTableDataSource(x);
-
-        this.ds.filterPredicate = (data, filter) => {
-          let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname + data.district + data.catholic;
-          const children = this.dataService.convertMapToArray(data.children);
-          children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-          dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-          return dataStr.indexOf(filter) != -1;
+        if (this.userIsSubcriber && !this.userIsAdmin) { // Do not do record match logic if user is admin
+          console.log('User is a subscriber, not an admin')
+          x.forEach(record => {
+            if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
+              
+              this.matchingRecords.push(record);
+              console.log('Matched doc: ', record);
+              this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an arrray.
+              this.recordMatch = true;
+            
+              // Simply 'else' will not work as the a document that does not match will still be evaluated and the follwoing would execute.
+            }else if (this.matchingRecords.length < 1 ){ 
+              console.log(`No matching records`);
+              this.recordMatch = false;
+            }
+          })
+        } else if (this.userIsAdmin) {
+          this.ds = new MatTableDataSource(x);
+          console.log('User is admin');
+        }else{
+          console.log(`User is neither subscriber or admin`);
         }
 
-        this.ds.paginator = this.paginator;
-        this.ds.sort = this.sort;
+        if(this.ds){ // Prevent error in console if no records.
+          this.ds.filterPredicate = (data, filter) => {
+            let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname + data.district + data.catholic;
+            const children = this.dataService.convertMapToArray(data.children);
+            children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
+            dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+            return dataStr.indexOf(filter) != -1;
+          }
+
+          this.ds.paginator = this.paginator;
+          this.ds.sort = this.sort;
+      }
+
+
       })
     )
 

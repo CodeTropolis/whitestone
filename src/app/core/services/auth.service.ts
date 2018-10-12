@@ -9,7 +9,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { User } from '../user';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -19,23 +18,42 @@ export class AuthService {
   public status$ = new BehaviorSubject<string>(null);
   public error$ = new BehaviorSubject<string>(null);
   public creatingAccount$ = new BehaviorSubject<boolean>(false);
+  
+  public user: any;
+  public userIsSubcriber$ = new BehaviorSubject<boolean>(null);
+  public userIsAdmin$ =  new BehaviorSubject<boolean>(null);
 
-  constructor(private afAuth: AngularFireAuth,  private afs: AngularFirestore, private router: Router) { 
+
+  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private router: Router) {
 
     // Subscribe to user$ in a component that may need to 
     // identify the user's role i.e. `user['roles'].subscriber`
     this.user$ = this.afAuth.authState
-    .pipe(
-      switchMap(user => {
-        if (user) {
-          return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
-        } else {
-          console.log(`User is null`);
-          return of(null);
+      .pipe(
+        switchMap(user => {
+          if (user) {
+            return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
+          } else {
+            console.log(`User is null`);
+            return of(null);
+          }
+        }),
+        shareReplay(1) // Let whatever subscribes get the cached value of the 'users' collection
+      );
+
+    
+    this.user$.subscribe(user => {
+      this.user = user;
+      if(user){
+        if (user['roles'].subscriber && !user['roles'].admin) {
+          this.userIsSubcriber$.next(true);
+          this.userIsAdmin$.next(false)
         }
-      }),
-      shareReplay(1) // Let whatever subscribes get the cached value of the 'users' collection
-    );
+        if (user['roles'].admin) {
+          this.userIsAdmin$.next(true)
+        }
+      }
+    });
 
   }
 
@@ -44,21 +62,21 @@ export class AuthService {
     return this.oAuthLogin(provider, link);
   }
 
-  private oAuthLogin(provider, link:string) {
+  private oAuthLogin(provider, link: string) {
     return this.afAuth.auth.signInWithPopup(provider)
       .then(() => {
         this.router.navigate([link]);
       })
   }
 
- 
+
   public emailLogin(e, p, link) {
     this.status$.next('');
     const promise = this.afAuth.auth.signInWithEmailAndPassword(e, p);
     promise.then(credential => {
       if (this.afAuth.auth.currentUser.emailVerified) {
         //console.log(`credential: ${JSON.stringify(credential)}`);
-        this.updateUserData(credential.user, link); 
+        this.updateUserData(credential.user, link);
         // this.router.navigate([link]);
       } else {
         this.error$.next('Email not verfied. If you have already signed up, please visit your inbox and verify your email.  Once verified, you may return to the app and login.');
@@ -111,10 +129,10 @@ export class AuthService {
         subscriber: true
       }
     }
-      userRef.set(data, { merge: true })
+    userRef.set(data, { merge: true })
       .then(_ => {
         this.router.navigate([link]);
       })
   }
-  
+
 }
