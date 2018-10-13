@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort, MatTableDataSource } from '@angular/material';
 import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-history',
@@ -22,16 +23,37 @@ export class HistoryComponent implements OnInit {
   private balanceKey: string;
 
   public tableData: MatTableDataSource<any>;
-  public tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
+  public tableColumns;
   public disableDelete: boolean[] = [];
 
-  constructor(private dataService: DataService, private financialsService: FinancialsService) { }
+  public userIsAdmin: boolean = false;
+  public userIsSubcriber: boolean = false;
+
+  constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
 
+    this.subscriptions.push(
+      this.authService.userIsAdmin$.subscribe(x => {
+       this.userIsAdmin = x;
+     } )
+   );
+
+   this.subscriptions.push(
+     this.authService.userIsSubcriber$.subscribe(x => {
+       this.userIsSubcriber = x;
+     })
+   )
+
+   if(this.userIsAdmin){
+    this.tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
+   }else{
+    this.tableColumns = ['amount', 'type', 'date', 'memo'];
+   }
+
     this.dataService.currentFinancialDoc$.subscribe(doc => {
       this.currentFinancialDoc = doc;
-      console.log('TCL: HistoryComponent -> ngOnInit -> this.dataService.currentFinancialDoc$', this.currentFinancialDoc);
+      //console.log('TCL: HistoryComponent -> ngOnInit -> this.dataService.currentFinancialDoc$', this.currentFinancialDoc);
     });
 
     this.subscriptions.push(

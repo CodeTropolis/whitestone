@@ -63,7 +63,7 @@ export class RecordListComponent implements OnInit {
             if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
               
               this.matchingRecords.push(record);
-              console.log('Matched doc: ', record);
+              //console.log('Matched doc: ', record);
               this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an arrray.
               this.recordMatch = true;
             

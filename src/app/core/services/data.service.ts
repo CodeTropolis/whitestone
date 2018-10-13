@@ -42,7 +42,7 @@ export class DataService {
     this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(id).snapshotChanges()
       .pipe(
         tap((doc => {
-          console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
+          //console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
           doc.payload.ref.get().then(snapshot => {
             if (!snapshot.exists) {
               doc.payload.ref.set({ dateCreated: new Date });

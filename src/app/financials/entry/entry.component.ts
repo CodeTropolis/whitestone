@@ -3,6 +3,7 @@ import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFirestoreDocument } from 'angularfire2/firestore';
+import { AuthService } from '../../core/services/auth.service';
 
 
 @Component({
@@ -11,7 +12,7 @@ import { AngularFirestoreDocument } from 'angularfire2/firestore';
   styleUrls: ['./entry.component.css']
 })
 export class EntryComponent implements OnInit {
-
+  
   // private categorySubscription: any;
   public currentFinancialDoc: any;
   public category: any;
@@ -48,17 +49,30 @@ export class EntryComponent implements OnInit {
   public chargesCollectionExists: boolean;
   public viewIsReady: boolean = false;
 
+  public userIsAdmin: boolean = false;
+  public userIsSubcriber: boolean = false;
 
-
-  constructor(private financialsService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
+  constructor(private authService: AuthService, private financialsService: FinancialsService, private dataService: DataService, private fb: FormBuilder) { }
 
   ngOnInit() {
+
+    this.subscriptions.push(
+      this.authService.userIsAdmin$.subscribe(x => {
+       this.userIsAdmin = x;
+     } )
+   );
+
+   this.subscriptions.push(
+     this.authService.userIsSubcriber$.subscribe(x => {
+       this.userIsSubcriber = x;
+     })
+   );
 
     this.showHistoryButton = false;
     this.showForm = false;
 
     this.dataService.currentFinancialDoc$.subscribe(doc => {
-      console.log('TCL: ngOnInit -> doc', doc.payload.ref);
+     // console.log('TCL: ngOnInit -> doc', doc.payload.ref);
       this.currentFinancialDoc = doc;
     });
 
@@ -82,7 +96,10 @@ export class EntryComponent implements OnInit {
             this.showForm = false; // Make sure form is hidden upon category selection until ready as determined in getBlance(), enterPayment(), and enterCharge()
             this.paymentsCollectionExists = false;
             this.chargesCollectionExists = false;
+
+            //!this.userIsAdmin ? this.showHistory = true : this.showForm = false;
             this.showHistory = false;
+
             // Obtain keys and collection names (tuitionPayments, tuitionCharges, lunchPayments, etc) based on current category
             // Keys and collections strings should always come from one source: financials.service.
             this.subscriptions.push(this.financialsService.startingBalanceKey$.subscribe(key => this.startingBalanceKey = key));
