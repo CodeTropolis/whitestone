@@ -16,8 +16,6 @@ export class CategorySelectComponent implements OnInit {
   public categories: any;
   public showAvatarSpinner: boolean;
   public user$: Observable<any>;
-  // public userIsAdmin: boolean = false;
-  // public userIsSubcriber: boolean = false;
 
   private spinnerSubscribe: any;
   private subscriptions: any[] = [];
@@ -25,21 +23,6 @@ export class CategorySelectComponent implements OnInit {
   constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
-
-
-    // this.user$ = this.authService.user$;
-    // this.subscriptions.push(
-    //   this.authService.userIsAdmin$.subscribe(x => {
-    //     this.userIsAdmin = x;
-    //   })
-    // );
-
-    // this.subscriptions.push(
-    //   this.authService.userIsSubcriber$.subscribe(x => {
-    //     this.userIsSubcriber = x;
-    //   })
-    // );
-
 
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
