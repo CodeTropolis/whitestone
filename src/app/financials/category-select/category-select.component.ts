@@ -16,18 +16,30 @@ export class CategorySelectComponent implements OnInit {
   public categories: any;
   public showAvatarSpinner: boolean;
   public user$: Observable<any>;
+  // public userIsAdmin: boolean = false;
+  // public userIsSubcriber: boolean = false;
 
   private spinnerSubscribe: any;
+  private subscriptions: any[] = [];
 
   constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
 
-    this.user$ = this.authService.user$;
 
-    // this.authService.user$.subscribe(user =>{
+    // this.user$ = this.authService.user$;
+    // this.subscriptions.push(
+    //   this.authService.userIsAdmin$.subscribe(x => {
+    //     this.userIsAdmin = x;
+    //   })
+    // );
 
-    // })
+    // this.subscriptions.push(
+    //   this.authService.userIsSubcriber$.subscribe(x => {
+    //     this.userIsSubcriber = x;
+    //   })
+    // );
+
 
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
@@ -42,16 +54,22 @@ export class CategorySelectComponent implements OnInit {
     // beginning of entry.component to prevent "Expression has changed after it was checked" err.
     this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup 
     // entry.component will set this to false at some point.
+
   }
 
   ngOnDestroy() {
-    if(this.spinnerSubscribe){
+    if (this.spinnerSubscribe) {
       this.spinnerSubscribe.unsubscribe();
     }
     this.currentChildSubscription.unsubscribe();
     // Clear out the current category else next selected child's financials will start out with previously selected category.
-    this.financialsService.currentCategory$.next(null); 
-    
+    this.financialsService.currentCategory$.next(null);
+
+    this.subscriptions.forEach(sub => {
+      sub.unsubscribe();
+    });
+
+
   }
 
 }

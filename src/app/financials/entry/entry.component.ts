@@ -97,7 +97,6 @@ export class EntryComponent implements OnInit {
             this.paymentsCollectionExists = false;
             this.chargesCollectionExists = false;
 
-            //!this.userIsAdmin ? this.showHistory = true : this.showForm = false;
             this.showHistory = false;
 
             // Obtain keys and collection names (tuitionPayments, tuitionCharges, lunchPayments, etc) based on current category

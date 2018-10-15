@@ -14,8 +14,9 @@ export class FinancialsService {
   public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null);
   public transactions$ = new BehaviorSubject<any>(null);
   // set to false so that avatar spinner on category-select.component does not show initially
-  public showAvatarSpinner$ = new BehaviorSubject<boolean>(false); 
+  public showAvatarSpinner$ = new BehaviorSubject<boolean>(false);
   private transactions: any[] = [];
+
 
   constructor() {
     this.categories = {
@@ -54,6 +55,7 @@ export class FinancialsService {
             this.transactions$.next(this.transactions);
           }
         )
-      });
+      })
+
   }
 }
