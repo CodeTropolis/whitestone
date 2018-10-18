@@ -61,6 +61,8 @@ export class RecordListComponent implements OnInit {
           console.log('User is a subscriber, not an admin')
           x.forEach(record => {
             if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
+            // console.log('TCL: RecordListComponent -> ngOnInit -> record.motherEmail', record.motherEmail);
+            // console.log('TCL: RecordListComponent -> ngOnInit -> record.fatherEmail', record.fatherEmail);
               
               this.matchingRecords.push(record);
               //console.log('Matched doc: ', record);

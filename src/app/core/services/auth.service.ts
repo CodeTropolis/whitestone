@@ -8,6 +8,7 @@ import { firebase } from '@firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { User } from '../user';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,13 +19,13 @@ export class AuthService {
   public status$ = new BehaviorSubject<string>(null);
   public error$ = new BehaviorSubject<string>(null);
   public creatingAccount$ = new BehaviorSubject<boolean>(false);
-  
+
   public user: any;
   public userIsSubcriber$ = new BehaviorSubject<boolean>(null);
-  public userIsAdmin$ =  new BehaviorSubject<boolean>(null);
+  public userIsAdmin$ = new BehaviorSubject<boolean>(null);
 
 
-  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private router: Router) {
+  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private firebaseService: FirebaseService, private router: Router) {
 
     // Subscribe to user$ in a component that may need to 
     // identify the user's role i.e. `user['roles'].subscriber`
@@ -41,10 +42,10 @@ export class AuthService {
         shareReplay(1) // Let whatever subscribes get the cached value of the 'users' collection
       );
 
-    
+
     this.user$.subscribe(user => {
       this.user = user;
-      if(user){
+      if (user) {
         if (user['roles'].subscriber && !user['roles'].admin) {
           this.userIsSubcriber$.next(true);
           this.userIsAdmin$.next(false)
@@ -89,7 +90,18 @@ export class AuthService {
   }
 
   public signUp(e, p) {
+    // Query record collection to see if email exist in any of the records.  
+    // If not, terminate the user creation process.
+    // A query only counts as a read if a document is returned.
+   // User needs read access prior to being a user...?
+    // let query = this.firebaseService.recordCollection.ref.where("fatherEmail", "==", e) || this.firebaseService.recordCollection.ref.where("motherEmail", "==", e);
+    // query.get().then(querySnapshot => {
+    //   console.log(querySnapshot);
+    // });
+
+  
     const promise = this.afAuth.auth.createUserWithEmailAndPassword(e, p);
+
     promise.then(success => {
       this.error$.next('');
       let user: any = this.afAuth.auth.currentUser;
@@ -108,6 +120,8 @@ export class AuthService {
       console.log(err);
       this.error$.next(err);
     });
+
+
   }
 
   public logOut(link: string) {

@@ -8,7 +8,7 @@
         <button mat-flat-button color="primary" (click)="toggleHistory()">History</button>
         <br>
     </div>
-    <h4 *ngIf="showInputForStartingBalance && userIsSubcriber">Financial data not yet present for {{category.val}}</h4>
+    <h4 *ngIf="showInputForStartingBalance && !userIsAdmin">Financial data not yet present for {{category.val}}</h4>
     <form *ngIf="showForm && userIsAdmin" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
         <!-- check for falsy for startingBalance will not suffice for balance entry of zero -->
         <div style="display:inline;" *ngIf="showInputForStartingBalance">
