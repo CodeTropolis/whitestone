@@ -24,6 +24,8 @@ export class AuthService {
   public userIsSubcriber$ = new BehaviorSubject<boolean>(null);
   public userIsAdmin$ = new BehaviorSubject<boolean>(null);
 
+  public disableLoginOrCreateButton$ = new BehaviorSubject<boolean>(null);
+
 
   constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private firebaseService: FirebaseService, private router: Router) {
 
@@ -72,9 +74,11 @@ export class AuthService {
 
 
   public emailLogin(e, p, link) {
+    this.disableLoginOrCreateButton$.next(true);
     this.status$.next('');
     const promise = this.afAuth.auth.signInWithEmailAndPassword(e, p);
     promise.then(credential => {
+      this.disableLoginOrCreateButton$.next(false);
       if (this.afAuth.auth.currentUser.emailVerified) {
         //console.log(`credential: ${JSON.stringify(credential)}`);
         this.updateUserData(credential.user, link);
@@ -85,24 +89,19 @@ export class AuthService {
     })
     promise.catch(err => {
       console.log(err);
-      this.error$.next(err);
+      this.error$.next("Account does not exist. Please create an account.");
     });
   }
 
   public signUp(e, p) {
-    // Query record collection to see if email exist in any of the records.  
-    // If not, terminate the user creation process.
-    // A query only counts as a read if a document is returned.
-   // User needs read access prior to being a user...?
-    // let query = this.firebaseService.recordCollection.ref.where("fatherEmail", "==", e) || this.firebaseService.recordCollection.ref.where("motherEmail", "==", e);
-    // query.get().then(querySnapshot => {
-    //   console.log(querySnapshot);
-    // });
 
-  
+    this.disableLoginOrCreateButton$.next(true);
+
     const promise = this.afAuth.auth.createUserWithEmailAndPassword(e, p);
 
     promise.then(success => {
+    //console.log('TCL: AuthService -> publicsignUp -> success', success);
+      
       this.error$.next('');
       let user: any = this.afAuth.auth.currentUser;
       user.sendEmailVerification().then(_ => {
@@ -115,12 +114,14 @@ export class AuthService {
           this.error$.next(err)
         }
       )
+      this.disableLoginOrCreateButton$.next(false);
     })
     promise.catch(err => {
       console.log(err);
       this.error$.next(err);
+      this.creatingAccount$.next(false); // Perhaps the user tried to create an account when it already exists so switch back to login or create account UI.  
+      this.disableLoginOrCreateButton$.next(false);
     });
-
 
   }
 

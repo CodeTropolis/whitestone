@@ -23,7 +23,7 @@ export class ChildTableComponent implements OnInit {
   }
 
   financials(child) { // Pass in the specific child.  A record may contain multple children.
-    console.log('TCL: ChildTableComponent -> financials -> child', child);
+    //console.log('TCL: ChildTableComponent -> financials -> child', child);
     // Why are these services in data.service instead of financial.service?
     // A: the child-table.component, which is outside of the financials module, sets these values.
     this.dataService.setFinancialDoc(child.id);

@@ -9,10 +9,10 @@
 		<i class="material-icons login-icon">supervised_user_circle</i>
 	</ng-template>
 
-	<p *ngIf="creatingAccount" class="create-acct">Please create an account using the email address associated with your student.<br> <br> 
-		Please contact the St. Teresa School Administration office at 618.233.3500 if you need assistance. </p>
+	<p *ngIf="creatingAccount" class="create-acct">Please create an account using the email address associated with your student and use a password of your choosing.</p>
+	<!-- Call the St. Teresa School Administration office at 618.233.3500 if you need further assistance.  -->
 
-	<div class="status">
+	<div class="account-response">
 		<p *ngIf="status$ | async as status">{{status}}</p>
 		<mat-error *ngIf="error$ | async as error">{{error}}</mat-error>
 	</div>
@@ -31,16 +31,19 @@
 		</mat-form-field>
 		<mat-form-field>
 			<input type="password" matInput placeholder="Password" formControlName="password">
+			<mat-error *ngIf="f.password.invalid && (f.password.dirty || f.password.touched)">
+				<div *ngIf="f.password.errors.required">
+					A password is required.
+				</div>
+			</mat-error>
 		</mat-form-field>
 
 		<div class="button-group">
-			<button *ngIf="creatingAccount; else login" [disabled]="!form.valid" type="submit" mat-flat-button color="primary">Create Account</button>
+			<button *ngIf="creatingAccount; else login" [disabled]="!form.valid || disableButton" type="submit" mat-flat-button color="primary">Create Account</button>
 			<ng-template #login>
-				<button type="submit" [disabled]="!form.valid" mat-flat-button color="primary">Login</button>
+				<button type="submit" class="login" [disabled]="!form.valid || disableButton" mat-flat-button color="primary">Login</button>
+				<a *ngIf="!creatingAccount" [routerLink]="" (click)="createAccount(formDirective)">Or Create Account</a>
 			</ng-template>
-			<p *ngIf="!creatingAccount" class="create-acct"><a [routerLink]="" (click)="createAccount(formDirective)">Or create an
-					account</a> </p>
-			<!-- <button type="button" mat-button color="basic" (click)="signUp()"> Sign Up</button> -->
 		</div>
 
 	</form>

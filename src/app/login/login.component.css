@@ -3,9 +3,19 @@ a {color: var(--ws-blue);}
 
 p.brand {margin-bottom: 0.25em;}
 
-button {
+
+.button-group {
+    text-align: center;
+}
+
+.button-group a {
     display: block;
-    margin: auto;
+    margin-top: 0.5em;
+}
+
+.button-group button {
+    display: block;
+    margin: 0 auto;
 }
 
 .create-acct {
@@ -38,4 +48,7 @@ p.brand {
     text-transform: uppercase;
 }
 
-.status {text-align: center;}
+.account-response {
+    margin-bottom: 0.5em;
+    text-align: center;
+}

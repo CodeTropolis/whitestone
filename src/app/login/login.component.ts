@@ -17,9 +17,15 @@ export class LoginComponent implements OnInit {
   public status$: Observable<string>;
   public error$: Observable<string>;
 
+  public disableButton: boolean;
+
   constructor(private auth: AuthService, private fb: FormBuilder, private fs: FirebaseService) {}
 
   ngOnInit() {
+
+    this.auth.disableLoginOrCreateButton$.subscribe(x => {
+      this.disableButton = x;
+    })
 
     this.status$ = this.auth.status$;
     this.error$ = this.auth.error$;
@@ -58,7 +64,8 @@ export class LoginComponent implements OnInit {
 
   public createAccount(formDirective) {
     this.resetForm(formDirective);
-   this.auth.creatingAccount$.next(true);
+    this.auth.creatingAccount$.next(true);
+    this.auth.disableLoginOrCreateButton$.next(false);
     // Clear out errors that occur if user attempted to login without first creating an account
     this.auth.error$.next('');
     this.auth.status$.next('');
