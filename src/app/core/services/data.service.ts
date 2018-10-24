@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, shareReplay } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
 
 
 @Injectable({
@@ -16,7 +17,7 @@ export class DataService {
   public currentRecord: any;
   public currentFinancialDoc$: Observable<any>;
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(private firebaseService: FirebaseService, private authService: AuthService) {
     // Only subscribing to make observable hot so that I can see the 
     // reads per mapAndReplayCollection in firebase.service.ts
     // Could be causing even more reads because of anytime something changes with the
@@ -44,6 +45,9 @@ export class DataService {
         tap((doc => {
           //console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
           doc.payload.ref.get().then(snapshot => {
+            if (this.authService.user['roles'].admin){ //  Only admin user can write. 
+              doc.payload.ref.set({ userId: this.authService.user.uid}, {merge:true}); // Need to do for existing and future financial docs. 
+            }
             if (!snapshot.exists) {
               doc.payload.ref.set({ dateCreated: new Date });
             }

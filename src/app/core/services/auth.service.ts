@@ -94,14 +94,10 @@ export class AuthService {
   }
 
   public signUp(e, p) {
-
     this.disableLoginOrCreateButton$.next(true);
-
     const promise = this.afAuth.auth.createUserWithEmailAndPassword(e, p);
-
     promise.then(success => {
     //console.log('TCL: AuthService -> publicsignUp -> success', success);
-      
       this.error$.next('');
       let user: any = this.afAuth.auth.currentUser;
       user.sendEmailVerification().then(_ => {
@@ -141,7 +137,7 @@ export class AuthService {
       uid: user.uid,
       email: user.email,
       roles: {
-        subscriber: true
+        subscriber: true,
       }
     }
     userRef.set(data, { merge: true })

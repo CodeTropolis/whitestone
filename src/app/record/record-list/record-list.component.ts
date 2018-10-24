@@ -58,7 +58,7 @@ export class RecordListComponent implements OnInit {
       this.fs.records$.subscribe(x => {
 
         if (this.userIsSubcriber && !this.userIsAdmin) { // Do not do record match logic if user is admin
-          console.log('User is a subscriber, not an admin')
+          console.log('User is a subscriber')
           x.forEach(record => {
             if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
             // console.log('TCL: RecordListComponent -> ngOnInit -> record.motherEmail', record.motherEmail);
