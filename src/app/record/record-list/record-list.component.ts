@@ -22,7 +22,7 @@ export class RecordListComponent implements OnInit {
   public showForm: boolean;
 
   public user: User;
-  public userIsAdmin: boolean = false;
+  public userIsAdmin: boolean = false;  // for view
   public userIsSubcriber: boolean = false;
   public recordMatch: boolean;
 
@@ -42,22 +42,35 @@ export class RecordListComponent implements OnInit {
 
   ngOnInit() {
 
-    this.subscriptions.push(
-       this.authService.userIsAdmin$.subscribe(x => {
-        this.userIsAdmin = x;
-      } )
-    );
+    // Why subscribe?  User is never changed once logged in.
 
-    this.subscriptions.push(
-      this.authService.userIsSubcriber$.subscribe(x => {
-        this.userIsSubcriber = x;
-      })
-    )
+    // this.subscriptions.push(
+    //    this.authService.userIsAdmin$.subscribe(x => {
+    //     this.userIsAdmin = x;
+    //   } )
+    // );
+
+    // this.subscriptions.push(
+    //   this.authService.userIsSubcriber$.subscribe(x => {
+    //     this.userIsSubcriber = x;
+    //   })
+    // )
+
+    if(this.authService.user['roles'].admin){
+      this.userIsAdmin = true;
+    }
+
+    
+    if(this.authService.user['roles'].subscriber){
+      this.userIsSubcriber = true;
+    }
     
     this.subscriptions.push(
       this.fs.records$.subscribe(x => {
-
-        if (this.userIsSubcriber && !this.userIsAdmin) { // Do not do record match logic if user is admin
+        //The admin will always have subscriber:true so filter out the admin user
+        if (this.userIsSubcriber && !this.userIsAdmin) { 
+          // Do not do record match logic if user is admin. 
+        //if (this.authService.user['roles'].subscriber && !this.authService.user['roles'].admin) {
           console.log('User is a subscriber')
           x.forEach(record => {
             if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
@@ -76,6 +89,7 @@ export class RecordListComponent implements OnInit {
             }
           })
         } else if (this.userIsAdmin) {
+        // } else if (this.authService.user['roles'].admin) {
           this.ds = new MatTableDataSource(x);
           console.log('User is admin');
         }else{

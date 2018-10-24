@@ -26,7 +26,7 @@ export class ChildTableComponent implements OnInit {
     //console.log('TCL: ChildTableComponent -> financials -> child', child);
     // Why are these services in data.service instead of financial.service?
     // A: the child-table.component, which is outside of the financials module, sets these values.
-    this.dataService.setFinancialDoc(child.id);
+    this.dataService.setFinancialDoc(child.id, this.record);
     this.dataService.setCurrentChild(child); // Future: UI element to select another child within same parent record, say on financials component.
     this.router.navigate(['/financials']);
   }

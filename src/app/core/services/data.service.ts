@@ -39,14 +39,24 @@ export class DataService {
   }
 
   // Creates the base doc (as an observable) for all the selected student's financials
-  public setFinancialDoc(id) {
+  public setFinancialDoc(id, record) {
     this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(id).snapshotChanges()
       .pipe(
         tap((doc => {
           //console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
           doc.payload.ref.get().then(snapshot => {
-            if (this.authService.user['roles'].admin){ //  Only admin user can write. 
-              doc.payload.ref.set({ userId: this.authService.user.uid}, {merge:true}); // Need to do for existing and future financial docs. 
+            // Pass the email to the financial document in order to secure reads to match user email.   
+            // Only admin user can write per Firestore rule. 
+            // Need to do for existing and future financial docs. 
+            if (this.authService.user['roles'].admin){ 
+              console.log('TCL: publicsetFinancialDoc -> snapshot user is admin');
+              if(record.fatherEmail){
+                doc.payload.ref.set({ fatherEmail: record.fatherEmail}, {merge:true});
+                console.log('write') // Since this is within snapshotChanges() this will write on every doc change.
+              }
+              if(record.motherEmail){
+                doc.payload.ref.set({ motherEmail: record.motherEmail}, {merge:true});  
+              }
             }
             if (!snapshot.exists) {
               doc.payload.ref.set({ dateCreated: new Date });
