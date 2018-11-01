@@ -22,13 +22,8 @@ export class ChildTableComponent implements OnInit {
     this.children.sort = this.sort;
   }
 
-  financials(child) { // Pass in the specific child. A record may contain multiple children
-    // Pass in children in order to obtain a list of 
-    // available children in order to switch child in financials component.
-    this.dataService.setFinancialDoc(child.id, this.record); // Pass in current record in order to update financial doc with father and/or mother email addresses.
-    this.dataService.setCurrentChild(child);
-    // Pass a list of available children (within same record) for other UIs i.e. select another child on financials
-    this.dataService.childrenOfRecord = this.dataService.convertMapToArray(this.record.children); 
+  public financials(child) { // Pass in the specific child. A record may contain multiple children
+    this.dataService.setFinancialDoc(child);
     this.router.navigate(['/financials']);
   }
 

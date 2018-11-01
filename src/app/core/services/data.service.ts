@@ -1,5 +1,3 @@
-// data.service for methods used across modules i.e. child.table from record module uses setCurrentChild() and createFinancialRecord()
-
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -15,7 +13,7 @@ export class DataService {
 
   public currentChild$ = new BehaviorSubject<any>(null);
   public childrenOfRecord: any[] =[];
-  // public currentRecord: any;
+  public currentRecord: any;
   public currentFinancialDoc$: Observable<any>;
   public financialDocExists: boolean;
 
@@ -38,14 +36,15 @@ export class DataService {
     return keys.map(key => map[`${key}`])
   }
 
-  public setCurrentChild(child) {
-    this.currentChild$.next(child); // Another UI may select other child
+  public setCurrentRecord(record){
+    this.currentRecord = record;
+    this.childrenOfRecord = this.convertMapToArray(record.children);
   }
 
   // Creates the base doc (as an observable) for all the selected student's financials
-  public setFinancialDoc(childId, record?) {
-    //this.currentRecord = record; // for child select in order to have have record data to update child's financiala doc with father and/or mother email address.
-    this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(childId).snapshotChanges()
+  public setFinancialDoc(child) {
+    this.currentChild$.next(child);
+    this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(child.id).snapshotChanges()
       .pipe(
         tap((doc => {
          // console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
@@ -56,14 +55,15 @@ export class DataService {
 
             // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
           
-            if (this.authService.user['roles'].admin){ 
-              //console.log('TCL: publicsetFinancialDoc -> snapshot user is admin');
-              if(record.fatherEmail){
-                doc.payload.ref.set({ fatherEmail: record.fatherEmail}, {merge:true});
+            if (this.authService.user['roles'].admin){
+              doc.payload.ref.set({recordId: this.currentRecord.realId}, {merge:true}); 
+              doc.payload.ref.set({childFname: child.fname, childLname: child.lname}, {merge:true}); 
+              if(this.currentRecord.fatherEmail){
+                doc.payload.ref.set({ fatherEmail: this.currentRecord.fatherEmail}, {merge:true});
                 //console.log('write') // Since this is within snapshotChanges() this will write on every doc change.
               }
-              if(record.motherEmail){
-                doc.payload.ref.set({ motherEmail: record.motherEmail}, {merge:true});  
+              if(this.currentRecord.motherEmail){
+                doc.payload.ref.set({ motherEmail: this.currentRecord.motherEmail}, {merge:true});  
               }
               if (!snapshot.exists) {
                 doc.payload.ref.set({ dateCreated: new Date });

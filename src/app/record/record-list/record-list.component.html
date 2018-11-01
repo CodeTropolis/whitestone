@@ -31,7 +31,7 @@
 				<mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
 				<mat-cell class="actions" *matCellDef="let row">
 
-					<button mat-icon-button [matMenuTriggerFor]="menu">
+					<button mat-icon-button [matMenuTriggerFor]="menu" (click)="setCurrentRecord(row)">
 						<mat-icon>more_vert</mat-icon>
 					</button>
 
@@ -48,9 +48,6 @@
 							<span>Update Family Record</span>
 						</button>
 					</mat-menu>
-
-					<!-- <button [disabled]="isUpdating" class="mat-info" mat-mini-fab color="primary" (click)="openModal('record-modal', row)"><i class="material-icons info">info</i></button>
-					<button [disabled]="isUpdating" mat-flat-button color="primary" (click)="onRowClicked(row)">Children</button> -->
 				</mat-cell>
 			</ng-container>
 

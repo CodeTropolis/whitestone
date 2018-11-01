@@ -141,6 +141,10 @@ export class RecordListComponent implements OnInit {
     this.res.deleteRecord(record);
   }
 
+  public setCurrentRecord(record){
+    this.dataService.setCurrentRecord(record);
+  }
+
   onRowClicked(row) {
     this.showChildren[row.realId] = !this.showChildren[row.realId];
   }

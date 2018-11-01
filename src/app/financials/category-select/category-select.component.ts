@@ -25,12 +25,7 @@ export class CategorySelectComponent implements OnInit {
   constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
-
-    // if (!this.dataService.financialDocExists){
-    //   this.financialDocExists = true;
-    //   return;
-    // }
-
+    
     this.childrenOfRecord = this.dataService.childrenOfRecord;
     console.log('TCL: CategorySelectComponent -> ngOnInit -> this.childrenOfRecord', this.childrenOfRecord);
     
@@ -50,10 +45,7 @@ export class CategorySelectComponent implements OnInit {
   }
 
   public financials(child){
-    console.log('TCL: CategorySelectComponent -> publicselectChild -> child.id', child.id);
-    //this.dataService.setFinancialDoc(child.id, this.dataService.currentRecord); // Pass in current record in order to update financial doc with father and/or mother email addresses.
-    this.dataService.setFinancialDoc(child.id);
-    this.dataService.setCurrentChild(child);
+    this.dataService.setFinancialDoc(child);
   }
 
   ngOnDestroy() {
