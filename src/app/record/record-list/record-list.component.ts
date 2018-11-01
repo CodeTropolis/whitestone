@@ -128,12 +128,6 @@ export class RecordListComponent implements OnInit {
     }
   }
 
-
-  // public recordModal(record) {
-  //   console.log('TCL: RecordListComponent -> publicviewFamilyRecord -> record', record);
-  //   this.currentRecord = record;
-  // }
-
   public prepFormToUpdate(record) {
     this.showForm = true;
     setTimeout(() => this.res.prepFormToUpdate(record), 250); // Give form a chance to load prior to populating

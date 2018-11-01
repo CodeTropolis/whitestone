@@ -41,7 +41,8 @@
 						</button>
 						<button [disabled]="isUpdating" mat-menu-item (click)="onRowClicked(row)">
 							<!-- <mat-icon>account</mat-icon> -->
-							<span>View Children</span>
+							<span *ngIf="!showChildren[row.realId]">Show Children</span>
+							<span *ngIf="showChildren[row.realId]">Hide Children</span>
 						</button>
 					</mat-menu>
 
@@ -89,9 +90,6 @@
 </ng-template>
 
 <jw-modal id="record-modal">
-
 	<pre>Surname: {{currentRecord | json}}</pre>
-	<!-- <p>Home page text: <input type="text" [(ngModel)]="bodyText" /></p> -->
 	<button (click)="closeModal('record-modal');">Close</button>
-
 </jw-modal>
