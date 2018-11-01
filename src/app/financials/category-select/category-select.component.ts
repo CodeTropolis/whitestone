@@ -16,6 +16,7 @@ export class CategorySelectComponent implements OnInit {
   public categories: any;
   public showAvatarSpinner: boolean;
   public user$: Observable<any>;
+  public financialDocExists: boolean;
 
   private spinnerSubscribe: any;
   private subscriptions: any[] = [];
@@ -23,6 +24,11 @@ export class CategorySelectComponent implements OnInit {
   constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
+
+    // if (!this.dataService.financialDocExists){
+    //   this.financialDocExists = true;
+    //   return;
+    // }
 
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);

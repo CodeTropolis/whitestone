@@ -12,9 +12,11 @@
         <i class="material-icons account-circle">account_circle</i>
         <app-progress-spinner *ngIf="showAvatarSpinner" class="avatar-spinner"></app-progress-spinner>
       </div>
-      <mat-card-title>
-        <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
-      </mat-card-title>
+
+    
+        <mat-card-title >
+          <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
+        </mat-card-title>
 
       <div class="buttons">
         <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
@@ -26,4 +28,5 @@
       <app-entry></app-entry>
     </mat-card-content>
   </mat-card>
+
 </ng-template>

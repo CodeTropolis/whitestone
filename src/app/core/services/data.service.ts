@@ -16,6 +16,7 @@ export class DataService {
   public currentChild$ = new BehaviorSubject<any>(null);
   public currentRecord: any;
   public currentFinancialDoc$: Observable<any>;
+  public financialDocExists: boolean;
 
   constructor(private firebaseService: FirebaseService, private authService: AuthService) {
     // Only subscribing to make observable hot so that I can see the 
@@ -45,9 +46,12 @@ export class DataService {
         tap((doc => {
           //console.log(`pipe(tap.. : ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
           doc.payload.ref.get().then(snapshot => {
-            // Pass the email to the financial document in order to secure reads to match user email.   
-            // Only admin user can write per Firestore rule. 
-            // Need to do for existing and future financial docs. 
+
+            // Pass the email to the financial document in order to secure reads to match user email.  
+            // Outside of if (!snapshot.exists) because this needs to be done for future as well as existing financial docs. 
+
+            // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
+          
             if (this.authService.user['roles'].admin){ 
               console.log('TCL: publicsetFinancialDoc -> snapshot user is admin');
               if(record.fatherEmail){
@@ -57,10 +61,14 @@ export class DataService {
               if(record.motherEmail){
                 doc.payload.ref.set({ motherEmail: record.motherEmail}, {merge:true});  
               }
+              if (!snapshot.exists) {
+                doc.payload.ref.set({ dateCreated: new Date });
+                //this.financialDocExists = true;
+              }
             }
-            if (!snapshot.exists) {
-              doc.payload.ref.set({ dateCreated: new Date });
-            }
+            //  else if (!snapshot.exists) { // If a non-admin user clicks the financials icon and no financial doc exists
+            //   this.financialDocExists = false;
+            //  }
           });
         }),
         ),

@@ -12,6 +12,7 @@ import { MapToIterablePipe } from './pipes/map-to-iterable.pipe';
 import { environment } from '../../environments/environment';
 
 import { RouterModule } from '@angular/router';
+import { ModalComponent } from '../modal/modal.component';
 
 @NgModule({
   imports: [
@@ -29,11 +30,13 @@ import { RouterModule } from '@angular/router';
     ProgressSpinnerComponent, 
     HeaderComponent,
     MapToIterablePipe,
+    ModalComponent,
   ],
   exports:[
     CommonModule,
     ProgressSpinnerComponent,   
     HeaderComponent,
+    ModalComponent,
     MapToIterablePipe,
     MaterialModule,
     ReactiveFormsModule,

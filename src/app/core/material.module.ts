@@ -6,6 +6,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatToolbarModule } from '@angular/material/toolbar';
 //import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMenuModule } from '@angular/material/menu'; // For material menu (3 vertical dots) on Available Records table.
+import { MatIconModule } from '@angular/material/icon'; // For material menu (3 vertical dots) on Available Records table.
 
 @NgModule({
   imports: [
@@ -24,6 +26,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatNativeDateModule,
     //MatMomentDateModule,
     MatDatepickerModule,
+    MatMenuModule,
+    MatIconModule,
   ],
   declarations: [],
   exports: [
@@ -42,6 +46,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatNativeDateModule,
     //MatMomentDateModule,
     MatDatepickerModule,
+    MatMenuModule,
+    MatIconModule,
   ],
 })
 export class MaterialModule { }
