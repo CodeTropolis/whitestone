@@ -11,10 +11,7 @@
     --ws-error:             #e27562;
 }
 
-a {
-    text-decoration: none;
-    color: var(--ws-smoke);
-}
+a {text-decoration: none;}
 
 app-entry {
     display: block;

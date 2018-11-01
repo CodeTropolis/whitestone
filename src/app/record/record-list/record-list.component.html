@@ -34,15 +34,18 @@
 					<button mat-icon-button [matMenuTriggerFor]="menu">
 						<mat-icon>more_vert</mat-icon>
 					</button>
+
 					<mat-menu #menu="matMenu">
+						<button [disabled]="isUpdating" mat-menu-item (click)="onRowClicked(row)">
+							<span *ngIf="!showChildren[row.realId]">Show Children</span>
+							<span *ngIf="showChildren[row.realId]">Hide Children</span>
+						</button>
 						<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal', row)">
 							<!-- <mat-icon>info</mat-icon> -->
 							<span>View Family Record</span>
 						</button>
-						<button [disabled]="isUpdating" mat-menu-item (click)="onRowClicked(row)">
-							<!-- <mat-icon>account</mat-icon> -->
-							<span *ngIf="!showChildren[row.realId]">Show Children</span>
-							<span *ngIf="showChildren[row.realId]">Hide Children</span>
+						<button [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
+							<span>Update Family Record</span>
 						</button>
 					</mat-menu>
 
@@ -61,10 +64,11 @@
 					<app-child-table *ngIf="showChildren[row.realId]" [record]="row"></app-child-table>
 
 					<div *ngIf="showChildren[row.realId]" class="actions">
-						<button *ngIf="userIsAdmin" [disabled]="isUpdating" mat-flat-button color="primary" (click)="prepFormToUpdate(row)">Update
-							Record</button>
 
-						<div *ngIf="userIsAdmin" class="delete-buttons">
+						<!-- <button *ngIf="userIsAdmin" [disabled]="isUpdating" mat-flat-button color="primary" (click)="prepFormToUpdate(row)">Update
+							Record</button> -->
+
+						<!-- <div *ngIf="userIsAdmin" class="delete-buttons">
 
 							<button *ngIf="!isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="warn" (click)="aboutToDelete(row)">
 								<i class="material-icons">delete_forever</i>
@@ -76,7 +80,7 @@
 
 							<button *ngIf="isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="primary" (click)="aboutToDelete(row)">
 								Cancel Deletion</button>
-						</div>
+						</div> -->
 					</div>
 				</div>
 			</ng-container>

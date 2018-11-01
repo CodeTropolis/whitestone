@@ -12,22 +12,23 @@ export class ChildTableComponent implements OnInit {
 
   @Input() record;
   @ViewChild(MatSort) sort: MatSort;
-  public data: MatTableDataSource<any>;
+  public children: MatTableDataSource<any>;
   public displayedColumnsChildren = ['fname', 'lname', 'grade', 'gender', 'race', 'financials'];
 
   constructor(private dataService: DataService, private router: Router) { }
 
   ngOnInit() {
-    this.data = new MatTableDataSource(this.dataService.convertMapToArray(this.record.children));
-    this.data.sort = this.sort;
+    this.children = new MatTableDataSource(this.dataService.convertMapToArray(this.record.children));
+    this.children.sort = this.sort;
   }
 
-  financials(child) { // Pass in the specific child.  A record may contain multple children.
-    //console.log('TCL: ChildTableComponent -> financials -> child', child);
-    // Why are these services in data.service instead of financial.service?
-    // A: the child-table.component, which is outside of the financials module, sets these values.
-    this.dataService.setFinancialDoc(child.id, this.record);
-    this.dataService.setCurrentChild(child); // Future: UI element to select another child within same parent record, say on financials component.
+  financials(child) { // Pass in the specific child. A record may contain multiple children
+    // Pass in children in order to obtain a list of 
+    // available children in order to switch child in financials component.
+    this.dataService.setFinancialDoc(child.id, this.record); // Pass in current record in order to update financial doc with father and/or mother email addresses.
+    this.dataService.setCurrentChild(child);
+    // Pass a list of available children (within same record) for other UIs i.e. select another child on financials
+    this.dataService.childrenOfRecord = this.dataService.convertMapToArray(this.record.children); 
     this.router.navigate(['/financials']);
   }
 

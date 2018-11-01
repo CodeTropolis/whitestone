@@ -72,7 +72,7 @@ export class EntryComponent implements OnInit {
     this.showForm = false;
 
     this.dataService.currentFinancialDoc$.subscribe(doc => {
-     // console.log('TCL: ngOnInit -> doc', doc.payload.ref);
+     console.log('TCL: ngOnInit -> doc', doc.payload.ref);
       this.currentFinancialDoc = doc;
     });
 

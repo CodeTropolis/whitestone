@@ -17,6 +17,7 @@ export class CategorySelectComponent implements OnInit {
   public showAvatarSpinner: boolean;
   public user$: Observable<any>;
   public financialDocExists: boolean;
+  public childrenOfRecord: any[] =[];
 
   private spinnerSubscribe: any;
   private subscriptions: any[] = [];
@@ -30,20 +31,29 @@ export class CategorySelectComponent implements OnInit {
     //   return;
     // }
 
+    this.childrenOfRecord = this.dataService.childrenOfRecord;
+    console.log('TCL: CategorySelectComponent -> ngOnInit -> this.childrenOfRecord', this.childrenOfRecord);
+    
+
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
   };
 
   public setCategory(cat: any) {
-
     this.financialsService.setCategoryAndStrings(cat);
-
     // Moved this.financialsService.showAvatarSpinner$.next(true);  to here instead of 
     // beginning of entry.component to prevent "Expression has changed after it was checked" err.
     this.financialsService.showAvatarSpinner$.next(true); // show avatar spinner while entry.component goes through its setup 
     // entry.component will set this to false at some point.
 
+  }
+
+  public financials(child){
+    console.log('TCL: CategorySelectComponent -> publicselectChild -> child.id', child.id);
+    //this.dataService.setFinancialDoc(child.id, this.dataService.currentRecord); // Pass in current record in order to update financial doc with father and/or mother email addresses.
+    this.dataService.setFinancialDoc(child.id);
+    this.dataService.setCurrentChild(child);
   }
 
   ngOnDestroy() {

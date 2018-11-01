@@ -4,7 +4,7 @@
 
 <ng-template #ready>
 
-  <app-header title="Financial Entry" link = "/record-list" linkName="Back to Record List"></app-header>
+  <app-header title="Financial Entry" link="/record-list" linkName="Back to Record List"></app-header>
 
   <mat-card>
     <mat-card-header>
@@ -13,20 +13,28 @@
         <app-progress-spinner *ngIf="showAvatarSpinner" class="avatar-spinner"></app-progress-spinner>
       </div>
 
-    
-        <mat-card-title >
-          <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
-        </mat-card-title>
+
+      <mat-card-title>
+        <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
+      </mat-card-title>
 
       <div class="buttons">
         <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
       </div>
     </mat-card-header>
- 
+
     <mat-card-content>
-        <!-- <h4 *ngIf="!transactions$ | async as transaction"><span *ngIf="transaction">Financial data not yet present for this category</span></h4> -->
+      <!-- <h4 *ngIf="!transactions$ | async as transaction"><span *ngIf="transaction">Financial data not yet present for this category</span></h4> -->
       <app-entry></app-entry>
     </mat-card-content>
+  </mat-card>
+
+  <app-header title="Children of Record"></app-header>
+
+  <mat-card>
+      <ul class="availableChildren" *ngFor="let child of childrenOfRecord">
+        <li><a [routerLink]="" (click)="financials(child)"> {{child.fname}} {{child.lname}} | Grade: {{child.grade}}</a></li>
+      </ul>
   </mat-card>
 
 </ng-template>
