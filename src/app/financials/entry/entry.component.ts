@@ -71,10 +71,12 @@ export class EntryComponent implements OnInit {
     this.showHistoryButton = false;
     this.showForm = false;
 
-    this.dataService.currentFinancialDoc$.subscribe(doc => {
-     console.log('TCL: ngOnInit -> doc', doc.payload.ref);
+    this.subscriptions.push(
+      this.dataService.currentFinancialDoc$.subscribe(doc => {
+      console.log('TCL: ngOnInit -> doc', doc.payload.ref);
       this.currentFinancialDoc = doc;
-    });
+      })
+    );
 
     // Listen for category selection from category-select.component
     this.subscriptions.push(

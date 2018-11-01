@@ -43,7 +43,7 @@ export class DataService {
 
   // Creates the base doc (as an observable) for all the selected student's financials
   public setFinancialDoc(child) {
-    this.currentChild$.next(child);
+    this.currentChild$.next(child); // ToDo: For category-select.component - get child's name from financials document.
     this.currentFinancialDoc$ = this.firebaseService.financialsCollection.doc(child.id).snapshotChanges()
       .pipe(
         tap((doc => {
@@ -56,18 +56,17 @@ export class DataService {
             // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
           
             if (this.authService.user['roles'].admin){
-              doc.payload.ref.set({recordId: this.currentRecord.realId}, {merge:true}); 
-              doc.payload.ref.set({childFname: child.fname, childLname: child.lname}, {merge:true}); 
+              doc.payload.ref.set({recordId: this.currentRecord.realId}); 
+              doc.payload.ref.set({childFname: child.fname, childLname: child.lname}); 
               if(this.currentRecord.fatherEmail){
-                doc.payload.ref.set({ fatherEmail: this.currentRecord.fatherEmail}, {merge:true});
+                doc.payload.ref.set({ fatherEmail: this.currentRecord.fatherEmail});
                 //console.log('write') // Since this is within snapshotChanges() this will write on every doc change.
               }
               if(this.currentRecord.motherEmail){
-                doc.payload.ref.set({ motherEmail: this.currentRecord.motherEmail}, {merge:true});  
+                doc.payload.ref.set({ motherEmail: this.currentRecord.motherEmail});  
               }
               if (!snapshot.exists) {
                 doc.payload.ref.set({ dateCreated: new Date });
-                //this.financialDocExists = true;
               }
             }
           });
