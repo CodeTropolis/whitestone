@@ -57,7 +57,6 @@ export class EntryComponent implements OnInit {
 
     this.subscriptions.push(
       this.dataService.currentFinancialDoc$.subscribe(doc => {
-      //console.log('TCL: ngOnInit -> doc', doc.payload.ref);
       console.log('TCL: ngOnInit -> doc', doc);
       this.currentFinancialDoc = doc;
       })

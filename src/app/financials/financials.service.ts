@@ -29,7 +29,7 @@ export class FinancialsService {
 
   public setCategoryAndStrings(cat: any) {
     this.currentCategory$.next(cat); // entry.component listens for this.
-    // Other components in this module such as history need some of these keys
+    // Other components in this module such as history will need some of these keys
     this.startingBalanceKey$.next(cat.key + 'StartingBalance');
     this.startingBalanceDateKey$.next(cat.key + 'StartingBalanceDate');
     this.startingBalanceMemoKey$.next(cat.key + 'StartingBalanceMemo');

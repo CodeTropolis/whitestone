@@ -1,8 +1,15 @@
-<!-- <div *ngIf="!currentChild; else ready">
+<div *ngIf="!currentChild; else ready">
   <app-progress-spinner></app-progress-spinner>
-</div> -->
-<!-- 
-<ng-template #ready> -->
+  <h3>Please select a student.</h3>
+</div>
+
+<mat-card>
+  <ul class="availableChildren" *ngFor="let child of childrenOfRecord">
+    <li><a [routerLink]="" (click)="createFinancialDoc(child)"> {{child.fname}} {{child.lname}} | Grade: {{child.grade}}</a></li>
+  </ul>
+</mat-card>
+
+<ng-template #ready>
 
   <app-header title="Financial Entry" link="/record-list" linkName="Back to Record List"></app-header>
 
@@ -12,7 +19,6 @@
         <i class="material-icons account-circle">account_circle</i>
         <app-progress-spinner *ngIf="showAvatarSpinner" class="avatar-spinner"></app-progress-spinner>
       </div>
-
 
       <mat-card-title>
         <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
@@ -30,10 +36,4 @@
 
   <app-header title="Children of Record"></app-header>
 
-  <mat-card>
-      <ul class="availableChildren" *ngFor="let child of childrenOfRecord">
-        <li><a [routerLink]="" (click)="createFinancialDoc(child)"> {{child.fname}} {{child.lname}} | Grade: {{child.grade}}</a></li>
-      </ul>
-  </mat-card>
-
-<!-- </ng-template> -->
+</ng-template>
