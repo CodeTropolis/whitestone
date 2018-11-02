@@ -3,7 +3,7 @@ import { FirebaseService } from './firebase.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, shareReplay } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
-
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -14,22 +14,12 @@ export class DataService {
   public currentChild$ = new BehaviorSubject<any>(null);
   public childrenOfRecord: any[] =[];
   public currentRecord: any;
-  public currentFinancialDoc$: Observable<any>;
+  public currentFinancialDoc$ = new BehaviorSubject<any>(null);
   public financialDocExists: boolean;
 
 
 
-  constructor(private firebaseService: FirebaseService, private authService: AuthService) {
-    // Only subscribing to make observable hot so that I can see the 
-    // reads per mapAndReplayCollection in firebase.service.ts
-    // Could be causing even more reads because of anytime something changes with the
-    // financials collection, snapshotChanges in the mapAndReplayCollection will log,
-    // which may cause a read on the collection.
-    
-    // this.firebaseService.financials$.subscribe(doc => { 
-    //   //console.log(`financials$ payload: ${JSON.stringify(doc)}`);
-    // })
-  }
+  constructor(private firebaseService: FirebaseService, private authService: AuthService, private router:Router) {}
 
   public convertMapToArray(map: {}) {
     const keys = Object.keys(map)
@@ -39,6 +29,42 @@ export class DataService {
   public setCurrentRecord(record){
     this.currentRecord = record;
     this.childrenOfRecord = this.convertMapToArray(record.children);
+  }
+
+  // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
+  // Outside of if (!snapshot.exists) because this needs to be done for future as well as existing financial docs.
+
+  public createFinancialDoc(child, link?){
+    this.currentChild$.next(child); // ToDo: For category-select.component - get child's name from financials document.
+    // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
+      if (this.authService.user['roles'].admin){
+        this.firebaseService.financialsCollection.doc(child.id)
+          .set({recordId: this.currentRecord.realId,
+              fatherEmail: this.currentRecord.fatherEmail, 
+              motherEmail: this.currentRecord.motherEmail,
+              childFirstName: child.fname, 
+              childLastName: child.lname,
+              }, 
+              {merge: true}
+            )
+            .then( _ => { // Set the currentFinancialDoc$
+              console.log(`doc written.`);
+              this.firebaseService.financialsCollection.doc(child.id).ref.get()
+                .then(doc => {
+                  this.currentFinancialDoc$.next(doc);
+                  if(link){
+                    this.router.navigate([link]); // Need to wait until financial doc is created and observble set because entry.component subscribes to currentFinancialDoc$
+                  }
+                })
+             
+              // .pipe(
+              //   tap( doc => {
+              //     console.log(`pipe(tap( doc: ${doc.payload.ref.id}`); // tap with log alerts us that there is a subscriber
+              //    }
+              //   )
+              // )
+            })
+        }
   }
 
   // Creates the base doc (as an observable) for all the selected student's financials

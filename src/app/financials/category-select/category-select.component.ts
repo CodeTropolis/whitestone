@@ -27,8 +27,6 @@ export class CategorySelectComponent implements OnInit {
   ngOnInit() {
 
     this.childrenOfRecord = this.dataService.childrenOfRecord;
-    //console.log('TCL: CategorySelectComponent -> ngOnInit -> this.childrenOfRecord', this.childrenOfRecord);
-    
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
     this.spinnerSubscribe = this.financialsService.showAvatarSpinner$.subscribe(x => this.showAvatarSpinner = x)
@@ -43,8 +41,8 @@ export class CategorySelectComponent implements OnInit {
 
   }
 
-  public financials(child){
-    this.dataService.setFinancialDoc(child);
+  public createFinancialDoc(child){
+    this.dataService.createFinancialDoc(child);
   }
 
   ngOnDestroy() {

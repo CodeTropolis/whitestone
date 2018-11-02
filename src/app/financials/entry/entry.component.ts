@@ -13,7 +13,6 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class EntryComponent implements OnInit {
   
-  // private categorySubscription: any;
   public currentFinancialDoc: any;
   public category: any;
 
@@ -57,6 +56,14 @@ export class EntryComponent implements OnInit {
   ngOnInit() {
 
     this.subscriptions.push(
+      this.dataService.currentFinancialDoc$.subscribe(doc => {
+      //console.log('TCL: ngOnInit -> doc', doc.payload.ref);
+      console.log('TCL: ngOnInit -> doc', doc);
+      this.currentFinancialDoc = doc;
+      })
+    );
+
+    this.subscriptions.push(
       this.authService.userIsAdmin$.subscribe(x => {
        this.userIsAdmin = x;
      } )
@@ -69,14 +76,7 @@ export class EntryComponent implements OnInit {
    );
 
     this.showHistoryButton = false;
-    this.showForm = false;
-
-    this.subscriptions.push(
-      this.dataService.currentFinancialDoc$.subscribe(doc => {
-      console.log('TCL: ngOnInit -> doc', doc.payload.ref);
-      this.currentFinancialDoc = doc;
-      })
-    );
+    this.showForm = false;  
 
     // Listen for category selection from category-select.component
     this.subscriptions.push(
