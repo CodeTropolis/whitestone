@@ -34,7 +34,7 @@ export class DataService {
   // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
   // Outside of if (!snapshot.exists) because this needs to be done for future as well as existing financial docs.
 
-  public createFinancialDoc(child, link?){
+  public createFinancialDoc(child){
     this.currentChild$.next(child); // ToDo: For category-select.component - get child's name from financials document.
     // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
       if (this.authService.user['roles'].admin){
@@ -48,13 +48,13 @@ export class DataService {
               {merge: true}
             )
             .then( _ => { // Set the currentFinancialDoc$
-              console.log(`doc written.`);
+              //console.log(`doc written.`);
               this.firebaseService.financialsCollection.doc(child.id).ref.get()
                 .then(doc => {
                   this.currentFinancialDoc$.next(doc);
-                  if(link){
-                    this.router.navigate([link]); // Need to wait until financial doc is created and observble set because entry.component subscribes to currentFinancialDoc$
-                  }
+                  // if(link){
+                  //   this.router.navigate([link]); // Need to wait until financial doc is created and observble set because entry.component subscribes to currentFinancialDoc$
+                  // }
                 })
              
               // .pipe(

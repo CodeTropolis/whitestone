@@ -136,7 +136,7 @@ export class EntryComponent implements OnInit {
   //  - Each time a category is selected by user
   //  - After submission of startingBalance
   private getBalance() {
-    this.currentFinancialDoc.payload.ref.get().then(
+    this.currentFinancialDoc.ref.get().then(
       snapshot => {
         if (snapshot.data()[this.startingBalanceKey] || snapshot.data()[this.startingBalanceKey] === 0) { // Important to check for a balance value of zero.
           this.startingBalance = snapshot.data()[this.startingBalanceKey];
@@ -182,7 +182,7 @@ export class EntryComponent implements OnInit {
     // Starting balance in root of currentFinancialDoc, therefore, 
     // starting balance elements must be identified by categeory i.e. lunchStartingBalanceDate, lunchStartingBalanceMemo, etc.
     // Also set the running balance which future Payment/Charges will calc against
-    this.currentFinancialDoc.payload.ref
+    this.currentFinancialDoc.ref
       .set({
         [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date,
         [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount
@@ -199,13 +199,13 @@ export class EntryComponent implements OnInit {
     let collection;
 
     this.isEnteringPayment ?
-      collection = this.currentFinancialDoc.payload.ref.collection(this.paymentsCollection) :
-      collection = this.currentFinancialDoc.payload.ref.collection(this.chargesCollection);
+      collection = this.currentFinancialDoc.ref.collection(this.paymentsCollection) :
+      collection = this.currentFinancialDoc.ref.collection(this.chargesCollection);
 
     collection.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
     // NOTE: Wrap formula in () and set input to type number or else + will concat. 
     this.isEnteringPayment ? this.balance -= this.formValue.amount : this.balance = (this.balance + this.formValue.amount);
-    this.currentFinancialDoc.payload.ref.set({ [this.balanceKey]: this.balance }, { merge: true })
+    this.currentFinancialDoc.ref.set({ [this.balanceKey]: this.balance }, { merge: true })
       .then(_ => {
         this.financialsService.runningBalanceForCurrentCategory$.next(this.balance);
         this.resetForm(fd);

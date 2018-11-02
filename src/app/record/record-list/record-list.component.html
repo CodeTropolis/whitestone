@@ -47,6 +47,9 @@
 						<button [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
 							<span>Update Family Record</span>
 						</button>
+						<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../financials']">
+							<span>Financials</span>
+						</button>
 					</mat-menu>
 				</mat-cell>
 			</ng-container>

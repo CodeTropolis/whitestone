@@ -13,7 +13,8 @@ export class ChildTableComponent implements OnInit {
   @Input() record;
   @ViewChild(MatSort) sort: MatSort;
   public children: MatTableDataSource<any>;
-  public displayedColumnsChildren = ['fname', 'lname', 'grade', 'gender', 'race', 'financials'];
+  // public displayedColumnsChildren = ['fname', 'lname', 'grade', 'gender', 'race', 'financials'];
+  public displayedColumnsChildren = ['fname', 'lname', 'grade', 'gender', 'race'];
 
   constructor(private dataService: DataService) { }
 
@@ -22,9 +23,8 @@ export class ChildTableComponent implements OnInit {
     this.children.sort = this.sort;
   }
 
-  public financials(child) { // Pass in the specific child. A record may contain multiple children
-    this.dataService.createFinancialDoc(child, '/financials');
-    //this.router.navigate(['/financials']); // Need to wait until financial doc is created and observble set because entry.component subscribes currentFinancialDoc$
-  }
+  // public financials(child) { // Pass in the specific child. A record may contain multiple children
+  //   this.dataService.createFinancialDoc(child, '/financials');
+  // }
 
 }
