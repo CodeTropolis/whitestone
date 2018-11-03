@@ -14,7 +14,7 @@ export class DataService {
   public childrenOfRecord: any[] = [];
   public currentRecord: any;
   public currentFinancialDoc$ = new BehaviorSubject<any>(null);
-  public financialDocExists: boolean;
+  public childsFinancialDocExist: boolean;
 
 
 
@@ -33,7 +33,7 @@ export class DataService {
   // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
   // Outside of if (!snapshot.exists) because this needs to be done for future as well as existing financial docs.
 
-  public createFinancialDoc(child) {
+  public setupFinancialDoc(child) {
     this.currentChild$.next(child); // ToDo: For category-select.component - get child's name from financials document.
     // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
     if (this.authService.user['roles'].admin) {
@@ -57,7 +57,12 @@ export class DataService {
     } else { // Else a non-admin user so retrieve only
       this.firebaseService.financialsCollection.doc(child.id).ref.get()
         .then(doc => {
-          this.currentFinancialDoc$.next(doc);
+            if (doc){
+              this.currentFinancialDoc$.next(doc);
+              this.childsFinancialDocExist = true;
+            }else{
+              this.childsFinancialDocExist = false;
+            }
         })
     }
   }

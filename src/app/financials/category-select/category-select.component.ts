@@ -16,13 +16,12 @@ export class CategorySelectComponent implements OnInit {
   public categories: any;
   public showAvatarSpinner: boolean;
   public user$: Observable<any>;
-  public financialDocExists: boolean;
   public childrenOfRecord: any[] =[];
 
   private spinnerSubscribe: any;
   private subscriptions: any[] = [];
 
-  constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
+  constructor( private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
 
@@ -43,10 +42,10 @@ export class CategorySelectComponent implements OnInit {
 
   }
 
-  // Non admins cannot create a doc and this should already exist by the 
-  // time the non-admin user attempts to view. 
-  public createFinancialDoc(child){ 
-    this.dataService.createFinancialDoc(child);
+  // Non admins cannot create a doc and the child's financial doc should already exist prior to 
+  // a non-admin user attempting to view.
+  public setupFinancialDoc(child){ 
+    this.dataService.setupFinancialDoc(child);
   }
 
   ngOnDestroy() {

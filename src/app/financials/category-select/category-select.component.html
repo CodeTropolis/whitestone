@@ -6,7 +6,7 @@
 <app-header title="Children of Record | Financials"  link="/record-list" linkName="Back to Record List"></app-header>
 <mat-card>
   <ul class="availableChildren" *ngFor="let child of childrenOfRecord">
-    <li><a [routerLink]="" (click)="createFinancialDoc(child)"> {{child.fname}} {{child.lname}} | Grade: {{child.grade}}</a></li>
+    <li><a [routerLink]="" (click)="setupFinancialDoc(child)"> {{child.fname}} {{child.lname}} | Grade: {{child.grade}}</a></li>
   </ul>
 </mat-card>
 

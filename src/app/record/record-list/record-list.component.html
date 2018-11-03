@@ -36,7 +36,7 @@
 					</button>
 
 					<mat-menu #menu="matMenu">
-						<button [disabled]="isUpdating" mat-menu-item (click)="onRowClicked(row)">
+						<button [disabled]="isUpdating" mat-menu-item (click)="toggleChildTable(row)">
 							<span *ngIf="!showChildren[row.realId]">Show Children</span>
 							<span *ngIf="showChildren[row.realId]">Hide Children</span>
 						</button>

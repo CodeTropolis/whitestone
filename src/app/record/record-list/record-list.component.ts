@@ -145,7 +145,7 @@ export class RecordListComponent implements OnInit {
     this.dataService.setCurrentRecord(record);
   }
 
-  onRowClicked(row) {
+  toggleChildTable(row) {
     this.showChildren[row.realId] = !this.showChildren[row.realId];
   }
 
