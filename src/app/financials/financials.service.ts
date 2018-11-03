@@ -46,7 +46,7 @@ export class FinancialsService {
 
   public getTransactions(currentFinancialDoc, collection) {
     const type = collection.includes('Payment') ? 'Payment' : 'Charge'
-    currentFinancialDoc.payload.ref.collection(collection).get()
+    currentFinancialDoc.ref.collection(collection).get()
       .then(snapshot => {
         snapshot.forEach(
           item => {

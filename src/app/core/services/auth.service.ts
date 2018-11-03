@@ -132,7 +132,7 @@ export class AuthService {
   }
 
   private updateUserData(user, link) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
+    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`); // ToDo: Lock down users collection.
     const data: User = {
       uid: user.uid,
       email: user.email,

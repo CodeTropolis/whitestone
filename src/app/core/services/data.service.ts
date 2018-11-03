@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap, shareReplay } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 

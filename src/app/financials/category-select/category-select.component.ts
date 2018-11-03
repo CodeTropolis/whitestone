@@ -26,6 +26,8 @@ export class CategorySelectComponent implements OnInit {
 
   ngOnInit() {
 
+    this.dataService.currentChild$.next(null); // Wipe out previously selected student else previous student will show upon entering financials.
+
     this.childrenOfRecord = this.dataService.childrenOfRecord;
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);

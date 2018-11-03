@@ -1,17 +1,18 @@
-<div *ngIf="!currentChild; else ready">
+<!-- <div *ngIf="!currentChild; else ready">
   <app-progress-spinner></app-progress-spinner>
   <h3>Please select a student.</h3>
-</div>
+</div> -->
 
+<app-header title="Children of Record | Financials"  link="/record-list" linkName="Back to Record List"></app-header>
 <mat-card>
   <ul class="availableChildren" *ngFor="let child of childrenOfRecord">
     <li><a [routerLink]="" (click)="createFinancialDoc(child)"> {{child.fname}} {{child.lname}} | Grade: {{child.grade}}</a></li>
   </ul>
 </mat-card>
 
-<ng-template #ready>
+<!-- <ng-template #ready> -->
 
-  <app-header title="Financial Entry" link="/record-list" linkName="Back to Record List"></app-header>
+  <!-- <app-header title="Financial Entry"></app-header> -->
 
   <mat-card>
     <mat-card-header>
@@ -21,11 +22,12 @@
       </div>
 
       <mat-card-title>
-        <h3>Financial status for {{currentChild.fname}} {{currentChild.lname}}</h3>
+        <h3>Financial status for <span *ngIf="currentChild; else selectChild">{{currentChild.fname}} {{currentChild.lname}}</span></h3>
+        <ng-template #selectChild>(Select a student)</ng-template>
       </mat-card-title>
 
       <div class="buttons">
-        <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
+        <button [disabled] = "!currentChild" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
       </div>
     </mat-card-header>
 
@@ -34,6 +36,6 @@
     </mat-card-content>
   </mat-card>
 
-  <app-header title="Children of Record"></app-header>
+  
 
-</ng-template>
+<!-- </ng-template> -->
