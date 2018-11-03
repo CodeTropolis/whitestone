@@ -43,7 +43,9 @@ export class CategorySelectComponent implements OnInit {
 
   }
 
-  public createFinancialDoc(child){
+  // Non admins cannot create a doc and this should already exist by the 
+  // time the non-admin user attempts to view. 
+  public createFinancialDoc(child){ 
     this.dataService.createFinancialDoc(child);
   }
 
