@@ -17,16 +17,33 @@ export class CategorySelectComponent implements OnInit {
   public showAvatarSpinner: boolean;
   public user$: Observable<any>;
   public childrenOfRecord: any[] =[];
+  public financialDocExists: boolean = true;
+  public currentRecord: any;
 
   private spinnerSubscribe: any;
   private subscriptions: any[] = [];
 
-  constructor( private dataService: DataService, private financialsService: FinancialsService) { }
+  constructor( public dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
 
-    this.dataService.currentChild$.next(null); // Wipe out previously selected student else previous student will show upon entering financials.
+    this.currentRecord = this.dataService.currentRecord;
 
+    this.subscriptions.push(
+      this.dataService.currentFinancialDoc$.subscribe(doc => {
+        if(doc){
+          if(doc.exists){
+            //console.log('TCL: CategorySelectComponent -> ngOnInit -> doc.exists', doc.exists);
+            this.financialDocExists = true;
+          }else{
+            this.financialDocExists = false;
+            //console.log('TCL: CategorySelectComponent -> ngOnInit -> doc.exists', doc.exists);
+          }
+        }
+      })
+    )
+
+    this.dataService.currentChild$.next(null); // Wipe out previously selected student else previous student will show upon entering financials.
     this.childrenOfRecord = this.dataService.childrenOfRecord;
     this.categories = this.financialsService.categories;
     this.currentChildSubscription = this.dataService.currentChild$.subscribe(child => this.currentChild = child);
