@@ -34,23 +34,23 @@
 					<button mat-icon-button [matMenuTriggerFor]="menu" (click)="setCurrentRecord(row)">
 						<mat-icon>more_vert</mat-icon>
 					</button>
-
 					<mat-menu #menu="matMenu">
+						<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal', row)">
+							<!-- <mat-icon>info</mat-icon> -->
+							<span>Family Contact Info</span>
+						</button>
+						<button *ngIf="userIsAdmin" [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
+							<span>Update Family Record</span>
+						</button>
 						<button [disabled]="isUpdating" mat-menu-item (click)="toggleChildTable(row)">
 							<span *ngIf="!showChildren[row.realId]">Show Children</span>
 							<span *ngIf="showChildren[row.realId]">Hide Children</span>
-						</button>
-						<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal', row)">
-							<!-- <mat-icon>info</mat-icon> -->
-							<span>View Family Record</span>
-						</button>
-						<button [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
-							<span>Update Family Record</span>
 						</button>
 						<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../financials']">
 							<span>Financials</span>
 						</button>
 					</mat-menu>
+
 				</mat-cell>
 			</ng-container>
 
@@ -62,26 +62,6 @@
 					<!-- <mat-row (click)="onRowClicked(row)"></mat-row> -->
 					<mat-row></mat-row>
 					<app-child-table *ngIf="showChildren[row.realId]" [record]="row"></app-child-table>
-
-					<div *ngIf="showChildren[row.realId]" class="actions">
-
-						<!-- <button *ngIf="userIsAdmin" [disabled]="isUpdating" mat-flat-button color="primary" (click)="prepFormToUpdate(row)">Update
-							Record</button> -->
-
-						<!-- <div *ngIf="userIsAdmin" class="delete-buttons">
-
-							<button *ngIf="!isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="warn" (click)="aboutToDelete(row)">
-								<i class="material-icons">delete_forever</i>
-							</button>
-
-							<button *ngIf="isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="warn" (click)="deleteRecord(row)">
-								<i class="material-icons">delete_forever</i>
-								Delete Permanently</button>
-
-							<button *ngIf="isDeleting[row.realId]" [disabled]="isUpdating" mat-flat-button color="primary" (click)="aboutToDelete(row)">
-								Cancel Deletion</button>
-						</div> -->
-					</div>
 				</div>
 			</ng-container>
 		</mat-table>
@@ -94,6 +74,33 @@
 </ng-template>
 
 <jw-modal id="record-modal">
-	<pre>Surname: {{currentRecord | json}}</pre>
-	<button (click)="closeModal('record-modal');">Close</button>
+	<!-- <pre>Surname: {{currentRecord | json}}</pre> -->
+
+	<div *ngIf="currentRecord">
+
+		<mat-card>
+
+			<mat-card-header>
+				<mat-card-title>Contact Information For: {{currentRecord.surname}}</mat-card-title>
+				<mat-card-subtitle>{{currentRecord.address}} {{currentRecord.city}}, {{ currentRecord.state}} {{currentRecord.zip}}</mat-card-subtitle>
+				<mat-card-subtitle>School District: {{currentRecord.district}}</mat-card-subtitle>
+				<mat-card-subtitle>Is Catholic: {{currentRecord.catholic}}</mat-card-subtitle>
+			</mat-card-header>
+
+			<mat-card-header>
+				<mat-card-title>Father/Guardian: {{currentRecord.fatherFname}} {{currentRecord.fatherLname}}</mat-card-title>
+				<mat-card-subtitle>{{currentRecord.fatherEmail}}</mat-card-subtitle>
+				<mat-card-subtitle *ngFor="let fPhone of currentRecord.fatherPhones | mapToIterable ">{{fPhone['val'].number}} | {{fPhone['val'].type}}</mat-card-subtitle>
+			</mat-card-header>
+
+			<mat-card-header>
+				<mat-card-title>Mother/Guardian: {{currentRecord.motherFname}} {{currentRecord.motherLname}}</mat-card-title>
+				<mat-card-subtitle>{{currentRecord.motherEmail}}</mat-card-subtitle>
+				<mat-card-subtitle *ngFor="let mPhone of currentRecord.motherPhones | mapToIterable ">{{mPhone['val'].number}} | {{mPhone['val'].type}}</mat-card-subtitle>
+			</mat-card-header>
+
+		</mat-card>
+
+	</div>
+	<!-- <button (click)="closeModal('record-modal');">Close</button> -->
 </jw-modal>

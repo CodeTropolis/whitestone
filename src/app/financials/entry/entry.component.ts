@@ -57,7 +57,7 @@ export class EntryComponent implements OnInit {
 
     this.subscriptions.push(
       this.dataService.currentFinancialDoc$.subscribe(doc => {
-      console.log('TCL: ngOnInit -> doc', doc);
+      //console.log('TCL: ngOnInit -> doc', doc);
       this.currentFinancialDoc = doc;
       this.viewIsReady = false; // When a student is clicked, the student's financial doc is 'next'd'.  Change the view to false so we don't see previous student's data.
       })

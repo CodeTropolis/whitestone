@@ -14,7 +14,6 @@ export class DataService {
   public childrenOfRecord: any[] = [];
   public currentRecord: any;
   public currentFinancialDoc$ = new BehaviorSubject<any>(null);
- // public financialDocExists: boolean;
 
   constructor(private firebaseService: FirebaseService, private authService: AuthService, private router: Router) { }
 
@@ -55,13 +54,7 @@ export class DataService {
     } else { // Else a non-admin user so retrieve only
       this.firebaseService.financialsCollection.doc(child.id).ref.get()
         .then(doc => {
-          this.currentFinancialDoc$.next(doc); // the doc object has an 'exist' property
-            // if (doc){
-            //   this.currentFinancialDoc$.next(doc);
-            //   this.financialDocExists = true;
-            // }else{
-            //   this.financialDocExists = false;
-            // }
+          this.currentFinancialDoc$.next(doc); 
         })
     }
   }

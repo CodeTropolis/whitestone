@@ -27,7 +27,10 @@ export class RecordListComponent implements OnInit {
   public userIsSubcriber: boolean = false;
   public recordMatch: boolean;
 
-  public currentRecord: any; // For modal
+  // For modal
+  public currentRecord: any;
+  public modalTableDataSource: MatTableDataSource<any>;
+  public displayedColumnsModal = ['fatherEmail','motherEmail', 'address', 'catholic'];
 
   private subscriptions: any[] = [];
   private matchingRecords: any[] = [];
@@ -61,57 +64,33 @@ export class RecordListComponent implements OnInit {
       })
     )
 
-    // if(this.authService.user['roles'].admin){
-    //   this.userIsAdmin = true;
-    // }
-
-
-    // if(this.authService.user['roles'].subscriber){
-    //   this.userIsSubcriber = true;
-    // }
-
     this.subscriptions.push(
       this.fs.records$.subscribe(x => {
         //The admin will always have subscriber:true so filter out the admin user
         if (this.userIsSubcriber && !this.userIsAdmin) {
           // Do not do record match logic if user is admin. 
-          console.log('User is a subscriber')
           x.forEach(record => {
             if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
-              // console.log('TCL: RecordListComponent -> ngOnInit -> record.motherEmail', record.motherEmail);
-              //console.log('TCL: RecordListComponent -> ngOnInit -> record.fatherEmail', record.fatherEmail);
-
               this.matchingRecords.push(record);
-              //console.log('Matched doc: ', record);
+              // this.ds: Data for table for Available Records
               this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an arrray.
               this.recordMatch = true;
-
-              // Simply 'else' will not work as the a document that does not match will still be evaluated and the following would execute.
             }
-            // else if (this.matchingRecords.length < 1 ){ 
-            //   console.log(`No matching records`); // this fires even when records match...?
-            //   this.recordMatch = false;
-            // }
           })
         } else if (this.userIsAdmin) {
           this.ds = new MatTableDataSource(x);
-          console.log('User is admin');
         }
-
         if (this.ds) { // Prevent error in console if no records.
           this.ds.filterPredicate = (data, filter) => {
-            let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname + data.district + data.catholic;
+            let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
             const children = this.dataService.convertMapToArray(data.children);
             children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
             dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
             return dataStr.indexOf(filter) != -1;
           }
-
           this.ds.paginator = this.paginator;
           this.ds.sort = this.sort;
         }
-
-
       })
     )
 
@@ -143,6 +122,7 @@ export class RecordListComponent implements OnInit {
 
   public setCurrentRecord(record){
     this.dataService.setCurrentRecord(record);
+    this.modalTableDataSource = new MatTableDataSource([record]); // data source must be an arrray.
   }
 
   toggleChildTable(row) {
