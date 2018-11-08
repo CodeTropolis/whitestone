@@ -27,7 +27,7 @@ export class FinancialsService {
     }
   }
 
-  public setCategoryAndStrings(cat: any) {
+  public setCategoryAndStrings(cat: any) { // Set by category-select.component.
     this.currentCategory$.next(cat); // entry.component listens for this.
     // Other components in this module such as history will need some of these keys
     this.startingBalanceKey$.next(cat.key + 'StartingBalance');
@@ -40,18 +40,22 @@ export class FinancialsService {
   }
 
   public clearTransactionsObservableAndArray() {
+    //console.log('TCL: FinancialsService -> publicclearTransactionsObservableAndArray'); //this gets called 3 times sometimes when clicking History
     this.transactions = [];
-    this.transactions$.next(0);
+    this.transactions$.next(null);
   }
 
   public getTransactions(currentFinancialDoc, collection) {
     const type = collection.includes('Payment') ? 'Payment' : 'Charge'
     currentFinancialDoc.ref.collection(collection).get()
       .then(snapshot => {
+        //console.log('TCL: FinancialsService -> publicgetTransactions -> snapshot', snapshot);
         snapshot.forEach(
           item => {
+            this.transactions = []; // Doing this here along with clearTransactionsObservableAndArray to prevent double entry.  Why isnt clearTransactionsObservableAndArray sufficient?
             let date = item.data().date.toDate();
             this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
+            console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
             this.transactions$.next(this.transactions);
           }
         )

@@ -33,6 +33,8 @@ export class HistoryComponent implements OnInit {
 
   ngOnInit() {
 
+    console.log(`history init`);
+
     this.subscriptions.push(
       this.authService.userIsAdmin$.subscribe(x => {
        this.userIsAdmin = x;
@@ -53,9 +55,13 @@ export class HistoryComponent implements OnInit {
 
     this.dataService.currentFinancialDoc$.subscribe(doc => {
       this.currentFinancialDoc = doc;
-      //console.log('TCL: HistoryComponent -> ngOnInit -> this.dataService.currentFinancialDoc$', this.currentFinancialDoc);
+      this.setupHistory();
     });
 
+  }
+
+  private setupHistory(){
+    console.log(`setupHistory`);
     this.subscriptions.push(
       this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
     );
@@ -75,13 +81,14 @@ export class HistoryComponent implements OnInit {
 
     this.financialsService.transactions$.subscribe(x => {
       if (x) {
+        //console.log('TCL: HistoryComponent ->financialsService.transactions$.subscribe -> x', x); 
         this.tableData = new MatTableDataSource(x);
         this.tableData.sort = this.sort;
       } else {
         this.tableData = null; // Set tableData to null in order to meet conditional in history view: <mat-table *ngIf="tableData" [dataSource]="tableData" matSort>
       }
-
     });
+
   }
 
   deleteTransaction(id: string, type: string, amount: number) {
