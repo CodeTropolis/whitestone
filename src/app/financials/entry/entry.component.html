@@ -1,42 +1,29 @@
-<div *ngIf="category && viewIsReady">
-    <br>
-    <div *ngIf="!showInputForStartingBalance">
-        <pre><strong>{{category.val}}</strong> Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}<span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></pre>
-        <button *ngIf="userIsAdmin"  mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
-        <button *ngIf="userIsAdmin" mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
-        <!-- <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button> -->
-        <button mat-flat-button color="primary" (click)="toggleHistory()">History</button>
-        <br>
+<app-header title="Financials for Surname: {{currentRecord.surname}}"  link="/record-list" linkName="Back to Record List"></app-header>
+
+<mat-card>
+  
+<div class="flex-container space-evenly">
+    <mat-card-header>
+      <div mat-card-avatar>
+        <i class="material-icons account-circle">account_circle</i>
+      </div>
+      <mat-card-title>
+        <h2>Financial status for 
+          <span *ngIf="currentStudent; else selectStudent">{{currentStudent.fname}} {{currentStudent.lname}} </span>
+        </h2>
+        <ng-template #selectStudent>(Select a student)</ng-template>
+      </mat-card-title>
+    </mat-card-header>
+  
+    <div class="students">
+      <h3>Students in this Record:</h3>
+      <ul *ngFor="let student of studentsOfRecord">
+        <li><a [routerLink]="" (click)="setupFinancialDoc(student)"> {{student.fname}} {{student.lname}} | Grade: {{student.grade}}</a></li>
+      </ul>
     </div>
-    <h4 *ngIf="showInputForStartingBalance && !userIsAdmin">Financial data not yet present for {{category.val}}</h4>
-    <form *ngIf="showForm && userIsAdmin" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-        <!-- check for falsy for startingBalance will not suffice for balance entry of zero -->
-        <div style="display:inline;" *ngIf="showInputForStartingBalance">
-            <p><strong>Enter starting balance for {{category.val}}</strong></p>
-            <mat-form-field>
-                <input matInput type=number step=0.01 placeholder="{{category.val}} Start Bal." formControlName="amount">
-            </mat-form-field>
-        </div>
-
-        <mat-form-field *ngIf="isEnteringPayment">
-            <input matInput type=number step=0.01 placeholder="{{category.val}} Payment" formControlName="amount">
-        </mat-form-field>
-
-        <mat-form-field *ngIf="isEnteringCharge">
-            <input matInput type=number step=0.01 placeholder="{{category.val}} Charge" formControlName="amount">
-        </mat-form-field>
-
-        <mat-form-field>
-            <input matInput [matDatepicker]="transactionDatePicker" placeholder="Date" formControlName="date">
-            <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #transactionDatePicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field>
-            <input matInput type=text placeholder="Memo" formControlName="memo">
-        </mat-form-field>
-
-        <button mat-flat-button color="primary" [disabled]="!formGroup.valid || disableSubmitButton" type="submit">Submit</button>
-    </form>
 </div>
-<app-history *ngIf="showHistory"></app-history>
+
+</mat-card>
+
+
+<!-- {{childrenOfRecord | json}} -->
