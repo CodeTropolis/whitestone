@@ -1,6 +1,6 @@
-<!-- History Table | Current finanical doc: {{currentFinancialDoc.ref.id}} -->
-<h4 *ngIf="currentCategory"  class="heading"> {{currentChild.fname}} {{currentChild.lname}}'s {{currentCategory.val}} History</h4>
-<mat-table *ngIf="tableData && currentCategory" [dataSource]="tableData" matSort>
+<div  *ngIf="tableData && currentCategory">
+<h4  class="heading"> {{currentChild.fname}} {{currentChild.lname}}'s {{currentCategory.val}} History</h4>
+<mat-table [dataSource]="tableData" matSort>
   <ng-container matColumnDef="amount">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
     <mat-cell *matCellDef="let row">
@@ -36,3 +36,5 @@
   <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
 </mat-table>
+
+</div>

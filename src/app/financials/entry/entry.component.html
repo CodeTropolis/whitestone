@@ -4,8 +4,8 @@
         <pre><strong>{{category.val}}</strong> Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}<span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></pre>
         <button *ngIf="userIsAdmin"  mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
         <button *ngIf="userIsAdmin" mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
-        <!-- <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button> -->
-        <button mat-flat-button color="primary" (click)="toggleHistory()">History</button>
+        <button *ngIf="paymentsCollectionExists || chargesCollectionExists" mat-flat-button color="primary" (click)="toggleHistory()">History</button>
+        
         <br>
     </div>
     <h4 *ngIf="showInputForStartingBalance && !userIsAdmin">Financial data not yet present for {{category.val}}</h4>

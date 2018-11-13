@@ -70,8 +70,12 @@ export class HistoryComponent implements OnInit {
 
   private setupHistory(){
     console.log(`setupHistory`);
+
+    // Subscribe to get the name of the charges collections based on category
     this.subscriptions.push(
-      this.financialsService.chargesCollection$.subscribe(collection => this.chargesCollection = collection)
+      this.financialsService.chargesCollection$.subscribe(collection => {
+        this.chargesCollection = collection;
+      })
     );
     this.subscriptions.push(
       this.financialsService.paymentsCollection$.subscribe(collection => this.paymentsCollection = collection)

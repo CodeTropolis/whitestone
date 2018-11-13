@@ -75,7 +75,6 @@ export class EntryComponent implements OnInit {
      })
    );
 
-    this.showHistoryButton = false;
     this.showForm = false;  
 
     // Listen for category selection from category-select.component
@@ -86,6 +85,29 @@ export class EntryComponent implements OnInit {
           if (x != null) {  // Because the body of the subscribe is ran on init, make sure nothing happens until a category is selected.
 
             this.category = x;
+						console.log("​ngOnInit -> this.category", this.category)
+
+            // check if a charges or payment subcollection exists in the currentFinancial Doc for the 
+            // selected category in order to determine whether to show history button or not.
+
+            this.currentFinancialDoc.ref.collection(this.category.key + 'Charges').get()
+              .then(sub => {
+                if (sub.docs.length > 0) {
+                 this.chargesCollectionExists = true;
+                }else{
+                  this.chargesCollectionExists = false;
+                }
+              })
+
+              this.currentFinancialDoc.ref.collection(this.category.key + 'Payments').get()
+                .then(sub => {
+                  if (sub.docs.length > 0) {
+                    this.paymentsCollectionExists= true;
+                  }else{
+                    this.paymentsCollectionExists = false;
+                  }
+                })
+           
 
             this.viewIsReady = false; // Set to false again upon category select.
 
@@ -94,12 +116,9 @@ export class EntryComponent implements OnInit {
             // Change to false here if resetForm isn't hit.
             this.disableSubmitButton = false;
 
-            this.showHistoryButton = false;
             this.showForm = false; // Make sure form is hidden upon category selection until ready as determined in getBlance(), enterPayment(), and enterCharge()
-            this.paymentsCollectionExists = false;
-            this.chargesCollectionExists = false;
-
-            this.showHistory = false;
+  
+          
 
             // Obtain keys and collection names (tuitionPayments, tuitionCharges, lunchPayments, etc) based on current category
             // Keys and collections strings should always come from one source: financials.service.
@@ -209,7 +228,6 @@ export class EntryComponent implements OnInit {
       .then(_ => {
         this.financialsService.runningBalanceForCurrentCategory$.next(this.balance);
         this.resetForm(fd);
-        this.showHistoryButton = true;
         // Run through getTransactions in order to update history table after a payment or charge has been entered.
         this.financialsService.clearTransactionsObservableAndArray();
         this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
