@@ -7,11 +7,19 @@ jw-modal {
     .jw-modal {
         /* modal container fixed across whole screen */
         position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
- 
+        // top: 0;
+        // right: 0;
+        // bottom: 0;
+        // left: 0;
+
+        // ToDo: Control size and position via component that uses the modal
+        width: 600px;
+        height: auto;
+        top: 25%;
+        left: 50%;
+        margin-top: -250px; /* Negative half of height. */
+        margin-left: -300px; /* Negative half of width. */
+        
         /* z-index must be higher than .jw-modal-background */
         z-index: 1000;
          

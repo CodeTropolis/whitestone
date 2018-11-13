@@ -30,7 +30,7 @@
 			<ng-container matColumnDef="actions">
 				<mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
 				<mat-cell class="actions" *matCellDef="let row">
-
+					<!-- Current record is set upon clicking the 3 vertical dots (more menu) -->
 					<button mat-icon-button [matMenuTriggerFor]="menu" (click)="setCurrentRecord(row)">
 						<mat-icon>more_vert</mat-icon>
 					</button>
@@ -102,5 +102,5 @@
 		</mat-card>
 
 	</div>
-	<!-- <button (click)="closeModal('record-modal');">Close</button> -->
+	<button class="close-modal" (click)="closeModal('record-modal');">Close</button>
 </jw-modal>

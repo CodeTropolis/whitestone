@@ -29,11 +29,19 @@ export class HistoryComponent implements OnInit {
   public userIsAdmin: boolean = false;
   public userIsSubcriber: boolean = false;
 
+  public currentChild: any;
+  public currentCategory: string;
+
   constructor(private authService: AuthService, private dataService: DataService, private financialsService: FinancialsService) { }
 
   ngOnInit() {
 
-    console.log(`history init`);
+    this.dataService.currentChild$.subscribe(child => {
+      this.currentChild = child;
+    });
+    this.financialsService.currentCategory$.subscribe(category => {
+      this.currentCategory = category;
+    })
 
     this.subscriptions.push(
       this.authService.userIsAdmin$.subscribe(x => {

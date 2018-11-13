@@ -1,5 +1,6 @@
 <!-- History Table | Current finanical doc: {{currentFinancialDoc.ref.id}} -->
-<mat-table *ngIf="tableData" [dataSource]="tableData" matSort>
+<h4 *ngIf="currentCategory"  class="heading"> {{currentChild.fname}} {{currentChild.lname}}'s {{currentCategory.val}} History</h4>
+<mat-table *ngIf="tableData && currentCategory" [dataSource]="tableData" matSort>
   <ng-container matColumnDef="amount">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
     <mat-cell *matCellDef="let row">

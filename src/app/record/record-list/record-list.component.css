@@ -25,4 +25,8 @@ ng-container.admin {margin-bottom: 5em;}
 .delete-buttons {float:right;}
 .delete-buttons button {margin-left: 1em;}
 
-/* jw-modal#record-modal .jw-modal {width: 40% !important;} */
+.close-modal {
+  display: block;
+  margin: 1em auto 0 auto;
+  width: 46px;
+}
