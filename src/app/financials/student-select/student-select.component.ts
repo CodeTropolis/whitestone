@@ -1,21 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
-  selector: 'app-entry',
-  templateUrl: './entry.component.html',
-  styleUrls: ['./entry.component.css']
+  selector: 'app-student-select',
+  templateUrl: './student-select.component.html',
+  styleUrls: ['./student-select.component.css']
 })
-export class EntryComponent implements OnInit {
+export class StudentSelectComponent implements OnInit {
 
   public currentRecord: any;
   public studentsOfRecord: any[] = [];
-  public currentStudent: any;
+  public currentStudent$: BehaviorSubject<any>;
 
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
   ngOnInit() {
+
+    this.currentStudent$ = this.financialsService.currentStudent$; // auto subscribe via async
 
     // currentRecord set by the 'more' menu on available records.
     this.currentRecord = this.dataService.currentRecord;
@@ -30,8 +33,7 @@ export class EntryComponent implements OnInit {
   }
 
   public setupFinancialDoc(student){ 
-    this.dataService.setupFinancialDoc(student);
-    this.currentStudent = student;
+    this.financialsService.setupFinancialDoc(student); // Also sets current student (as a behavior subject)
   }
 
 }

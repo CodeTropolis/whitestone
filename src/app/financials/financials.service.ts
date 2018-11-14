@@ -1,65 +1,58 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { FirebaseService } from '../core/services/firebase.service';
+import { AuthService } from '../core/services/auth.service';
+import { DataService } from '../core/services/data.service';
 
 @Injectable()
 export class FinancialsService {
+
   public categories: any;
-  public currentCategory$ = new BehaviorSubject<string>(null);
-  public startingBalanceKey$ = new BehaviorSubject<string>(null);
-  public startingBalanceDateKey$ = new BehaviorSubject<string>(null);
-  public startingBalanceMemoKey$ = new BehaviorSubject<string>(null);
-  public balanceKey$ = new BehaviorSubject<string>(null);
-  public paymentsCollection$ = new BehaviorSubject<string>(null);
-  public chargesCollection$ = new BehaviorSubject<string>(null);
-  public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null);
-  public transactions$ = new BehaviorSubject<any>(null);
-  // set to false so that avatar spinner on category-select.component does not show initially
-  public showAvatarSpinner$ = new BehaviorSubject<boolean>(false);
-  private transactions: any[] = [];
+  public currentStudent$ = new BehaviorSubject<any>(null);
+  public currentFinancialDoc$ = new BehaviorSubject<any>(null); // Each student has own financial doc
 
+  constructor(private firebaseService: FirebaseService, 
+              private authService: AuthService, 
+              private dataService: DataService) {
 
-  constructor() {
     this.categories = {
       tuition: 'Tuition',
       lunch: 'Lunch',
       extendedCare: 'Extended Care',
       misc: 'Misc',
     }
-  }
-
-  public setCategoryAndStrings(cat: any) { // Set by category-select.component.
-    this.currentCategory$.next(cat); // entry.component listens for this.
-    // Other components in this module such as history will need some of these keys
-    this.startingBalanceKey$.next(cat.key + 'StartingBalance');
-    this.startingBalanceDateKey$.next(cat.key + 'StartingBalanceDate');
-    this.startingBalanceMemoKey$.next(cat.key + 'StartingBalanceMemo');
-    this.balanceKey$.next(cat.key + 'Balance');
-    this.paymentsCollection$.next(cat.key + 'Payments');
-    this.chargesCollection$.next(cat.key + 'Charges');
 
   }
 
-  public clearTransactionsObservableAndArray() {
-    //console.log('TCL: FinancialsService -> publicclearTransactionsObservableAndArray'); //this gets called 3 times sometimes when clicking History
-    this.transactions = [];
-    this.transactions$.next(null);
-  }
+  // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
+  // Outside of if (!snapshot.exists) because this needs to be done for future as well as existing financial docs.
 
-  public getTransactions(currentFinancialDoc, collection) {
-    const type = collection.includes('Payment') ? 'Payment' : 'Charge'
-    currentFinancialDoc.ref.collection(collection).get()
-      .then(snapshot => {
-        //console.log('TCL: FinancialsService -> publicgetTransactions -> snapshot', snapshot);
-        snapshot.forEach(
-          item => {
-            this.transactions = []; // Doing this here along with clearTransactionsObservableAndArray to prevent double entry.  Why isnt clearTransactionsObservableAndArray sufficient?
-            let date = item.data().date.toDate();
-            this.transactions.push({ id: item.id, amount: item.data().amount, type: type, date: date, memo: item.data().memo });
-            console.log('TCL: FinancialsService -> publicgetTransactions -> this.transactions', this.transactions);
-            this.transactions$.next(this.transactions);
-          }
+  public setupFinancialDoc(student) {
+    this.currentStudent$.next(student); 
+    // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
+    if (this.authService.user['roles'].admin) {
+      this.firebaseService.financialsCollection.doc(student.id)
+        .set({
+          recordId: this.dataService.currentRecord.realId,
+          fatherEmail: this.dataService.currentRecord.fatherEmail,
+          motherEmail: this.dataService.currentRecord.motherEmail,
+          childFirstName: student.fname,
+          childLastName: student.lname,
+        },
+          { merge: true }
         )
-      })
-
+        .then(_ => { // Set the current financial doc
+          this.firebaseService.financialsCollection.doc(student.id).ref.get()
+            .then(doc => {
+              this.currentFinancialDoc$.next(doc);
+            })
+        })
+    } else { // Else a non-admin user so retrieve only
+      this.firebaseService.financialsCollection.doc(student.id).ref.get()
+        .then(doc => {
+          this.currentFinancialDoc$.next(doc); 
+        })
+    }
   }
+
 }

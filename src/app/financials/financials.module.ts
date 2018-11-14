@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '../core/core.module';
 import { FinancialsRoutingModule } from './financials-routing.module';
 import { FinancialsService } from './financials.service';
-import { EntryComponent } from './entry/entry.component';
+import { StudentSelectComponent } from './student-select/student-select.component';
 
 
 @NgModule({
@@ -10,7 +10,7 @@ import { EntryComponent } from './entry/entry.component';
     CoreModule,
     FinancialsRoutingModule,
   ],
-  declarations: [EntryComponent],
+  declarations: [StudentSelectComponent],
   providers: [FinancialsService]
 })
 export class FinancialsModule { }

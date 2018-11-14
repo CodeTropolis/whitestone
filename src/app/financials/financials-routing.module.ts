@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { EntryComponent } from './entry/entry.component'
+import { StudentSelectComponent } from './student-select/student-select.component'
 
 const routes: Routes = [
-  {path: '',component: EntryComponent},
+  {path: '',component: StudentSelectComponent},
 ];
 
 @NgModule({
