@@ -24,11 +24,14 @@ export class FinancialsService {
 
   }
 
+  public setCurrentStudent(student){
+    this.currentStudent$.next(student); 
+  }
+
   // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
   // Outside of if (!snapshot.exists) because this needs to be done for future as well as existing financial docs.
 
   public setupFinancialDoc(student) {
-    this.currentStudent$.next(student); 
     // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
     if (this.authService.user['roles'].admin) {
       this.firebaseService.financialsCollection.doc(student.id)

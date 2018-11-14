@@ -5,6 +5,7 @@
   }
 
 button { 
+  float:right;
   width: 150px;
   margin: 0.5em 0 0 0;
 }
@@ -19,7 +20,7 @@ button {
     display: flex;
   }
 
-  h2 {margin-top: 1.25em;}
+  h2 {margin-top: 2.25em;}
   h3 {margin-bottom: 0.5em;}
 
   .space-evenly { 

@@ -18,7 +18,7 @@ export class StudentSelectComponent implements OnInit {
 
   ngOnInit() {
 
-    this.currentStudent$ = this.financialsService.currentStudent$; // auto subscribe via async
+    this.currentStudent$ = this.financialsService.currentStudent$; // auto subscribe via async.
 
     // currentRecord set by the 'more' menu on available records.
     this.currentRecord = this.dataService.currentRecord;
@@ -32,8 +32,10 @@ export class StudentSelectComponent implements OnInit {
    
   }
 
-  public setupFinancialDoc(student){ 
-    this.financialsService.setupFinancialDoc(student); // Also sets current student (as a behavior subject)
+  public setCurrentStudentAndFinancialDoc(student){ 
+    this.financialsService.setCurrentStudent(student);
+    this.financialsService.setupFinancialDoc(student);
   }
 
 }
+
