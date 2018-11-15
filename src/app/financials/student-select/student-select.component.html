@@ -10,6 +10,7 @@
             <span *ngIf="currentStudent$ | async as currentStudent; else selectStudent">{{currentStudent.fname}} {{currentStudent.lname}} </span>
           </h2>
           <ng-template #selectStudent>(Select a student)</ng-template>
+          <app-entry-category></app-entry-category>
         </mat-card-title>
       </mat-card-header>
     
@@ -20,5 +21,4 @@
         </div>
       </div>
   </div>
-  <app-entry-category></app-entry-category>
 </mat-card>

@@ -1,4 +1,3 @@
-<button *ngFor="let cat of categories | mapToIterable" mat-flat-button color="primary"
- (click)="setCategoryAndFinancialDocPropsAndCollections(cat)">{{cat.val}}</button>
-<hr>
+<button [disabled]="!enableButtons"  mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategoryPropsAndCollections(cat)">{{cat.val}}</button>
+
  {{currentCategory | json}}

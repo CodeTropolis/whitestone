@@ -9,7 +9,8 @@ import { FinancialsService } from '../financials.service';
 export class EntryCategoryComponent implements OnInit {
 
   public categories: any[] =[];
-  public currentCategory: string;
+  public currentCategory: any;
+  public currentFinancialDoc: any;
 
   public startingBalanceKey: string;
   public startingBalanceDateKey: string;
@@ -17,17 +18,65 @@ export class EntryCategoryComponent implements OnInit {
   public startingBalance: number;
   public balanceKey: string;
 
-  private paymentsCollection: string;
+
+  public enableButtons: boolean;
+
   private chargesCollection: string;
+  private paymentsCollection: string;
+    
+  private subscriptions: any[] = [];
 
   constructor(private financialsService: FinancialsService) { }
 
   ngOnInit() {
+
     this.categories = this.financialsService.categories;
+
+    this.subscriptions.push(
+        this.financialsService.currentStudent$.subscribe(student =>{
+        if(student){
+          this.enableButtons = true;
+        }else{
+          this.enableButtons = false;
+        }
+      })
+    )
+    // Current financail doc set by student-select.component.
+    this.subscriptions.push(
+      this.financialsService.currentFinancialDoc$.subscribe(doc => this.currentFinancialDoc = doc)
+    )
+
   }
 
-  public setCategoryAndFinancialDocPropsAndCollections(category){
-    this.currentCategory = category;
+  public setCategoryPropsAndCollections(cat){
+    this.currentCategory = cat;
+    this.startingBalanceKey = cat.key + 'StartingBalance';
+    this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
+    this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
+    this.balanceKey = cat.key + 'StartingBalance';
+    this.chargesCollection = cat.key + 'Charges';
+    this.paymentsCollection = cat.key + 'Payments';
+    this.checkForBalance();
+  }
+
+  private checkForBalance(){
+    this.currentFinancialDoc.ref.get().then( 
+      snapshot => { 
+        if (snapshot.data()[this.startingBalanceKey] || snapshot.data()[this.startingBalanceKey] === 0) { // Important to check for a balance value of zero.
+          this.startingBalance = snapshot.data()[this.startingBalanceKey];
+        } else {
+          this.startingBalance = null;
+          console.log(`No starting balance present for ${this.currentCategory.val}`)
+        }
+      }
+    )
+  }
+
+  
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => {
+      sub.unsubscribe();
+    });
   }
 
 }

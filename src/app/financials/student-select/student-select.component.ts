@@ -17,19 +17,18 @@ export class StudentSelectComponent implements OnInit {
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
   ngOnInit() {
-
-    this.currentStudent$ = this.financialsService.currentStudent$; // auto subscribe via async.
-
     // currentRecord set by the 'more' menu on available records.
     this.currentRecord = this.dataService.currentRecord;
-
     if (this.currentRecord){
-       // Get all the children of the currentRecord. 
-      this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children)
-    }else{
-      console.log('There is an issue with obtaining the current record');
-    }
-   
+      // Get all the children of the currentRecord. 
+     this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children)
+   }else{
+     console.log('There is an issue with obtaining the current record');
+   }
+    // Set currentStudent to null so that we don't have a student set from previous use of this component.
+    this.financialsService.currentStudent$.next(null); 
+    // Listen for currentStudent selection 
+    this.currentStudent$ = this.financialsService.currentStudent$;
   }
 
   public setCurrentStudentAndFinancialDoc(student){ 
@@ -38,4 +37,3 @@ export class StudentSelectComponent implements OnInit {
   }
 
 }
-
