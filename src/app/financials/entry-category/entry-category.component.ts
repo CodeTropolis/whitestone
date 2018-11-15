@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-entry-category',
@@ -18,17 +19,20 @@ export class EntryCategoryComponent implements OnInit {
   public startingBalance: number;
   public balanceKey: string;
 
-
   public enableButtons: boolean;
+
+  public formGroup: FormGroup;
 
   private chargesCollection: string;
   private paymentsCollection: string;
     
   private subscriptions: any[] = [];
 
-  constructor(private financialsService: FinancialsService) { }
+  constructor(private financialsService: FinancialsService, private fb: FormBuilder) { }
 
   ngOnInit() {
+
+    this.setFormControls();
 
     this.categories = this.financialsService.categories;
 
@@ -41,7 +45,7 @@ export class EntryCategoryComponent implements OnInit {
         }
       })
     )
-    // Current financail doc set by student-select.component.
+    // Current financial doc set by student-select.component.
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc => this.currentFinancialDoc = doc)
     )
@@ -66,13 +70,20 @@ export class EntryCategoryComponent implements OnInit {
           this.startingBalance = snapshot.data()[this.startingBalanceKey];
         } else {
           this.startingBalance = null;
-          console.log(`No starting balance present for ${this.currentCategory.val}`)
+         // console.log(`No starting balance present for ${this.currentCategory.val}`)
         }
       }
     )
   }
 
-  
+  private setFormControls() {
+    this.formGroup = this.fb.group({
+      amount: ['', Validators.required],
+      date: ['', Validators.required],
+      memo: ['', Validators.required],
+    });
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();

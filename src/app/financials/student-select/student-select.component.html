@@ -15,7 +15,7 @@
       </mat-card-header>
     
       <div class="students">
-        <h3>Students in this Record:</h3>
+        <h3>Students:</h3>
         <div *ngFor="let student of studentsOfRecord">
           <button mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
         </div>
