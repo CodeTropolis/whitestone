@@ -3,8 +3,8 @@
     (click)="setCategoryPropsAndCollections(cat)">{{cat.val}}</button>
 
 <form  *ngIf="currentCategory" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-    <div style="display:inline;" *ngIf="!startingBalance">
-        <p><strong>Enter starting balance for {{currentCategory.val}}</strong></p>
+    <div *ngIf="!startingBalance">
+        <h3>Enter starting balance for {{currentCategory.val}}</h3>
         <mat-form-field>
             <input matInput type=number step=0.01 placeholder="{{currentCategory.val}} Start Bal." formControlName="amount">
         </mat-form-field>
@@ -20,5 +20,5 @@
             <input matInput type=text placeholder="Memo" formControlName="memo">
         </mat-form-field>
     </div>
-    <button mat-flat-button color="primary" [disabled]="!formGroup.valid" type="submit">Submit</button>
+    <button mat-flat-button color="primary" [disabled]="!formGroup.valid || disableSubmit" type="submit">Submit</button>
 </form>
