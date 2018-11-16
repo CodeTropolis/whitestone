@@ -24,7 +24,7 @@ export class EntryCategoryComponent implements OnInit {
   public formGroup: FormGroup;
   public formValue: any;
 
-  public disableSubmit: boolean;
+  public disableSubmitButton: boolean;
 
   private chargesCollection: string;
   private paymentsCollection: string;
@@ -90,12 +90,16 @@ export class EntryCategoryComponent implements OnInit {
   public submitHandler(formDirective) {
 
     this.formValue = this.formGroup.value;
-    this.disableSubmit = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
+    this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
 
     if(!this.startingBalance){
       this.currentFinancialDoc.ref.set({
         [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date,
-        [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount}, { merge: true })
+        [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount}, 
+        { merge: true }).then( _ => {
+              this.disableSubmitButton = false;
+            }
+          )
     }
   
   }
