@@ -31,19 +31,16 @@ export class AuthService {
 
     // Subscribe to user$ in a component that may need to 
     // identify the user's role i.e. `user['roles'].subscriber`
-    this.user$ = this.afAuth.authState
-      .pipe(
-        switchMap(user => {
-          if (user) {
-            return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
-          } else {
-            console.log(`User is null`);
-            return of(null);
-          }
-        }),
-        shareReplay(1) // Let whatever subscribes get the cached value of the 'users' collection
-      );
 
+    this.user$ = this.afAuth.authState.pipe(
+      switchMap(user => {
+        if (user) {
+          return this.afs.doc<User>(`users/${user.uid}`).valueChanges()
+        } else {
+          return of(null)
+        }
+      })
+    )
 
     this.user$.subscribe(user => {
       this.user = user;

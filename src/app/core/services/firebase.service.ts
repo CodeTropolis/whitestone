@@ -17,14 +17,14 @@ export class FirebaseService {
   // app.component sets this value to determine if show prog spinner.  See login component
   public loading = new Subject<boolean>();
 
-  constructor(private db: AngularFirestore) {
+  constructor(private afs: AngularFirestore) {
 
     this.loading.next(false);
 
-    this.recordCollection = this.db.collection<any[]>('records');
+    this.recordCollection = this.afs.collection<any[]>('records');
     this.records$ = this.mapAndReplayCollection(this.recordCollection);
 
-    this.financialsCollection = this.db.collection<any[]>('financials');
+    this.financialsCollection = this.afs.collection<any[]>('financials');
    
   }
 

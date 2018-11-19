@@ -8,6 +8,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/user';
 import { ModalService } from '../../modal/modal.service';
 
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+import { Observable, of, combineLatest } from 'rxjs';
+import { switchMap, map} from 'rxjs/operators';
+//import {combineLatest} from "rxjs/index";
+//import { combineLatest } from "rxjs/observable/combineLatest";
+
 @Component({
   selector: 'app-record-list',
   templateUrl: './record-list.component.html',
@@ -38,6 +44,8 @@ export class RecordListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  public records$: Observable<any[]>;
+
   constructor(
     private fs: FirebaseService,
     private res: RecordService,
@@ -45,9 +53,12 @@ export class RecordListComponent implements OnInit {
     private dataService: DataService,
     private authService: AuthService,
     private modalService: ModalService,
+    private afs: AngularFirestore
   ) { }
 
   ngOnInit() {
+
+    this.recordMatch = false;
 
     // Why subscribe?  User is never changed once logged in.
     // Because user data may be retrieved in time.
@@ -64,35 +75,68 @@ export class RecordListComponent implements OnInit {
       })
     )
 
+ //The admin will always have subscriber:true so filter out the admin user
+  if (this.userIsSubcriber && !this.userIsAdmin) {
+
+    const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail","==", this.authService.user.email));
+    const matchMotherEmail = this.afs.collection("records", ref => ref.where("motherEmail","==", this.authService.user.email));
+
+    this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
+      .pipe(switchMap(docs => {
+        const [docsFatherEmail, docsMotherEmail] = docs;
+        const combined = docsFatherEmail.concat(docsMotherEmail);
+        return of(combined);
+      }));
+
+      this.subscriptions.push(
+        this.records$.subscribe(records =>{
+          this.ds = new MatTableDataSource(records);
+          this.recordMatch = true;
+        })
+      )
+
+  }else if(this.userIsAdmin){
     this.subscriptions.push(
-      this.fs.records$.subscribe(x => {
-        //The admin will always have subscriber:true so filter out the admin user
-        if (this.userIsSubcriber && !this.userIsAdmin) {
-          // Do not do record match logic if user is admin. 
+        this.fs.records$.subscribe(x => {
           x.forEach(record => {
-            if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
               this.matchingRecords.push(record);
-              // this.ds: Data for table for Available Records
               this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an arrray.
-              this.recordMatch = true;
-            }
+              //this.recordMatch = true;
           })
-        } else if (this.userIsAdmin) {
-          this.ds = new MatTableDataSource(x);
-        }
-        if (this.ds) { // Prevent error in console if no records.
-          this.ds.filterPredicate = (data, filter) => {
-            let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
-            const children = this.dataService.convertMapToArray(data.children);
-            children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-            dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-            return dataStr.indexOf(filter) != -1;
-          }
-          this.ds.paginator = this.paginator;
-          this.ds.sort = this.sort;
-        }
-      })
+       })
     )
+  }
+
+
+    // this.subscriptions.push(
+    //   this.fs.records$.subscribe(x => {
+    //     //The admin will always have subscriber:true so filter out the admin user
+    //     if (this.userIsSubcriber && !this.userIsAdmin) {
+    //       // Do not do record match logic if user is admin. 
+    //       x.forEach(record => {
+    //         if (record.fatherEmail === this.authService.user.email || record.motherEmail === this.authService.user.email) {
+    //           this.matchingRecords.push(record);
+    //           // this.ds: Data for table for Available Records
+    //           this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an arrray.
+    //           this.recordMatch = true;
+    //         }
+    //       })
+    //     } else if (this.userIsAdmin) {
+    //       this.ds = new MatTableDataSource(x);
+    //     }
+    //     if (this.ds) { // Prevent error in console if no records.
+    //       this.ds.filterPredicate = (data, filter) => {
+    //         let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
+    //         const children = this.dataService.convertMapToArray(data.children);
+    //         children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
+    //         dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+    //         return dataStr.indexOf(filter) != -1;
+    //       }
+    //       this.ds.paginator = this.paginator;
+    //       this.ds.sort = this.sort;
+    //     }
+    //   })
+    // )
 
     // Get state from service for button state: disable upon edit.
     this.subscriptions.push(this.res.isUpdating$.subscribe(x => this.isUpdating = x));
