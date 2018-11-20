@@ -73,7 +73,7 @@ export class EntryCategoryComponent implements OnInit {
           this.startingBalance = snapshot.data()[this.startingBalanceKey];
         } else {
           this.startingBalance = null;
-         // console.log(`No starting balance present for ${this.currentCategory.val}`)
+          console.log(`No starting balance present for ${this.currentCategory.val}`)
         }
       }
     )
@@ -88,20 +88,26 @@ export class EntryCategoryComponent implements OnInit {
   }
 
   public submitHandler(formDirective) {
-
     this.formValue = this.formGroup.value;
     this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
-
     if(!this.startingBalance){
       this.currentFinancialDoc.ref.set({
         [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date,
         [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount}, 
         { merge: true }).then( _ => {
-              this.disableSubmitButton = false;
+          this.resetForm(formDirective);
             }
           )
     }
   
+  }
+
+  private resetForm(formDirective?) {
+    if (formDirective) {
+      formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
+    }
+    this.formGroup.reset();
+    this.disableSubmitButton = false;
   }
 
   ngOnDestroy() {
