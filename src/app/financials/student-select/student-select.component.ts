@@ -34,8 +34,7 @@ export class StudentSelectComponent implements OnInit {
   public setCurrentStudentAndFinancialDoc(student){ 
     this.financialsService.setCurrentStudent(student);
     this.financialsService.setupFinancialDoc(student);
-     // Set currentCategory$ to null so that a previously selected student's info does not show.  
-     // See entry.component.html: <form *ngIf="currentCategory" 
+     // Set currentCategory$ to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
   }
 

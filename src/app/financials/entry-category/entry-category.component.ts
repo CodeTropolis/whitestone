@@ -24,20 +24,26 @@ export class EntryCategoryComponent implements OnInit {
 
   public formGroup: FormGroup;
   public formValue: any;
+  public formReady: boolean;
 
   public disableSubmitButton: boolean;
 
   public userIsAdmin: boolean = false; 
   public userIsSubcriber: boolean = false;
 
+
   private chargesCollection: string;
   private paymentsCollection: string;
-    
+  
   private subscriptions: any[] = [];
 
   constructor(private financialsService: FinancialsService, private fb: FormBuilder, private authService: AuthService) { }
 
   ngOnInit() {
+
+    // Prevent a student's category entry form from showing when 
+    // going from financials, to the record list, back to financials
+    this.financialsService.currentCategory$.next(null); 
 
     this.setFormControls();
 
@@ -87,6 +93,7 @@ export class EntryCategoryComponent implements OnInit {
   }
 
   public setCategoryPropsAndCollections(cat){
+    this.formReady = false;
     this.financialsService.currentCategory$.next(cat);
     this.checkForBalance();
   }
@@ -100,6 +107,7 @@ export class EntryCategoryComponent implements OnInit {
           this.startingBalance = null;
           console.log(`No starting balance present for ${this.currentCategory.val}`)
         }
+        this.formReady = true;
       }
     )
   }
@@ -119,10 +127,7 @@ export class EntryCategoryComponent implements OnInit {
       this.currentFinancialDoc.ref.set({
         [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date,
         [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount}, 
-        { merge: true }).then( _ => {
-          this.resetForm(formDirective);
-            }
-          )
+        { merge: true }).then( _ => this.resetForm(formDirective))
     }
   
   }
