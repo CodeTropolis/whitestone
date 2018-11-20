@@ -10,6 +10,7 @@ export class FinancialsService {
   public categories: any;
   public currentStudent$ = new BehaviorSubject<any>(null);
   public currentFinancialDoc$ = new BehaviorSubject<any>(null); // Each student has own financial doc
+  public currentCategory$ = new BehaviorSubject<any>(null); 
 
   constructor(private firebaseService: FirebaseService, 
               private authService: AuthService, 

@@ -53,16 +53,31 @@ export class EntryCategoryComponent implements OnInit {
       this.financialsService.currentFinancialDoc$.subscribe(doc => this.currentFinancialDoc = doc)
     )
 
+    this.subscriptions.push(
+      this.financialsService.currentCategory$.subscribe(cat => {
+        this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
+        if(cat){
+          this.startingBalanceKey = cat.key + 'StartingBalance';
+          this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
+          this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
+          this.balanceKey = cat.key + 'StartingBalance';
+          this.chargesCollection = cat.key + 'Charges';
+          this.paymentsCollection = cat.key + 'Payments';
+        }
+      })
+    )
+
   }
 
   public setCategoryPropsAndCollections(cat){
-    this.currentCategory = cat;
-    this.startingBalanceKey = cat.key + 'StartingBalance';
-    this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
-    this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
-    this.balanceKey = cat.key + 'StartingBalance';
-    this.chargesCollection = cat.key + 'Charges';
-    this.paymentsCollection = cat.key + 'Payments';
+    this.financialsService.currentCategory$.next(cat);
+    // this.currentCategory = cat;
+    // this.startingBalanceKey = cat.key + 'StartingBalance';
+    // this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
+    // this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
+    // this.balanceKey = cat.key + 'StartingBalance';
+    // this.chargesCollection = cat.key + 'Charges';
+    // this.paymentsCollection = cat.key + 'Payments';
     this.checkForBalance();
   }
 
