@@ -1,4 +1,4 @@
-<button [disabled]="!enableButtons" 
+<button [disabled]="!enableCatButtons" 
     mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
     (click)="setCategoryPropsAndCollections(cat)">{{cat.val}}</button>
 
@@ -23,7 +23,7 @@
     </div>
     <ng-template #transaction>
         <pre><strong>{{currentCategory.val}}</strong> Starting Balance: {{startingBalance | currency}} | Running Balance: {{balance | currency}}<span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></pre>
-           <div *ngIf="userIsAdmin" >
+           <div *ngIf="userIsAdmin">
                 <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
                 <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
            </div>

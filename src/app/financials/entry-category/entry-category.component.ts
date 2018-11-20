@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-entry-category',
@@ -19,19 +20,22 @@ export class EntryCategoryComponent implements OnInit {
   public startingBalance: number;
   public balanceKey: string;
 
-  public enableButtons: boolean;
+  public enableCatButtons: boolean;
 
   public formGroup: FormGroup;
   public formValue: any;
 
   public disableSubmitButton: boolean;
 
+  public userIsAdmin: boolean = false; 
+  public userIsSubcriber: boolean = false;
+
   private chargesCollection: string;
   private paymentsCollection: string;
     
   private subscriptions: any[] = [];
 
-  constructor(private financialsService: FinancialsService, private fb: FormBuilder) { }
+  constructor(private financialsService: FinancialsService, private fb: FormBuilder, private authService: AuthService) { }
 
   ngOnInit() {
 
@@ -42,16 +46,16 @@ export class EntryCategoryComponent implements OnInit {
     this.subscriptions.push(
         this.financialsService.currentStudent$.subscribe(student =>{
         if(student){
-          this.enableButtons = true;
+          this.enableCatButtons = true;
         }else{
-          this.enableButtons = false;
+          this.enableCatButtons = false;
         }
       })
     )
     // Current financial doc set by student-select.component.
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc => this.currentFinancialDoc = doc)
-    )
+    );
 
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
@@ -65,19 +69,25 @@ export class EntryCategoryComponent implements OnInit {
           this.paymentsCollection = cat.key + 'Payments';
         }
       })
+    );
+
+
+    this.subscriptions.push(
+      this.authService.userIsAdmin$.subscribe(x => {
+        this.userIsAdmin = x;
+      })
+    );
+
+    this.subscriptions.push(
+      this.authService.userIsSubcriber$.subscribe(x => {
+        this.userIsSubcriber = x;
+      })
     )
 
   }
 
   public setCategoryPropsAndCollections(cat){
     this.financialsService.currentCategory$.next(cat);
-    // this.currentCategory = cat;
-    // this.startingBalanceKey = cat.key + 'StartingBalance';
-    // this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
-    // this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
-    // this.balanceKey = cat.key + 'StartingBalance';
-    // this.chargesCollection = cat.key + 'Charges';
-    // this.paymentsCollection = cat.key + 'Payments';
     this.checkForBalance();
   }
 
