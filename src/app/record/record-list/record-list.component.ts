@@ -97,6 +97,7 @@ export class RecordListComponent implements OnInit {
   }else if(this.userIsAdmin){
     this.subscriptions.push(
         this.fs.records$.subscribe(x => {
+          this.matchingRecords = []; // prevent duplicate entries i.e. upon update record and other events(?)
           x.forEach(record => {
               this.matchingRecords.push(record);
               this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an arrray.

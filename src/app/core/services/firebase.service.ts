@@ -38,7 +38,7 @@ export class FirebaseService {
           })
         }),
        shareReplay(1) // Apparently a bug with shareReplay() causes <observable>$ to not unsubscribe despite unsubscribing.
-      );
+      )
   }
 
 }

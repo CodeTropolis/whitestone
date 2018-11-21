@@ -12,8 +12,6 @@ import { FirebaseService } from './core/services/firebase.service';
 })
 export class AppComponent {
 
-  // public loading: boolean = false;
-
   constructor(private router: Router, private fs: FirebaseService) {
     router.events.subscribe((routerEvent: any) => {
       this.checkRouterEvent(routerEvent);

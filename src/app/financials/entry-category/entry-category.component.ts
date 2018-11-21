@@ -17,10 +17,13 @@ export class EntryCategoryComponent implements OnInit {
   public startingBalanceKey: string;
   public startingBalanceDateKey: string;
   public startingBalanceMemoKey: string;
+  public runningBalanceKey: string;
+
   public startingBalance: number;
-  public balanceKey: string;
+  public runningBalance: number;
 
   public enableCatButtons: boolean;
+  public balanceIsNegative: boolean;
 
   public formGroup: FormGroup;
   public formValue: any;
@@ -31,6 +34,8 @@ export class EntryCategoryComponent implements OnInit {
   public userIsAdmin: boolean = false; 
   public userIsSubcriber: boolean = false;
 
+  public isEnteringPayment: boolean = false;
+  public isEnteringCharge: boolean = false;
 
   private chargesCollection: string;
   private paymentsCollection: string;
@@ -41,9 +46,23 @@ export class EntryCategoryComponent implements OnInit {
 
   ngOnInit() {
 
+      // Listen for balance update.  An update could come from the history.component.
+      // History and entry-category only need to share the running balance per category
+      this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
+        this.runningBalance = bal;
+        if (Math.sign(this.runningBalance) === -1) {
+          this.balanceIsNegative = true;
+        } else {
+          this.balanceIsNegative = false;
+        }
+      });
+
     // Prevent a student's category entry form from showing when 
     // going from financials, to the record list, back to financials
     this.financialsService.currentCategory$.next(null); 
+
+    this.isEnteringCharge = false;
+    this.isEnteringPayment = false;
 
     this.setFormControls();
 
@@ -70,7 +89,7 @@ export class EntryCategoryComponent implements OnInit {
           this.startingBalanceKey = cat.key + 'StartingBalance';
           this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
           this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
-          this.balanceKey = cat.key + 'StartingBalance';
+          this.runningBalanceKey = cat.key + 'RunningBalance';
           this.chargesCollection = cat.key + 'Charges';
           this.paymentsCollection = cat.key + 'Payments';
         }
@@ -103,9 +122,10 @@ export class EntryCategoryComponent implements OnInit {
       snapshot => { 
         if (snapshot.data()[this.startingBalanceKey] || snapshot.data()[this.startingBalanceKey] === 0) { // Important to check for a balance value of zero.
           this.startingBalance = snapshot.data()[this.startingBalanceKey];
+          this.runningBalance = snapshot.data()[this.runningBalanceKey];
+          this.financialsService.runningBalanceForCurrentCategory$.next(snapshot.data()[this.runningBalanceKey]);
         } else {
           this.startingBalance = null;
-          console.log(`No starting balance present for ${this.currentCategory.val}`)
         }
         this.formReady = true;
       }
@@ -123,13 +143,52 @@ export class EntryCategoryComponent implements OnInit {
   public submitHandler(formDirective) {
     this.formValue = this.formGroup.value;
     this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
+
     if(!this.startingBalance){
       this.currentFinancialDoc.ref.set({
-        [this.startingBalanceKey]: this.formValue.amount, [this.startingBalanceDateKey]: this.formValue.date,
-        [this.startingBalanceMemoKey]: this.formValue.memo, [this.balanceKey]: this.formValue.amount}, 
-        { merge: true }).then( _ => this.resetForm(formDirective))
+        [this.startingBalanceKey]: this.formValue.amount, 
+        [this.startingBalanceDateKey]: this.formValue.date,
+        [this.startingBalanceMemoKey]: this.formValue.memo, 
+        [this.runningBalanceKey]: this.formValue.amount}, 
+        { merge: true })
+          .then( _ => {
+            this.resetForm(formDirective);
+            this.checkForBalance();
+          })
+           // Now that a starting balance has been entered, check for balance in order to set startingBlance so that transactions form elements show.
+    }else{
+      this.processTransaction(formDirective);
     }
   
+  }
+
+  private processTransaction(formDirective){
+    let collection;
+
+    this.isEnteringPayment ?
+      collection = this.currentFinancialDoc.ref.collection(this.paymentsCollection) :
+      collection = this.currentFinancialDoc.ref.collection(this.chargesCollection);
+
+      collection.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
+      // Calc running balance based on payment or charge then set.
+      // NOTE: Wrap formula in () and set input to type number or else + will concat. 
+      this.isEnteringPayment ? this.runningBalance -= this.formValue.amount : this.runningBalance = (this.runningBalance + this.formValue.amount);
+      this.currentFinancialDoc.ref.set({ [this.runningBalanceKey]: this.runningBalance }, 
+        { merge: true }) .then( _ => {
+          this.resetForm(formDirective);
+        })
+  }
+
+  public enterPayment() {
+    this.isEnteringPayment = true;
+    this.isEnteringCharge = false;
+    this.resetForm();
+  }
+
+  public enterCharge() {
+    this.isEnteringPayment = false;
+    this.isEnteringCharge = true;
+    this.resetForm();
   }
 
   private resetForm(formDirective?) {
