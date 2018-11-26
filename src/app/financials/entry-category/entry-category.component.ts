@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { query } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-entry-category',
@@ -37,6 +38,11 @@ export class EntryCategoryComponent implements OnInit {
   public isEnteringPayment: boolean = false;
   public isEnteringCharge: boolean = false;
 
+  public paymentsCollectionExists: boolean;
+  public chargesCollectionExists: boolean;
+
+  public showHistory: boolean;
+
   private chargesCollection: string;
   private paymentsCollection: string;
   
@@ -46,20 +52,35 @@ export class EntryCategoryComponent implements OnInit {
 
   ngOnInit() {
 
-      // Listen for balance update.  An update could come from the history.component.
-      // History and entry-category only need to share the running balance per category
-      this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
-        this.runningBalance = bal;
-        if (Math.sign(this.runningBalance) === -1) {
-          this.balanceIsNegative = true;
-        } else {
-          this.balanceIsNegative = false;
-        }
-      });
+    // Pass null as current financial doc to prevent previously selected student's doc as current doc when entering this component.
+    this.financialsService.currentFinancialDoc$.next(null);
 
     // Prevent a student's category entry form from showing when 
     // going from financials, to the record list, back to financials
     this.financialsService.currentCategory$.next(null); 
+     
+    // currentFinancialDoc$ next'd by student-select.component
+    this.subscriptions.push(
+      this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
+        if(doc){
+          this.currentFinancialDoc = doc;
+					//console.log("​EntryCategoryComponent -> ngOnInit ->  this.currentFinancialDoc",  this.currentFinancialDoc)
+          this.enableCatButtons = true;
+        }else {
+          this.enableCatButtons = false;
+        }
+      })
+    );
+
+    // Listen for balance update.  An update could come from the history.component.
+    this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
+      this.runningBalance = bal;
+      if (Math.sign(this.runningBalance) === -1) {
+        this.balanceIsNegative = true;
+      } else {
+        this.balanceIsNegative = false;
+      }
+    });
 
     this.isEnteringCharge = false;
     this.isEnteringPayment = false;
@@ -67,20 +88,6 @@ export class EntryCategoryComponent implements OnInit {
     this.setFormControls();
 
     this.categories = this.financialsService.categories;
-
-    this.subscriptions.push(
-        this.financialsService.currentStudent$.subscribe(student =>{
-        if(student){
-          this.enableCatButtons = true;
-        }else{
-          this.enableCatButtons = false;
-        }
-      })
-    )
-    // Current financial doc set by student-select.component.
-    this.subscriptions.push(
-      this.financialsService.currentFinancialDoc$.subscribe(doc => this.currentFinancialDoc = doc)
-    );
 
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
@@ -115,6 +122,12 @@ export class EntryCategoryComponent implements OnInit {
     this.formReady = false;
     this.financialsService.currentCategory$.next(cat);
     this.checkForBalance();
+
+    // Check if any of the transaction subcollections (payments or charges) exist for the
+    //  the current financial doc and set booleans. 
+    //  Do this here as subcollecton may exist upon selecting cat and 
+    //  after processing a transaction as the subcollecton will exist after a transaction
+     this.checkForTransactions();
   }
 
   private checkForBalance(){
@@ -130,6 +143,30 @@ export class EntryCategoryComponent implements OnInit {
         this.formReady = true;
       }
     )
+  }
+
+  private checkForTransactions() {
+    // this.charges | payments Collection will be the proper collection based on selected category i.e. tutionCharges
+    this.currentFinancialDoc.ref.collection(this.chargesCollection).get()
+      .then(query => {
+        if (query.size > 0){
+          this.chargesCollectionExists = true;
+          console.log(`${this.chargesCollection} exists`);
+        }else{
+          this.chargesCollectionExists = false;
+          console.log(`${this.chargesCollection} does not exists`);
+        }
+      })
+      this.currentFinancialDoc.ref.collection(this.paymentsCollection).get()
+      .then(query => {
+        if (query.size > 0){
+          this.paymentsCollectionExists = true;
+          console.log(`${this.paymentsCollection} exists`);
+        }else{
+          this.paymentsCollectionExists = false;
+          console.log(`${this.paymentsCollection} does not exists`);
+        }
+      })
   }
 
   private setFormControls() {
@@ -170,12 +207,12 @@ export class EntryCategoryComponent implements OnInit {
       collection = this.currentFinancialDoc.ref.collection(this.chargesCollection);
 
       collection.doc().set({ amount: this.formValue.amount, date: this.formValue.date, memo: this.formValue.memo });
-      // Calc running balance based on payment or charge then set.
       // NOTE: Wrap formula in () and set input to type number or else + will concat. 
       this.isEnteringPayment ? this.runningBalance -= this.formValue.amount : this.runningBalance = (this.runningBalance + this.formValue.amount);
       this.currentFinancialDoc.ref.set({ [this.runningBalanceKey]: this.runningBalance }, 
         { merge: true }) .then( _ => {
           this.resetForm(formDirective);
+          this.checkForTransactions();
         })
   }
 
@@ -197,6 +234,10 @@ export class EntryCategoryComponent implements OnInit {
     }
     this.formGroup.reset();
     this.disableSubmitButton = false;
+  }
+
+  public toggleHistory() {
+    this.showHistory = !this.showHistory;
   }
 
   ngOnDestroy() {
