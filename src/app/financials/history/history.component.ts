@@ -23,8 +23,8 @@ export class HistoryComponent implements OnInit {
       this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
         if(doc){
           this.currentFinancialDoc = doc;
-          console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc id:", this.currentFinancialDoc);
-					console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc childFirstName:", this.currentFinancialDoc.data().childFirstName)
+         // console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc id:", this.currentFinancialDoc.id);
+					//console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc childFirstName:", this.currentFinancialDoc.data().childFirstName)
           
         }
       })
@@ -36,9 +36,9 @@ export class HistoryComponent implements OnInit {
           // this.runningBalanceKey = cat.key + 'RunningBalance';
 					// console.log("​HistoryComponent -> ngOnInit ->  this.runningBalanceKey",  this.runningBalanceKey)
           this.chargesCollection = cat.key + 'Charges';
-					console.log("​HistoryComponent -> ngOnInit -> this.chargesCollection", this.chargesCollection)
+					//console.log("​HistoryComponent -> ngOnInit -> this.chargesCollection", this.chargesCollection)
           this.paymentsCollection = cat.key + 'Payments';
-					console.log("​HistoryComponent -> ngOnInit -> this.paymentsCollection", this.paymentsCollection)
+					//console.log("​HistoryComponent -> ngOnInit -> this.paymentsCollection", this.paymentsCollection)
         }
       })
     );

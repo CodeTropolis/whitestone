@@ -63,7 +63,6 @@ export class EntryCategoryComponent implements OnInit {
       this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
         if(doc){
           this.currentFinancialDoc = doc;
-					//console.log("​EntryCategoryComponent -> ngOnInit ->  this.currentFinancialDoc",  this.currentFinancialDoc)
           this.enableCatButtons = true;
         }else {
           this.enableCatButtons = false;
@@ -127,7 +126,8 @@ export class EntryCategoryComponent implements OnInit {
     //  Do this here as subcollecton may exist upon selecting cat and 
     //  after processing a transaction as the subcollecton will exist after a transaction
      this.checkForTransactions();
-     this.financialsService.showHistory$.next(false); // Do not show history from previously selected category after clicking on another cateory
+     this.showHistory = false;
+     this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another cateory
   }
 
   private checkForBalance(){
