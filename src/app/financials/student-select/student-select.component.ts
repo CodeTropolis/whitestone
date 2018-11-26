@@ -13,6 +13,7 @@ export class StudentSelectComponent implements OnInit {
   public currentRecord: any;
   public studentsOfRecord: any[] = [];
   public currentStudent$: BehaviorSubject<any>;
+  public showHistory$: BehaviorSubject<boolean>;
 
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
@@ -29,6 +30,7 @@ export class StudentSelectComponent implements OnInit {
     this.financialsService.currentStudent$.next(null); 
     // Listen for currentStudent selection 
     this.currentStudent$ = this.financialsService.currentStudent$;
+    this.showHistory$ = this.financialsService.showHistory$;
   }
 
   public setCurrentStudentAndFinancialDoc(student){ 
@@ -36,6 +38,7 @@ export class StudentSelectComponent implements OnInit {
     this.financialsService.setupFinancialDoc(student);
      // Set currentCategory$ to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
+    this.financialsService.showHistory$.next(false); // Do not show history from previously selected student after clicking on another student
   }
 
 }

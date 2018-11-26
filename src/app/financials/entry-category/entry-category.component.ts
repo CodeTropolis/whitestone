@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { query } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-entry-category',
@@ -128,6 +127,7 @@ export class EntryCategoryComponent implements OnInit {
     //  Do this here as subcollecton may exist upon selecting cat and 
     //  after processing a transaction as the subcollecton will exist after a transaction
      this.checkForTransactions();
+     this.financialsService.showHistory$.next(false); // Do not show history from previously selected category after clicking on another cateory
   }
 
   private checkForBalance(){
@@ -238,6 +238,7 @@ export class EntryCategoryComponent implements OnInit {
 
   public toggleHistory() {
     this.showHistory = !this.showHistory;
+    this.financialsService.showHistory$.next(this.showHistory);
   }
 
   ngOnDestroy() {

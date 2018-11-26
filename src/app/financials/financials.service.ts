@@ -12,6 +12,8 @@ export class FinancialsService {
   public currentFinancialDoc$ = new BehaviorSubject<any>(null); // Each student has own financial doc
   public currentCategory$ = new BehaviorSubject<any>(null); 
   public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null);
+  public showHistory$ = new BehaviorSubject<boolean>(null);
+
 
   constructor(private firebaseService: FirebaseService, 
               private authService: AuthService, 
