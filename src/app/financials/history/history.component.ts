@@ -43,6 +43,9 @@ export class HistoryComponent implements OnInit {
       })
     );
 
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection)
+
 
   } // end init()
 

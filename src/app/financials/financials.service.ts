@@ -62,4 +62,17 @@ export class FinancialsService {
     }
   }
 
+  public getTransactions(currentFinancialDoc, collection){
+      // Get transactions (amounts from <cat.key>payments | charges collections)
+      currentFinancialDoc.ref.collection(collection).get()
+      .then(snapshot => {
+          snapshot.forEach(x => console.log(x.data()));
+      });
+  
+      currentFinancialDoc.ref.collection(collection).get()
+      .then(snapshot => {
+          snapshot.forEach(x => console.log(x.data()));
+      });
+  }
+
 }

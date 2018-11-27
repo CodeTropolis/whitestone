@@ -147,6 +147,7 @@ export class EntryCategoryComponent implements OnInit {
 
   private checkForTransactions() {
     // this.charges | payments Collection will be the proper collection based on selected category i.e. tutionCharges
+    // per https://stackoverflow.com/a/49597381: .collection(..).get() returns a QuerySnapshot which has the property size
     this.currentFinancialDoc.ref.collection(this.chargesCollection).get()
       .then(query => {
         if (query.size > 0){
