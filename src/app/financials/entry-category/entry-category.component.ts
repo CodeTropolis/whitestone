@@ -214,6 +214,10 @@ export class EntryCategoryComponent implements OnInit {
         { merge: true }) .then( _ => {
           this.resetForm(formDirective);
           this.checkForTransactions();
+          // Update history.component
+          this.financialsService.transactions = []; // Prevent duplicate entries
+          this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+          this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
         })
   }
 
