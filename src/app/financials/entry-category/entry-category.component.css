@@ -1,5 +1,9 @@
 button {margin:1em 0.25em;}
 
+.button-group {display: block;}
+
+.button-group button {float: left;}
+
 .credit {color: green;}
 
 p {font-size: 1.25em;}

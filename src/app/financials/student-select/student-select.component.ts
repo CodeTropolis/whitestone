@@ -13,8 +13,7 @@ export class StudentSelectComponent implements OnInit {
   public currentRecord: any;
   public studentsOfRecord: any[] = [];
   public currentStudent$: BehaviorSubject<any>;
-  public showHistory$: BehaviorSubject<boolean>;
-
+  
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
   ngOnInit() {
@@ -30,7 +29,7 @@ export class StudentSelectComponent implements OnInit {
     this.financialsService.currentStudent$.next(null); 
     // Listen for currentStudent selection 
     this.currentStudent$ = this.financialsService.currentStudent$;
-    this.showHistory$ = this.financialsService.showHistory$;
+
   }
 
   public setCurrentStudentAndFinancialDoc(student){ 

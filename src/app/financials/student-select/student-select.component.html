@@ -1,4 +1,3 @@
-<app-header title="Financials for Surname: {{currentRecord.surname}}"  link="/record-list" linkName="Back to Record List"></app-header>
 <mat-card>
   <div class="flex-container space-evenly">
       <mat-card-header>
@@ -10,7 +9,6 @@
             <span *ngIf="currentStudent$ | async as currentStudent; else selectStudent">{{currentStudent.fname}} {{currentStudent.lname}} </span>
           </h2>
           <ng-template #selectStudent>(Select a student)</ng-template>
-          <app-entry-category></app-entry-category>
         </mat-card-title>
       </mat-card-header>
     
@@ -22,4 +20,3 @@
       </div>
   </div>
 </mat-card>
-<app-history *ngIf="showHistory$ | async"></app-history>

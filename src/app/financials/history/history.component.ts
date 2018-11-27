@@ -11,6 +11,8 @@ export class HistoryComponent implements OnInit {
 
   private subscriptions: any[] = [];
   public currentFinancialDoc: any;
+  public currentCategory: string;
+  public currentChild: string;
   //public runningBalanceKey: string;
   private chargesCollection: string;
   private paymentsCollection: string;
@@ -25,9 +27,7 @@ export class HistoryComponent implements OnInit {
     this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
       if(doc){
         this.currentFinancialDoc = doc;
-        // console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc id:", this.currentFinancialDoc.id);
-        //console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc childFirstName:", this.currentFinancialDoc.data().childFirstName)
-        
+        this.currentChild = this.currentFinancialDoc.data().childFirstName + ' ' + this.currentFinancialDoc.data().childLastName;     
       }
     })
   );
@@ -35,12 +35,10 @@ export class HistoryComponent implements OnInit {
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
         if(cat){
+          this.currentCategory = cat.val;
           // this.runningBalanceKey = cat.key + 'RunningBalance';
-					// console.log("​HistoryComponent -> ngOnInit ->  this.runningBalanceKey",  this.runningBalanceKey)
           this.chargesCollection = cat.key + 'Charges';
-					//console.log("​HistoryComponent -> ngOnInit -> this.chargesCollection", this.chargesCollection)
           this.paymentsCollection = cat.key + 'Payments';
-					//console.log("​HistoryComponent -> ngOnInit -> this.paymentsCollection", this.paymentsCollection)
         }
       })
     );
