@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-history',
@@ -13,22 +14,23 @@ export class HistoryComponent implements OnInit {
   //public runningBalanceKey: string;
   private chargesCollection: string;
   private paymentsCollection: string;
+  public transactions$: BehaviorSubject<any[]>;
 
   constructor(private financialsService: FinancialsService) { }
 
   ngOnInit() {
 
-     // currentFinancialDoc$ next'd by student-select.component
-     this.subscriptions.push(
-      this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
-        if(doc){
-          this.currentFinancialDoc = doc;
-         // console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc id:", this.currentFinancialDoc.id);
-					//console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc childFirstName:", this.currentFinancialDoc.data().childFirstName)
-          
-        }
-      })
-    );
+    // currentFinancialDoc$ next'd by student-select.component
+    this.subscriptions.push(
+    this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
+      if(doc){
+        this.currentFinancialDoc = doc;
+        // console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc id:", this.currentFinancialDoc.id);
+        //console.log("​HistoryComponent -> ngOnInit -> this.currentFinancialDoc childFirstName:", this.currentFinancialDoc.data().childFirstName)
+        
+      }
+    })
+  );
 
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
@@ -43,8 +45,12 @@ export class HistoryComponent implements OnInit {
       })
     );
 
+    this.financialsService.transactions = [];
+      
     this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
-    this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection)
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
+    
+    this.transactions$ = this.financialsService.transactions$;
 
 
   } // end init()

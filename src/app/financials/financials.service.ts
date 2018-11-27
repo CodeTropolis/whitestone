@@ -13,6 +13,8 @@ export class FinancialsService {
   public currentCategory$ = new BehaviorSubject<any>(null); 
   public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null);
   public showHistory$ = new BehaviorSubject<boolean>(null);
+  public transactions: any[] = [];
+  public transactions$ = new BehaviorSubject<any[]>(null);
 
 
   constructor(private firebaseService: FirebaseService, 
@@ -64,14 +66,22 @@ export class FinancialsService {
 
   public getTransactions(currentFinancialDoc, collection){
       // Get transactions (amounts from <cat.key>payments | charges collections)
+      const type = collection.includes('Payment') ? 'Payment' : 'Charge'
       currentFinancialDoc.ref.collection(collection).get()
       .then(snapshot => {
-          snapshot.forEach(x => console.log(x.data()));
-      });
-  
-      currentFinancialDoc.ref.collection(collection).get()
-      .then(snapshot => {
-          snapshot.forEach(x => console.log(x.data()));
+          snapshot.forEach(item => {
+            let date = item.data().date.toDate();
+            const transactionObj = {
+              id: item.id, 
+              amount: item.data().amount, 
+              type: type, 
+              date: date,
+               memo: item.data().memo 
+            }
+            //const transactions:any[] = [];
+            this.transactions.push(transactionObj);
+            this.transactions$.next(this.transactions);
+          });
       });
   }
 
