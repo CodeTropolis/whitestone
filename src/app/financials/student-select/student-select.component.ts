@@ -12,6 +12,7 @@ export class StudentSelectComponent implements OnInit {
 
   public currentRecord: any;
   public studentsOfRecord: any[] = [];
+  //public categories: any[] =[];
   public currentStudent$: BehaviorSubject<any>;
   
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
@@ -25,10 +26,16 @@ export class StudentSelectComponent implements OnInit {
    }else{
      console.log('There is an issue with obtaining the current record');
    }
+
+  //  this.categories = this.financialsService.categories;
+
     // Set currentStudent to null so that we don't have a student set from previous use of this component.
     this.financialsService.currentStudent$.next(null); 
     // Listen for currentStudent selection 
     this.currentStudent$ = this.financialsService.currentStudent$;
+    // showHistory may still be set to true when entering back into this component.  
+    //  Set to false to avoid null history.
+    this.financialsService.showHistory$.next(false); 
 
   }
 

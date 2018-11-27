@@ -8,7 +8,13 @@
           <h2>Financial status for 
             <span *ngIf="currentStudent$ | async as currentStudent; else selectStudent">{{currentStudent.fname}} {{currentStudent.lname}} </span>
           </h2>
-          <ng-template #selectStudent>(Select a student)</ng-template>
+          <ng-template #selectStudent>(Select a student)
+
+            <!-- <button [disabled]="!enableCatButtons" 
+            mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
+            (click)="setCategoryPropsAndCollections(cat)">{{cat.val}}</button> -->
+
+          </ng-template>
         </mat-card-title>
       </mat-card-header>
     

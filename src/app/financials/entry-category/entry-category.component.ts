@@ -124,7 +124,7 @@ export class EntryCategoryComponent implements OnInit {
     // Check if any of the transaction subcollections (payments or charges) exist for the
     //  the current financial doc and set booleans. 
     //  Do this here as subcollecton may exist upon selecting cat and 
-    //  after processing a transaction as the subcollecton will exist after a transaction
+    //  do this after processing a transaction as the subcollecton will exist after a transaction
      this.checkForTransactions();
      this.showHistory = false;
      this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another cateory
