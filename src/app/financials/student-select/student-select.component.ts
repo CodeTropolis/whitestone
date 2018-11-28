@@ -22,6 +22,14 @@ export class StudentSelectComponent implements OnInit {
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
   ngOnInit() {
+    // Set current financial doc to null else category buttons will be 
+    //  active prior to selecting student which enables the buttons.
+    this.financialsService.currentFinancialDoc$.next(null); 
+    // Set current category to null else entry-category.component will 
+    //  detect a category and run through checks for balance and tranactions.
+    this.financialsService.currentCategory$.next(null);
+
+    this.enableCatButtons = false;
     // currentRecord set by the 'more' menu on available records.
     this.currentRecord = this.dataService.currentRecord;
     if (this.currentRecord){
