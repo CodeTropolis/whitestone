@@ -10,7 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class EntryCategoryComponent implements OnInit {
 
-  public categories: any[] =[];
+  //public categories: any[] =[];
   public currentCategory: any;
   public currentFinancialDoc: any;
 
@@ -22,7 +22,7 @@ export class EntryCategoryComponent implements OnInit {
   public startingBalance: number;
   public runningBalance: number;
 
-  public enableCatButtons: boolean;
+  //public enableCatButtons: boolean;
   public balanceIsNegative: boolean;
 
   public formGroup: FormGroup;
@@ -51,21 +51,34 @@ export class EntryCategoryComponent implements OnInit {
 
   ngOnInit() {
 
-    // Pass null as current financial doc to prevent previously selected student's doc as current doc when entering this component.
-    this.financialsService.currentFinancialDoc$.next(null);
-
-    // Prevent a student's category entry form from showing when 
-    // going from financials, to the record list, back to financials
-    this.financialsService.currentCategory$.next(null); 
-     
-    // currentFinancialDoc$ next'd by student-select.component
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
         if(doc){
           this.currentFinancialDoc = doc;
-          this.enableCatButtons = true;
-        }else {
-          this.enableCatButtons = false;
+        }
+      })
+    );
+
+    this.subscriptions.push(
+      this.financialsService.currentCategory$.subscribe(cat => {
+        this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
+        if(cat){
+          this.startingBalanceKey = cat.key + 'StartingBalance';
+          this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
+          this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
+          this.runningBalanceKey = cat.key + 'RunningBalance';
+          this.chargesCollection = cat.key + 'Charges';
+          this.paymentsCollection = cat.key + 'Payments';
+
+          this.checkForBalance();
+          // Check if any of the transaction subcollections (payments or charges) exist for the
+          //  the current financial doc and set booleans. 
+          //  Do this here as subcollecton may exist upon selecting cat and 
+          //  do this after processing a transaction as the subcollecton will exist after a transaction
+           this.checkForTransactions();
+           this.showHistory = false;
+           this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another cateory
+
         }
       })
     );
@@ -85,23 +98,6 @@ export class EntryCategoryComponent implements OnInit {
 
     this.setFormControls();
 
-    this.categories = this.financialsService.categories;
-
-    this.subscriptions.push(
-      this.financialsService.currentCategory$.subscribe(cat => {
-        this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
-        if(cat){
-          this.startingBalanceKey = cat.key + 'StartingBalance';
-          this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
-          this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
-          this.runningBalanceKey = cat.key + 'RunningBalance';
-          this.chargesCollection = cat.key + 'Charges';
-          this.paymentsCollection = cat.key + 'Payments';
-        }
-      })
-    );
-
-
     this.subscriptions.push(
       this.authService.userIsAdmin$.subscribe(x => {
         this.userIsAdmin = x;
@@ -112,22 +108,11 @@ export class EntryCategoryComponent implements OnInit {
       this.authService.userIsSubcriber$.subscribe(x => {
         this.userIsSubcriber = x;
       })
-    )
+    );
 
-  }
-
-  public setCategoryPropsAndCollections(cat){
     this.formReady = false;
-    this.financialsService.currentCategory$.next(cat);
-    this.checkForBalance();
 
-    // Check if any of the transaction subcollections (payments or charges) exist for the
-    //  the current financial doc and set booleans. 
-    //  Do this here as subcollecton may exist upon selecting cat and 
-    //  do this after processing a transaction as the subcollecton will exist after a transaction
-     this.checkForTransactions();
-     this.showHistory = false;
-     this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another cateory
+
   }
 
   private checkForBalance(){

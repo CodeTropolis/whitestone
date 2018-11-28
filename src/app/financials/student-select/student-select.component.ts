@@ -11,9 +11,13 @@ import { BehaviorSubject } from 'rxjs';
 export class StudentSelectComponent implements OnInit {
 
   public currentRecord: any;
+  public currentFinancialDoc: any;
   public studentsOfRecord: any[] = [];
-  //public categories: any[] =[];
+  public categories: any[] =[];
   public currentStudent$: BehaviorSubject<any>;
+  public enableCatButtons: boolean;
+  
+  private subscriptions: any[] = [];
   
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
@@ -27,7 +31,18 @@ export class StudentSelectComponent implements OnInit {
      console.log('There is an issue with obtaining the current record');
    }
 
-  //  this.categories = this.financialsService.categories;
+   this.subscriptions.push(
+    this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
+      if(doc){
+        this.currentFinancialDoc = doc;
+        this.enableCatButtons = true;
+      }else {
+        this.enableCatButtons = false;
+      }
+    })
+  );
+
+  this.categories = this.financialsService.categories;
 
     // Set currentStudent to null so that we don't have a student set from previous use of this component.
     this.financialsService.currentStudent$.next(null); 
@@ -45,6 +60,10 @@ export class StudentSelectComponent implements OnInit {
      // Set currentCategory$ to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
     this.financialsService.showHistory$.next(false); // Do not show history from previously selected student after clicking on another student
+  }
+
+   public setCategory(cat){
+    this.financialsService.currentCategory$.next(cat);
   }
 
 }

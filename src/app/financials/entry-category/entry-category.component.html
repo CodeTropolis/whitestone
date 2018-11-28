@@ -1,8 +1,4 @@
 
-<button [disabled]="!enableCatButtons" 
-    mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
-    (click)="setCategoryPropsAndCollections(cat)">{{cat.val}}</button>
-
 <!-- Issue: Within the form, "Enter starting balance for.."  will display briefly until startingBalance is resolved
     Solution: Show spinner until checkForBalance is completed -->
     <!-- Only want spinner to show when a category has been selected -->

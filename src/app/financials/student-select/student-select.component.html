@@ -8,20 +8,16 @@
           <h2>Financial status for 
             <span *ngIf="currentStudent$ | async as currentStudent; else selectStudent">{{currentStudent.fname}} {{currentStudent.lname}} </span>
           </h2>
-          <ng-template #selectStudent>(Select a student)
-
-            <!-- <button [disabled]="!enableCatButtons" 
-            mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
-            (click)="setCategoryPropsAndCollections(cat)">{{cat.val}}</button> -->
-
-          </ng-template>
+          <ng-template #selectStudent>(Select a student)</ng-template>
+          <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
+          (click)="setCategory(cat)">{{cat.val}}</button>
         </mat-card-title>
       </mat-card-header>
     
       <div class="students">
         <h3>Students:</h3>
         <div *ngFor="let student of studentsOfRecord">
-          <button mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
+          <button class="student" mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
         </div>
       </div>
   </div>

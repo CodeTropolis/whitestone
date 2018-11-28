@@ -4,7 +4,9 @@
     color: var(--ws-light-grey);
   }
 
-button { 
+button {margin: 1em 0.5em 0 0;}
+
+button.student { 
   float:right;
   width: 150px;
   margin: 0.5em 0 0 0;
