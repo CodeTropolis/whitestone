@@ -1,8 +1,6 @@
-<mat-card>
+<mat-card *ngIf="tableData">
     <p class="history-title"><strong>{{currentChild}}'s</strong> Transaction History for <strong>{{currentCategory}}</strong></p>
-    <!-- <pre>{{transactions$ | async | json}}</pre> -->
-    
-    <mat-table *ngIf="tableData && currentCategory" [dataSource]="tableData" matSort>
+    <mat-table *ngIf="currentCategory" [dataSource]="tableData" matSort>
         <ng-container matColumnDef="amount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
           <mat-cell *matCellDef="let row">
@@ -13,7 +11,8 @@
         <ng-container matColumnDef="type">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <span [class.deduction]="row.type === 'Deduction'">{{row.type}}</span>
+            <!-- <span [class.deduction]="row.type === 'Deduction'">{{row.type}}</span> -->
+           {{row.type}}
           </mat-cell>
         </ng-container>
       

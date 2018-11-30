@@ -72,67 +72,63 @@ export class HistoryComponent implements OnInit {
           this.runningBalanceKey = cat.key + 'RunningBalance';
           this.chargesCollection = cat.key + 'Charges';
           this.paymentsCollection = cat.key + 'Payments';
-          this.runningBalance = this.currentFinancialDoc.data()[this.runningBalanceKey]; // get the running balance of the current category  
-					console.log(`runningBlanceKey: ${this.runningBalanceKey} | Running Balance: ${this.runningBalance}`);
         }
       })
     );
 
-    this.financialsService.transactions = [];
-    this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
-    this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
-    
+    // Get the running balance which is next'd by entry-category.component. 
+    //  Trying to get it via this.currentFinancialDoc.data()[this.runningBalanceKey] sometimes returns as undefined
+      this.financialsService.runningBalanceForCurrentCategory$.subscribe(runningBalance => {
+        console.log(runningBalance);
+        this.runningBalance = runningBalance;
+      });
+
     this.financialsService.transactions$.subscribe(x => {
       if (x) {
         this.tableData = new MatTableDataSource(x);
         this.tableData.sort = this.sort;
       } else {
+        this.tableData = null;
        console.log(`Table data issue with: ${x}`)
       }
     });
 
+    this.setupHistory();
+    
   } // end init()
+
+  private setupHistory(){
+    this.financialsService.transactions = [];
+    this.financialsService.transactions$.next(null);
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+  }
 
   public deleteTransaction(id: string, type: string, amount: number) {
     
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
 
     type === 'Payment' ? this.updatedBalance = (this.runningBalance + amount) : this.updatedBalance = (this.runningBalance - amount);
+		// console.log("​HistoryComponent -> publicdeleteTransaction -> type", type)
+		// console.log("​HistoryComponent -> publicdeleteTransaction -> this.updatedBalance ", this.updatedBalance );
 
     // Update the running balance in the DB
-    // Issue with running balance being passed a NaN
     this.currentFinancialDoc.ref.set({ [this.runningBalanceKey]: this.updatedBalance }, { merge: true })
       .then(_ => { 
         this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
-        // Update history table data.
-        this.financialsService.transactions = [];
-        this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
-        this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+
+        // Delete the subcollection that is the payment or charge being deleted.
+        let collection: string;
+        // Determine subcollection.
+        type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
+        this.currentFinancialDoc.ref.collection(collection).doc(id).delete()
+          .then(_ => {
+            // console.log('TCL: HistoryComponent -> deleteTransaction -> id', id, 'Amount:', amount); 
+            // Update history table data.
+            this.setupHistory();
+          });
+
       });
-
-    
-    // Delete the subcollection that is the payment or charge being deleted.
-    // Are we dealing with the payments or charges subcollection?
-    let collection: string;
-    type === 'Payment' ? collection = this.paymentsCollection : collection = this.chargesCollection;
-
-
-
-    // this.currentFinancialDoc.ref.collection(collection).doc(id).delete()
-    //   .then(_ => {
-    //     console.log('TCL: HistoryComponent -> deleteTransaction -> id', id, 'Amount:', amount);
-    //     // Update the DB
-    //     // Issue with running balance being passed a NaN
-    //     this.currentFinancialDoc.ref.set({ [this.runningBalanceKey]: this.updatedBalance }, { merge: true })
-    //       .then(_ => { 
-    //         this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance); // For entry.component to show Running Balance
-    //         // Update history table data.
-    //         this.financialsService.transactions = [];
-    //         this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
-    //         this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
-    //       })
-    //   });
-
   }
 
   ngOnDestroy() {

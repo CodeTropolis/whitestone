@@ -10,7 +10,6 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class EntryCategoryComponent implements OnInit {
 
-  //public categories: any[] =[];
   public currentCategory: any;
   public currentFinancialDoc: any;
 
@@ -22,7 +21,6 @@ export class EntryCategoryComponent implements OnInit {
   public startingBalance: number;
   public runningBalance: number;
 
-  //public enableCatButtons: boolean;
   public balanceIsNegative: boolean;
 
   public formGroup: FormGroup;
@@ -51,6 +49,7 @@ export class EntryCategoryComponent implements OnInit {
 
   ngOnInit() {
 
+    // Listen for current financial doc set in student-select.component
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
         if(doc){
@@ -59,6 +58,7 @@ export class EntryCategoryComponent implements OnInit {
       })
     );
 
+   // Listen for current current set in student-select.component   
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
         this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
@@ -69,15 +69,10 @@ export class EntryCategoryComponent implements OnInit {
           this.runningBalanceKey = cat.key + 'RunningBalance';
           this.chargesCollection = cat.key + 'Charges';
           this.paymentsCollection = cat.key + 'Payments';
-
           this.checkForBalance();
-          // Check if any of the transaction subcollections (payments or charges) exist for the
-          //  the current financial doc and set booleans. 
-          //  Do this here as subcollecton may exist upon selecting cat and 
-          //  do this after processing a transaction as the subcollecton will exist after a transaction
-           this.checkForTransactions();
-           this.showHistory = false;
-           this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another cateory
+          this.checkForTransactions();
+          this.showHistory = false;
+          this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another category
 
         }
       })
@@ -112,7 +107,6 @@ export class EntryCategoryComponent implements OnInit {
 
     this.formReady = false;
 
-
   }
 
   private checkForBalance(){
@@ -129,7 +123,10 @@ export class EntryCategoryComponent implements OnInit {
       }
     )
   }
-
+    // Check if any of the transaction subcollections (payments or charges) exist for the
+    //  the current financial doc and set booleans. 
+    //  Do this here as subcollecton may exist upon selecting cat and 
+    //  do this after processing a transaction as the subcollecton will exist after a transaction
   private checkForTransactions() {
     // this.charges | payments Collection will be the proper collection based on selected category i.e. tutionCharges
     // per https://stackoverflow.com/a/49597381: .collection(..).get() returns a QuerySnapshot which has the property size
@@ -137,20 +134,20 @@ export class EntryCategoryComponent implements OnInit {
       .then(query => {
         if (query.size > 0){
           this.chargesCollectionExists = true;
-          console.log(`${this.chargesCollection} exists`);
+         // console.log(`${this.chargesCollection} exists`);
         }else{
           this.chargesCollectionExists = false;
-          console.log(`${this.chargesCollection} does not exists`);
+         // console.log(`${this.chargesCollection} does not exists`);
         }
       })
       this.currentFinancialDoc.ref.collection(this.paymentsCollection).get()
       .then(query => {
         if (query.size > 0){
           this.paymentsCollectionExists = true;
-          console.log(`${this.paymentsCollection} exists`);
+         // console.log(`${this.paymentsCollection} exists`);
         }else{
           this.paymentsCollectionExists = false;
-          console.log(`${this.paymentsCollection} does not exists`);
+         // console.log(`${this.paymentsCollection} does not exists`);
         }
       })
   }
@@ -170,9 +167,10 @@ export class EntryCategoryComponent implements OnInit {
     if(!this.startingBalance){
       this.currentFinancialDoc.ref.set({
         [this.startingBalanceKey]: this.formValue.amount, 
+        [this.runningBalanceKey]: this.formValue.amount,
         [this.startingBalanceDateKey]: this.formValue.date,
         [this.startingBalanceMemoKey]: this.formValue.memo, 
-        [this.runningBalanceKey]: this.formValue.amount}, 
+        }, 
         { merge: true })
           .then( _ => {
             this.resetForm(formDirective);
@@ -196,14 +194,19 @@ export class EntryCategoryComponent implements OnInit {
       // NOTE: Wrap formula in () and set input to type number or else + will concat. 
       this.isEnteringPayment ? this.runningBalance -= this.formValue.amount : this.runningBalance = (this.runningBalance + this.formValue.amount);
       this.currentFinancialDoc.ref.set({ [this.runningBalanceKey]: this.runningBalance }, 
-        { merge: true }) .then( _ => {
+        { merge: true }).then( _ => {
+          this.financialsService.runningBalanceForCurrentCategory$.next(this.runningBalance);
           this.resetForm(formDirective);
           this.checkForTransactions();
-          // Update history.component
-          this.financialsService.transactions = []; // Prevent duplicate entries
-          this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
-          this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
+          this.setupHistory(); // Update history.component
         })
+  }
+
+  private setupHistory(){
+    this.financialsService.transactions = []; // Prevent duplicate entries
+    this.financialsService.transactions$.next(null);
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+    this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
   }
 
   public enterPayment() {

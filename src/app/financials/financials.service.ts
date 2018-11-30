@@ -35,7 +35,7 @@ export class FinancialsService {
   }
 
   // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
-  // Outside of if (!snapshot.exists) because this needs to be done for future as well as existing financial docs.
+  // Outside of if (!snapshot.exists) because, in addition to future financial docs, this also needs to be done for existing financial docs.
 
   public setupFinancialDoc(student) {
     // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
@@ -78,7 +78,6 @@ export class FinancialsService {
               date: date,
                memo: item.data().memo 
             }
-            //const transactions:any[] = [];
             this.transactions.push(transactionObj);
             this.transactions$.next(this.transactions);
           });
