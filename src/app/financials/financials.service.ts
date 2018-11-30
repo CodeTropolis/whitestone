@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
 import { FirebaseService } from '../core/services/firebase.service';
 import { AuthService } from '../core/services/auth.service';
 import { DataService } from '../core/services/data.service';
+
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+import { switchMap} from 'rxjs/operators';
 
 @Injectable()
 export class FinancialsService {
@@ -16,10 +19,13 @@ export class FinancialsService {
   public transactions: any[] = [];
   public transactions$ = new BehaviorSubject<any[]>(null);
 
+  public financialDocs$: Observable<any[]>;
+
 
   constructor(private firebaseService: FirebaseService, 
               private authService: AuthService, 
-              private dataService: DataService) {
+              private dataService: DataService,
+              private afs: AngularFirestore) {
 
     this.categories = {
       tuition: 'Tuition',
@@ -56,10 +62,32 @@ export class FinancialsService {
               this.currentFinancialDoc$.next(doc);
             })
         })
-    } else { // Else a non-admin user so retrieve only
+    } else { // Else a non-admin user so retrieve only.
+
+  
+        // const matchFatherEmail = this.afs.collection("financials", ref => ref.where("fatherEmail","==", this.authService.user.email));
+        // const matchMotherEmail = this.afs.collection("financials", ref => ref.where("motherEmail","==", this.authService.user.email));
+    
+        // this.financialDocs$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
+        //   .pipe(switchMap(docs => {
+        //     const [docsFatherEmail, docsMotherEmail] = docs;
+        //     const combined = docsFatherEmail.concat(docsMotherEmail);
+        //     return of(combined);
+        //   }));
+
+        //   this.financialDocs$.subscribe(doc => console.log(doc));
+
+        //console.log(this.firebaseService.financialsCollection.doc(student.id));
+
       this.firebaseService.financialsCollection.doc(student.id).ref.get()
         .then(doc => {
-          this.currentFinancialDoc$.next(doc); 
+          if(doc.data()){
+						//console.log("​FinancialsService -> publicsetupFinancialDoc -> doc", doc)
+            this.currentFinancialDoc$.next(doc); 
+          }else{
+           console.log('No financial data for this student.');
+          }
+          
         })
     }
   }

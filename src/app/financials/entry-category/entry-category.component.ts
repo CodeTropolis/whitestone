@@ -54,6 +54,8 @@ export class EntryCategoryComponent implements OnInit {
       this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
         if(doc){
           this.currentFinancialDoc = doc;
+        }else{
+          //console.log('No financial data for this student.');
         }
       })
     );
@@ -62,6 +64,7 @@ export class EntryCategoryComponent implements OnInit {
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
         this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
+        // Check if financial doc exists as a non admin user will possilby click a student for which there is no financial data.
         if(cat){
           this.startingBalanceKey = cat.key + 'StartingBalance';
           this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
@@ -73,7 +76,6 @@ export class EntryCategoryComponent implements OnInit {
           this.checkForTransactions();
           this.showHistory = false;
           this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another category
-
         }
       })
     );
