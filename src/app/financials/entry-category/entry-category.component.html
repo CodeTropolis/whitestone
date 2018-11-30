@@ -3,12 +3,19 @@
     Solution: Show spinner until checkForBalance is completed -->
     <!-- Only want spinner to show when a category has been selected -->
 <mat-card>
-    <div *ngIf="!formReady && currentCategory else form"> 
+    <div *ngIf="!formReady && currentCategory else entry"> 
         <app-progress-spinner></app-progress-spinner>
     </div>
     
-    <ng-template #form>
-        <form *ngIf="currentCategory" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
+    <ng-template #entry>
+
+            <p  *ngIf="currentCategory && startingBalance"><strong>{{currentCategory.val}}</strong> Starting Balance: {{startingBalance | currency}} | 
+                Running Balance:  <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
+                <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></p>
+            
+            <p *ngIf="currentCategory && !startingBalance && !userIsAdmin">Financial data for {{currentCategory.val}} is pending.</p>
+
+        <form *ngIf="currentCategory && userIsAdmin" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
             <!-- Now that form is ready, check for a starting balance to determine which form controls to show -->
            <div *ngIf="!startingBalance else transaction">  
                 <h3>Enter starting balance for {{currentCategory.val}}</h3>
@@ -18,18 +25,16 @@
             </div>
     
             <ng-template #transaction>
-                <p><strong>{{currentCategory.val}}</strong> Starting Balance: {{startingBalance | currency}} | 
-                    Running Balance:  <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
-                    <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></p>
+               
                     
                    <div>
-                        <span *ngIf="userIsAdmin">
-                            <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
-                            <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
-                        </span>
-                        <!-- history button should be availabe to both admin and non admin users.-->
+                    
+                        <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
+                        <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
+                            <!-- history button should be availabe to both admin and non admin users.-->
                         <button *ngIf="paymentsCollectionExists || chargesCollectionExists" 
                         mat-flat-button color="primary" type="button" (click)="toggleHistory()">History</button>
+                        
                    </div>
                   
                     <mat-form-field *ngIf="isEnteringPayment">
@@ -43,16 +48,23 @@
     
             <!-- Date picker and memo will show for entering balance, payment and charge -->
          
-                <mat-form-field>
-                    <input matInput [matDatepicker]="transactionDatePicker" placeholder="Date" formControlName="date">
-                    <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
-                    <mat-datepicker #transactionDatePicker></mat-datepicker>
-                </mat-form-field>
-                <mat-form-field>
-                    <input matInput type=text placeholder="Memo" formControlName="memo">
-                </mat-form-field>
+              <div *ngIf="!startingBalance || (isEnteringCharge || isEnteringPayment)">
+                    <mat-form-field>
+                        <input matInput [matDatepicker]="transactionDatePicker" placeholder="Date" formControlName="date">
+                        <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #transactionDatePicker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput type=text placeholder="Memo" formControlName="memo">
+                    </mat-form-field>
+              </div>
           
             <button mat-flat-button color="primary" [disabled]="!formGroup.valid || disableSubmitButton" type="submit">Submit</button>
         </form>
+
+           <!-- history button should be availabe to both admin and non admin users.-->
+           <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && !userIsAdmin && currentCategory" 
+           mat-flat-button color="primary" type="button" (click)="toggleHistory()">History</button>
+          
     </ng-template>
 </mat-card>
