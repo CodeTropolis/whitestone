@@ -79,7 +79,7 @@ export class HistoryComponent implements OnInit {
     // Get the running balance which is next'd by entry-category.component. 
     //  Trying to get it via this.currentFinancialDoc.data()[this.runningBalanceKey] sometimes returns as undefined
       this.financialsService.runningBalanceForCurrentCategory$.subscribe(runningBalance => {
-        console.log(runningBalance);
+        //console.log(runningBalance);
         this.runningBalance = runningBalance;
       });
 
@@ -89,7 +89,7 @@ export class HistoryComponent implements OnInit {
         this.tableData.sort = this.sort;
       } else {
         this.tableData = null;
-       console.log(`Table data issue with: ${x}`)
+      // console.log(`Table data issue with: ${x}`)
       }
     });
 
