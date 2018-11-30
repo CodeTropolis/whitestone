@@ -1,1 +1,4 @@
-p.history-title {text-align: center;}
+p.info {
+    font-size: 1.25em;
+    text-align: center;
+}
