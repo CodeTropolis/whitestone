@@ -21,10 +21,6 @@ export class FinancialsService {
 
   public financialDocs$: Observable<any[]>;
 
-  // public userIsAdmin: boolean = false;  
-  // public userIsSubcriber: boolean = false;
-
-
   constructor(private firebaseService: FirebaseService, 
               private authService: AuthService, 
               private dataService: DataService,
@@ -36,18 +32,6 @@ export class FinancialsService {
       extendedCare: 'Extended Care',
       misc: 'Misc',
     }
-
-  //  // this.subscriptions.push(
-  //     this.authService.userIsAdmin$.subscribe(x => {
-  //       this.userIsAdmin = x;
-  //     })
-  //  // );
-
-  //   //this.subscriptions.push(
-  //     this.authService.userIsSubcriber$.subscribe(x => {
-  //       this.userIsSubcriber = x;
-  //     })
-  //  // )
 
   }
 
@@ -80,28 +64,11 @@ export class FinancialsService {
     } else { // Else a non-admin user so retrieve only.
 
       console.log('user is subscriber only');
-  
-        // const matchFatherEmail = this.afs.collection("financials", ref => ref.where("fatherEmail","==", this.authService.user.email));
-        // const matchMotherEmail = this.afs.collection("financials", ref => ref.where("motherEmail","==", this.authService.user.email));
-    
-        // this.financialDocs$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
-        //   .pipe(switchMap(docs => {
-        //     const [docsFatherEmail, docsMotherEmail] = docs;
-        //     const combined = docsFatherEmail.concat(docsMotherEmail);
-        //     return of(combined);
-        //   }));
-
-        //   this.financialDocs$.subscribe(doc => console.log(doc));
-
-        //console.log(this.firebaseService.financialsCollection.doc(student.id));
 
       this.firebaseService.financialsCollection.doc(student.id).ref.get()
         .then(doc => {
           if(doc.data()){
-            //console.log("​FinancialsService -> publicsetupFinancialDoc -> doc", doc.data())
-            //if (doc.data().fatherEmail == this.authService.user.email || doc.data().fatherEmail == this.authService.user.email){
               this.currentFinancialDoc$.next(doc); 
-            //}
           }else{
            console.log('No financial data for this student.');
           }
