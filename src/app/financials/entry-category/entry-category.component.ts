@@ -45,6 +45,8 @@ export class EntryCategoryComponent implements OnInit {
   
   private subscriptions: any[] = [];
 
+  public showStartingBalanceInput: boolean;
+
   constructor(private financialsService: FinancialsService, private fb: FormBuilder, private authService: AuthService) { }
 
   ngOnInit() {
@@ -60,16 +62,18 @@ export class EntryCategoryComponent implements OnInit {
       })
     );
 
-   // Listen for current current set in student-select.component   
+   // Listen for category selection (from student-select.component)   
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
+        this.isEnteringCharge = false;
+        this.isEnteringPayment = false;
         this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
         // Check if financial doc exists as a non admin user will possilby click a student for which there is no financial data.
         if(cat){
           this.startingBalanceKey = cat.key + 'StartingBalance';
           this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
           this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
-          this.runningBalanceKey = cat.key + 'RunningBalance';
+          this.runningBalanceKey = cat.key + 'Balance'; // Do not change key strings.  Keys already present in DB.
           this.chargesCollection = cat.key + 'Charges';
           this.paymentsCollection = cat.key + 'Payments';
           this.checkForBalance();
@@ -120,8 +124,15 @@ export class EntryCategoryComponent implements OnInit {
           this.startingBalance = snapshot.data()[this.startingBalanceKey];
           this.runningBalance = snapshot.data()[this.runningBalanceKey];
           this.financialsService.runningBalanceForCurrentCategory$.next(snapshot.data()[this.runningBalanceKey]);
+
+          this.showStartingBalanceInput = false;
+         
+
         } else {
           this.startingBalance = null;
+
+          this.showStartingBalanceInput = true;
+          
         }
         this.formReady = true;
       }
@@ -167,7 +178,7 @@ export class EntryCategoryComponent implements OnInit {
     this.formValue = this.formGroup.value;
     this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
 
-    if(!this.startingBalance){
+    if(this.showStartingBalanceInput){
       this.currentFinancialDoc.ref.set({
         [this.startingBalanceKey]: this.formValue.amount, 
         [this.runningBalanceKey]: this.formValue.amount,
@@ -182,6 +193,7 @@ export class EntryCategoryComponent implements OnInit {
            // Now that a starting balance has been entered, check for balance in order to set startingBlance so that transactions form elements show.
     }else{
       this.processTransaction(formDirective);
+      console.log('process transaction')
     }
   
   }
