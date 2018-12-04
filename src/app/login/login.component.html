@@ -20,7 +20,7 @@
 
 	<!-- <button mat-raised-button color="primary" (click)="logIn()">Login Using Google</button> -->
 	<!-- <form [formGroup]="emailLoginForm" #formDirective="ngForm" (ngSubmit)="emailLogin(formDirective)"> -->
-	<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="creatingAccount ? signUp() : emailLogin()">
+	<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="creatingAccount ? signUp() : emailLogin(formDirective)">
 		<mat-form-field>
 			<input matInput placeholder="Email" formControlName="email">
 			<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
@@ -39,14 +39,14 @@
 		</mat-form-field>
 
 		<div class="button-group">
-			<button *ngIf="creatingAccount; else login" [disabled]="!form.valid || disableButton" type="submit" mat-flat-button color="primary">Create Account</button>
+			<button *ngIf="creatingAccount; else login" [disabled]="!form.valid" type="submit" mat-flat-button color="primary">Create Account</button>
 			<ng-template #login>
-				<button type="submit" class="login" [disabled]="!form.valid || disableButton" mat-flat-button color="primary">Login</button>
+				<button type="submit" class="login" [disabled]="!form.valid" mat-flat-button color="primary">Login</button>
 				<a *ngIf="!creatingAccount" [routerLink]="" (click)="createAccount(formDirective)">Or Create Account</a>
 			</ng-template>
 		</div>
 
 	</form>
-	<p class="legal">&copy; 2018 CodeTropolis</p>
+	<p class="legal">&copy; 2018 ProDev, LLC</p>
 	<!-- <p class="legal">Release Branch</p> -->
 </mat-card>

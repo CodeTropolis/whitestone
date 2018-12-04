@@ -48,12 +48,13 @@ export class LoginComponent implements OnInit {
     }
   
 
-  public emailLogin() {
+  public emailLogin(formDirective) {
     this.auth.error$.next('');
     this.auth.status$.next('');
     const e = this.form.value.email;
     const p = this.form.value.password;
     this.auth.emailLogin(e, p, 'record-list');
+    this.resetForm(formDirective);
   }
 
   public signUp() {

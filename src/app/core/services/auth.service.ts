@@ -86,7 +86,7 @@ export class AuthService {
     })
     promise.catch(err => {
       console.log(err);
-      this.error$.next("Account does not exist. Please create an account.");
+      this.error$.next(err.message);
     });
   }
 
