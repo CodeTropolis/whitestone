@@ -31,7 +31,7 @@ export class FirebaseService {
   private mapAndReplayCollection(collection: AngularFirestoreCollection<any[]>): any {
     return collection.snapshotChanges()
       .pipe(
-       // tap((arr => console.log(`${arr.length} reads on ${collection.ref.id} collection `))),
+        tap((arr => console.log(`${arr.length} reads on ${collection.ref.id} collection `))),
         map(changes => {
           return changes.map(a => {
             return { realId: a.payload.doc.id, ...a.payload.doc.data() }

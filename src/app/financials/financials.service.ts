@@ -4,8 +4,7 @@ import { FirebaseService } from '../core/services/firebase.service';
 import { AuthService } from '../core/services/auth.service';
 import { DataService } from '../core/services/data.service';
 
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
-import { switchMap} from 'rxjs/operators';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 @Injectable()
 export class FinancialsService {
