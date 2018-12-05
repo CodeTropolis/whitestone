@@ -93,6 +93,9 @@ export class RecordListComponent implements OnInit {
         this.records$.subscribe(records =>{
           this.ds = new MatTableDataSource(records);
           this.recordMatch = true;
+
+          this.ds.paginator = this.paginator;
+          this.ds.sort = this.sort;
         })
       )
 
@@ -102,7 +105,9 @@ export class RecordListComponent implements OnInit {
           this.matchingRecords = []; // prevent duplicate entries i.e. upon update record and other events(?)
           x.forEach(record => {
               this.matchingRecords.push(record);
-              this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an arrray.
+              this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an array.
+              this.ds.paginator = this.paginator;
+              this.ds.sort = this.sort;
           })
 
             this.ds.filterPredicate = (data, filter) => {
@@ -112,8 +117,7 @@ export class RecordListComponent implements OnInit {
               dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
               return dataStr.indexOf(filter) != -1;
             }
-            this.ds.paginator = this.paginator;
-            this.ds.sort = this.sort;
+            
        })
     )
     
