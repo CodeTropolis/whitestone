@@ -47,7 +47,9 @@ export class EntryCategoryComponent implements OnInit {
 
   public showStartingBalanceInput: boolean;
 
-  constructor(private financialsService: FinancialsService, private fb: FormBuilder, private authService: AuthService) { }
+  constructor(private financialsService: FinancialsService, 
+    private fb: FormBuilder, 
+    private authService: AuthService) { }
 
   ngOnInit() {
 
@@ -247,6 +249,11 @@ export class EntryCategoryComponent implements OnInit {
   public toggleHistory() {
     this.showHistory = !this.showHistory;
     this.financialsService.showHistory$.next(this.showHistory);
+  }
+
+  public goToURL(url){
+    //window.location.href = url;
+    window.open(url,'_blank');
   }
 
   ngOnDestroy() {

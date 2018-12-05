@@ -9,11 +9,12 @@
     
     <ng-template #entry>
 
-        <p *ngIf="currentCategory && (startingBalance || startingBalance == 0)"><strong>{{currentCategory.val}}</strong> Starting Balance: {{startingBalance | currency}} | 
+        <p *ngIf="currentCategory && (startingBalance || startingBalance == 0)"><strong>{{currentCategory.val}}</strong> 
+           <span style="color:darkgray;"> Starting Balance: {{startingBalance | currency}} </span>| 
             Running Balance:  <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
             <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></p>
         
-        <p *ngIf="currentCategory && !startingBalance && !userIsAdmin">Financial data for {{currentCategory.val}} is pending.</p>
+        <p *ngIf="currentCategory && !userIsAdmin && showStartingBalanceInput">Financial data for {{currentCategory.val}} is pending.</p>
 
         <form *ngIf="currentCategory && userIsAdmin" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
             <!-- Now that form is ready, check for a starting balance to determine which form controls to show -->
@@ -66,6 +67,8 @@
            <!-- history button should be availabe to both admin and non admin users.-->
            <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && !userIsAdmin && currentCategory" 
            mat-flat-button color="primary" type="button" (click)="toggleHistory()">History</button>
+           <button *ngIf="!userIsAdmin && currentCategory"  mat-flat-button color="primary" 
+           type="button" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
           
     </ng-template>
 </mat-card>

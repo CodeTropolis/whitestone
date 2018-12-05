@@ -135,6 +135,7 @@ export class AuthService {
       email: user.email,
       roles: {
         subscriber: true,
+       // admin: true,
       }
     }
     userRef.set(data, { merge: true })

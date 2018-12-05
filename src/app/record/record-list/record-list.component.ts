@@ -87,7 +87,7 @@ export class RecordListComponent implements OnInit {
         return of(combined);
       }));
 
-      console.log("​RecordListComponent -> ngOnInit ->  this.records$",  this.records$)
+      //console.log("​RecordListComponent -> ngOnInit ->  this.records$",  this.records$)
 
       this.subscriptions.push(
         this.records$.subscribe(records =>{
