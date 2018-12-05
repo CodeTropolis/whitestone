@@ -28,6 +28,8 @@ body {background: #f6f6f6;}
 
 button[color=basic] {background: #eff1f1;} 
 
+button[color=financial] {background:var(--ws-green);} 
+
 .container {
     margin: 0 auto;
     max-width: 1000px;

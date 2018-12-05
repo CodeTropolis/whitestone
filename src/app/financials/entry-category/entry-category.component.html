@@ -29,13 +29,14 @@
                
                     
                    <div>
-                    
                         <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
                         <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
                             <!-- history button should be availabe to both admin and non admin users.-->
                         <button *ngIf="paymentsCollectionExists || chargesCollectionExists" 
                         mat-flat-button color="primary" type="button" (click)="toggleHistory()">History</button>
-                        
+
+                        <!-- <button *ngIf="currentCategory" class="payment"  mat-flat-button color="primary" 
+                        type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button> -->
                    </div>
                   
                     <mat-form-field *ngIf="isEnteringPayment">
@@ -67,8 +68,9 @@
            <!-- history button should be availabe to both admin and non admin users.-->
            <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && !userIsAdmin && currentCategory" 
            mat-flat-button color="primary" type="button" (click)="toggleHistory()">History</button>
-           <button *ngIf="!userIsAdmin && currentCategory"  mat-flat-button color="primary" 
-           type="button" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
+
+           <!-- <button *ngIf="currentCategory && !userIsAdmin" class="payment"  mat-flat-button color="primary" 
+           type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button> -->
           
     </ng-template>
 </mat-card>

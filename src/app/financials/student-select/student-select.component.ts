@@ -78,4 +78,9 @@ export class StudentSelectComponent implements OnInit {
     this.financialsService.currentCategory$.next(cat);
   }
 
+  public goToURL(url){
+    //window.location.href = url;
+    window.open(url,'_blank');
+  }
+
 }

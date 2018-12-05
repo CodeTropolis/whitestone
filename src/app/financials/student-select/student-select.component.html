@@ -19,6 +19,7 @@
         <div *ngFor="let student of studentsOfRecord">
           <button class="student" mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
         </div>
+        <button class="student" mat-flat-button color="primary" type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
       </div>
   </div>
 </mat-card>
