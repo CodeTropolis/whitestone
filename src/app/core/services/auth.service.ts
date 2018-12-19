@@ -26,6 +26,8 @@ export class AuthService {
 
   public disableLoginOrCreateButton$ = new BehaviorSubject<boolean>(null);
 
+  private userData: User;
+
 
   constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private firebaseService: FirebaseService, private router: Router) {
 
@@ -47,10 +49,10 @@ export class AuthService {
       if (user) {
         if (user['roles'].subscriber && !user['roles'].admin) {
           this.userIsSubcriber$.next(true);
-          this.userIsAdmin$.next(false)
+          this.userIsAdmin$.next(false);
         }
         if (user['roles'].admin) {
-          this.userIsAdmin$.next(true)
+          this.userIsAdmin$.next(true);
         }
       }
     });
@@ -130,18 +132,39 @@ export class AuthService {
 
   private updateUserData(user, link) {
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`); // ToDo: Lock down users collection.
-    const data: User = {
-      uid: user.uid,
-      email: user.email,
-      roles: {
-        subscriber: true,
-       // admin: true,
+
+    this.userIsAdmin$.subscribe(x => {
+      if (x){
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          roles: {
+            subscriber: true,
+            admin: true, // This property must be present and set to *true* for the back end rule to pass.
+          }
+        }
+
+        userRef.set(userData, { merge: true })
+        .then(_ => {
+          this.router.navigate([link]);
+        })
+
+      }else{
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          roles: {
+            subscriber: true,
+            admin: false, // This property must be present and set to *false* for the back end rule to pass.
+          }
+        }
+        userRef.set(userData, { merge: true })
+        .then(_ => {
+          this.router.navigate([link]);
+        })
       }
-    }
-    userRef.set(data, { merge: true })
-      .then(_ => {
-        this.router.navigate([link]);
-      })
+    })
+  
   }
 
 }

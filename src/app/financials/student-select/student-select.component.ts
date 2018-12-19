@@ -46,11 +46,12 @@ export class StudentSelectComponent implements OnInit {
         this.enableCatButtons = true;
       }else {
         this.enableCatButtons = false;
+        console.log('financial doc null')
       }
     })
   );
 
-  this.categories = this.financialsService.categories;
+    this.categories = this.financialsService.categories;
 
     // Set currentStudent to null so that we don't have a student set from previous use of this component.
     this.financialsService.currentStudent$.next(null); 

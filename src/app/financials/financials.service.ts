@@ -63,15 +63,22 @@ export class FinancialsService {
     } else { // Else a non-admin user so retrieve only.
 
       console.log('user is subscriber only');
+  
+      // // It is possible that a financial doc has not yet been created by admin.
+      // this.firebaseService.financialsCollection.ref.where('fatherEmail', "==", student.email).get()
+      //   .then(querySnapshot => {
+			// 		console.log("​FinancialsService -> publicsetupFinancialDoc -> querySnapshot", querySnapshot)
+          
+      //   })
 
-      this.firebaseService.financialsCollection.doc(student.id).ref.get()
+      // finanical collection rules will prevent this if incoming user's email has no match on the fin doc.
+      this.firebaseService.financialsCollection.doc(student.id).ref.get() 
         .then(doc => {
           if(doc.data()){
               this.currentFinancialDoc$.next(doc); 
-          }else{
+          }else{ 
            console.log('No financial data for this student.');
-          }
-          
+          } 
         })
     }
   }
