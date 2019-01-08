@@ -25,6 +25,7 @@
     "@angular/router": "^7.0.4",
     "angular-material": "^1.1.9",
     "angularfire2": "^5.0.0-rc.10",
+    "bootstrap": "^4.2.1",
     "core-js": "^2.5.4",
     "firebase": "^5.0.4",
     "moment": "^2.22.2",
