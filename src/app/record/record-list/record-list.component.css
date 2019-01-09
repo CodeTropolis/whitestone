@@ -5,6 +5,11 @@
   margin-top: -3.5em;
 }
 
+button  {
+  display:block;
+  width: auto;
+}
+
 .expanded {
     background: #f5fafc;
     border: 1px solid #cdd0d2;
@@ -30,3 +35,5 @@ ng-container.admin {margin-bottom: 5em;}
   margin: 1em auto 0 auto;
   width: 46px;
 }
+
+mat-cell { display: block;}

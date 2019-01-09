@@ -9,10 +9,18 @@
     
     <ng-template #entry>
 
-        <p *ngIf="currentCategory && (startingBalance || startingBalance == 0)"><strong>{{currentCategory.val}}</strong> 
-           <span style="color:darkgray;"> Starting Balance: {{startingBalance | currency}} </span>| 
+
+        <div *ngIf="currentCategory && (startingBalance || startingBalance == 0)">
+            <div> 
+                <strong>{{currentCategory.val | uppercase}} </strong>
+                <!-- history button should be availabe to both admin and non admin users.-->
+                <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && currentCategory" 
+                mat-flat-button color="primary" type="button" (click)="toggleHistory()">View History</button>
+            </div>
+           <span style="color:darkgray;"> Starting Balance: {{startingBalance | currency}} | </span>
             Running Balance:  <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
-            <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></p>
+            <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span>
+        </div>
         
         <p *ngIf="currentCategory && !userIsAdmin && showStartingBalanceInput">Financial data for {{currentCategory.val}} is pending.</p>
 
@@ -31,12 +39,6 @@
                    <div>
                         <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
                         <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
-                            <!-- history button should be availabe to both admin and non admin users.-->
-                        <button *ngIf="paymentsCollectionExists || chargesCollectionExists" 
-                        mat-flat-button color="primary" type="button" (click)="toggleHistory()">History</button>
-
-                        <!-- <button *ngIf="currentCategory" class="payment"  mat-flat-button color="primary" 
-                        type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button> -->
                    </div>
                   
                     <mat-form-field *ngIf="isEnteringPayment">
@@ -65,12 +67,5 @@
             <button mat-flat-button color="primary" [disabled]="!formGroup.valid || disableSubmitButton" type="submit">Submit</button>
         </form>
 
-           <!-- history button should be availabe to both admin and non admin users.-->
-           <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && !userIsAdmin && currentCategory" 
-           mat-flat-button color="primary" type="button" (click)="toggleHistory()">History</button>
-
-           <!-- <button *ngIf="currentCategory && !userIsAdmin" class="payment"  mat-flat-button color="primary" 
-           type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button> -->
-          
     </ng-template>
 </mat-card>

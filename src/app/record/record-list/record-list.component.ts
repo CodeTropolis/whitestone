@@ -22,7 +22,7 @@ export class RecordListComponent implements OnInit {
 
   public isUpdating: boolean;
   public ds: MatTableDataSource<any>;
-  public displayedColumns = ['surname', 'father', 'mother', 'actions'];
+  public displayedColumns;
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] = [];
   public showForm: boolean;
@@ -77,6 +77,8 @@ export class RecordListComponent implements OnInit {
  //The admin will always have subscriber:true so filter out the admin user
   if (this.userIsSubcriber && !this.userIsAdmin) {
 
+    this.displayedColumns = ['surname', 'actions'];
+
     const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail","==", this.authService.user.email));
     const matchMotherEmail = this.afs.collection("records", ref => ref.where("motherEmail","==", this.authService.user.email));
 
@@ -100,6 +102,7 @@ export class RecordListComponent implements OnInit {
       )
 
   }else if(this.userIsAdmin){
+    this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
     this.subscriptions.push(
         this.fs.records$.subscribe(x => {
           this.matchingRecords = []; // prevent duplicate entries i.e. upon update record and other events(?)

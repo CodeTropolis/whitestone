@@ -5,9 +5,9 @@
           <i class="material-icons account-circle">account_circle</i>
         </div>
         <mat-card-title>
-          <h2>Financial status for 
+          <h5>Financial status for 
             <span *ngIf="currentStudent$ | async as currentStudent; else selectStudent">{{currentStudent.fname}} {{currentStudent.lname}} </span>
-          </h2>
+          </h5>
           <ng-template #selectStudent>(Select a student)</ng-template>
           <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
           (click)="setCategory(cat)">{{cat.val}}</button>
@@ -15,7 +15,7 @@
       </mat-card-header>
     
       <div class="students">
-        <h3>Students:</h3>
+        <h5>Students:</h5>
         <div *ngFor="let student of studentsOfRecord">
           <button class="student" mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
         </div>
