@@ -12,6 +12,7 @@ export class HeaderComponent implements OnInit {
   @Input() title = 'Header...';
   @Input() link;
   @Input() linkName;
+  @Input() showUserEmail = false;
 
   public currentUser$: Observable<any>;
 

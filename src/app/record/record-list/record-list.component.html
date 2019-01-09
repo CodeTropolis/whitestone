@@ -1,10 +1,8 @@
-<app-header title="Record Admin"></app-header>
+<app-header title="Your Records for St. Teresa Tigers" [showUserEmail]="true"></app-header>
 
 <app-record-entry *ngIf="showForm"></app-record-entry>
 <div *ngIf="ds || userIsAdmin; else noRecords" class="mat-elevation-z8">
 	<mat-card>
-		<h3>Available Records</h3>
-
 		<button *ngIf="userIsAdmin" class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i>
 			Family Record</button>
 		<mat-form-field *ngIf="userIsAdmin">
@@ -75,9 +73,10 @@
 				<ng-container matColumnDef="actions">
 					<mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
 					<mat-cell class="actions" *matCellDef="let row">
-							<button mat-flat-button color="basic" (click)="setCurrentRecord(row)" [routerLink]="['../financials']">Financials</button>
-							<!-- <button mat-flat-button color="basic" [disabled]="true">Grades (Coming Soon)</button>
-							<button mat-flat-button color="basic" [disabled]="true">Attendance (Coming Soon)</button> -->
+						<div></div>
+							<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../financials']">Financials</button>
+							<button mat-flat-button color="primary" [disabled]="true">Grades</button>
+							<button mat-flat-button color="primary" [disabled]="true">Attendance</button>
 					</mat-cell>
 				</ng-container>
 

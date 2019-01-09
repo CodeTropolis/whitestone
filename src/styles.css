@@ -21,7 +21,7 @@ app-entry {
 app-login {
     display: block;
     margin: 7em auto;
-    width: 500px;
+    max-width: 500px;
 }
 
 body {background: #f6f6f6;}
@@ -29,12 +29,6 @@ body {background: #f6f6f6;}
 button[color=basic] {background: #eff1f1;} 
 
 button[color=financial] {background:var(--ws-green);} 
-
-.container {
-    margin: 0 auto;
-    max-width: 1000px;
-    min-width: 500px;
-}
 
 .legal {
     color: var(--ws-light-grey);
@@ -68,9 +62,13 @@ input:-webkit-autofill {
 
     app-login { margin: 1em auto;}
 
-    jw-modal .jw-modal {width: 93vw !important;}
-
     mat-card, mat-toolbar {width: 93vw !important;}
 
-    mat-cell { display: block; padding: 1em;}
+    mat-cell { display: block !important; padding: 1em;}
+    mat-cell button {
+        margin-top: 1em !important;
+        width: 100px !important;
+    }
+
+    .mat-toolbar.mat-primary {padding: 2em 0 !important;}
 }
