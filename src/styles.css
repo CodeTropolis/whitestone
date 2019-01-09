@@ -71,4 +71,6 @@ input:-webkit-autofill {
     jw-modal .jw-modal {width: 93vw !important;}
 
     mat-card, mat-toolbar {width: 93vw !important;}
+
+    mat-cell { display: block; padding: 1em;}
 }
