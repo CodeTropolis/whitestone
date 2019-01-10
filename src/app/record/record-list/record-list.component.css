@@ -1,9 +1,6 @@
 .actions button {margin-right: 0.5em;}
 
-.btn-add-record  {
-  float: right;
-  margin-top: -3.5em;
-}
+.btn-add-record  {float: right;}
 
 button  {
   display:block;
