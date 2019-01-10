@@ -57,7 +57,7 @@ input:-webkit-autofill {
     
     .desktop {display:none;}
 
-    mat-card, mat-toolbar {width: 93vw !important;}
+    /* mat-card, mat-toolbar {width: 93vw !important;} */
 
     mat-cell { display: block !important; padding: 1em;}
     mat-cell button {

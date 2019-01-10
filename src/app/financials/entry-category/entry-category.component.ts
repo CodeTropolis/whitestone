@@ -249,6 +249,17 @@ export class EntryCategoryComponent implements OnInit {
   public toggleHistory() {
     this.showHistory = !this.showHistory;
     this.financialsService.showHistory$.next(this.showHistory);
+
+    setTimeout( _ =>{
+      let el = document.getElementById('history');
+      //console.log("​publictoggleHistory -> el", el)
+      if (el){
+        //el.scrollTop = el.scrollHeight + 200;
+        window.scrollBy(0, 200);
+      }
+    }, 250)
+
+
   }
 
   public goToURL(url){
