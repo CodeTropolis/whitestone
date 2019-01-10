@@ -1,11 +1,21 @@
 
 a {color: var(--ws-smoke);}
 
-.fill-space {flex: 1 1 auto;}
+/* .fill-space {flex: 1 1 auto;} */
 
 mat-toolbar .info {font-size: 0.7em;}
 
+.mat-toolbar-row, 
+.mat-toolbar-single-row {height: 101px;}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) { 
-    .info {text-align: right;}
- }
+    mat-toolbar .info {text-align: right;}
+}
+
+/* Small devices (landscape phones, less than 768px) */
+ @media (max-width: 767.98px) {
+    .mat-toolbar-row, 
+    .mat-toolbar-single-row {height: 150px;}
+  }
+

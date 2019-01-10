@@ -9,7 +9,9 @@ import { AuthService } from '../core/services/auth.service';
 })
 export class HeaderComponent implements OnInit {
 
-  @Input() title = 'Header...';
+  @Input() color = 'basic'; // Pass in basic or primary.  basic is default.
+  @Input() title;
+  @Input() img;
   @Input() link;
   @Input() linkName;
   @Input() showUserEmail = false;
