@@ -9,6 +9,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'record-list', loadChildren: './record/record.module#RecordModule', 
   canLoad:[AuthGuard],
+ // canActivate:[AuthGuard]
   //resolve: {records: RecordResolverService}
   },
   {path: 'financials', loadChildren: './financials/financials.module#FinancialsModule', 

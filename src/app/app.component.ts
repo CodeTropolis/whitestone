@@ -18,6 +18,10 @@ export class AppComponent {
     })
   }
 
+  ngOnInit() {
+    this.router.navigate(['']) // Deal with user refreshing browser. https://stackoverflow.com/a/47235233
+  }
+
   private checkRouterEvent(routerEvent: Event) {
 
     if (routerEvent instanceof NavigationStart) {

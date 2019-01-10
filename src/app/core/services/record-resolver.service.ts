@@ -10,7 +10,7 @@ export class RecordResolverService implements Resolve<any> {
 
   constructor(private fs: FirebaseService) { }
 
-  // The observable provided to the Router must complete *. 
+  // The observable provided to the Router must complete*. 
   // If the observable does not complete, the navigation will not continue.
 
   resolve(){ 
