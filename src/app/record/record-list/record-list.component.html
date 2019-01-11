@@ -1,4 +1,5 @@
-<app-header color="primary" img="headerLogo.png" [showUserEmail]="true"></app-header>
+<!-- <app-header title = "St. Teresa Catholic School Student Portal" color="primary" [showUserEmail]="true"></app-header> -->
+<app-header color="primary" img="headerLogo.png" title="Available Records" [showUserEmail]="true"></app-header>
 
 <app-record-entry *ngIf="showForm"></app-record-entry>
 <div *ngIf="ds || userIsAdmin; else noRecords" class="mat-elevation-z8">

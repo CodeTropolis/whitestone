@@ -10,8 +10,8 @@ import { AuthService } from '../core/services/auth.service';
 export class HeaderComponent implements OnInit {
 
   @Input() color = 'basic'; // Pass in basic or primary.  basic is default.
-  @Input() title;
   @Input() img;
+  @Input() title;
   @Input() link;
   @Input() linkName;
   @Input() showUserEmail = false;

@@ -27,7 +27,7 @@ export class RecordListComponent implements OnInit {
   public isDeleting: boolean[] = [];
   public showForm: boolean;
 
-  public user: User;
+  // public user: User;
   public userIsAdmin: boolean = false;  // for view
   public userIsSubcriber: boolean = false;
   public recordMatch: boolean;
@@ -56,7 +56,6 @@ export class RecordListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
     this.recordMatch = false;
 
     // Why subscribe?  User is never changed once logged in.

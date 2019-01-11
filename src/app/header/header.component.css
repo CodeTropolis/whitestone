@@ -1,21 +1,30 @@
 
 a {color: var(--ws-smoke);}
 
-/* .fill-space {flex: 1 1 auto;} */
-
-mat-toolbar .info {font-size: 0.7em;}
+mat-toolbar .info {font-size: 0.75em;}
 
 .mat-toolbar-row, 
 .mat-toolbar-single-row {height: 101px;}
 
+mat-toolbar .title {text-align: center;}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) { 
-    mat-toolbar .info {text-align: right;}
+
+    mat-toolbar .info {
+        margin-top: 1.25em;
+        text-align: right; 
+    }
+
+    mat-toolbar .title {margin-top: 1em;}
 }
 
 /* Small devices (landscape phones, less than 768px) */
  @media (max-width: 767.98px) {
     .mat-toolbar-row, 
-    .mat-toolbar-single-row {height: 150px;}
+    .mat-toolbar-single-row {
+        height: 150px; 
+        text-align: center;
+    }
   }
 
