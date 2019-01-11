@@ -9,15 +9,23 @@
     
     <ng-template #entry>
         <div *ngIf="currentCategory && (startingBalance || startingBalance == 0)">
-            <div> 
+         
+
+           <div class="desktop">
                 <strong>{{currentCategory.val | uppercase}} </strong>
-                <!-- history button should be availabe to both admin and non admin users.-->
-                <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && currentCategory" 
-                mat-flat-button color="primary" type="button" (click)="toggleHistory()">View History</button>
+               <span style="color:darkgray;"> Starting Balance: {{startingBalance | currency}} | </span>
+                Running Balance: <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
+                <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span>
+                <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && currentCategory" mat-flat-button color="primary" type="button" (click)="toggleHistory()">View History</button>
             </div>
-           <span style="color:darkgray;"> Starting Balance: {{startingBalance | currency}} | </span>
-            Running Balance:  <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
-            <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span>
+
+           <div class="mobile">
+                <strong>{{currentCategory.val | uppercase}} </strong>
+                <div style="color:darkgray;"> Starting Balance: {{startingBalance | currency}}  </div>
+                <div>Running Balance: <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span> <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></div>
+                <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && currentCategory"mat-flat-button color="primary" type="button" (click)="toggleHistory()">View History</button>
+            </div>
+            
         </div>
         
         <p *ngIf="currentCategory && !userIsAdmin && showStartingBalanceInput">Financial data for {{currentCategory.val}} is pending.</p>

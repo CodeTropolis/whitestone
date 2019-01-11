@@ -252,10 +252,8 @@ export class EntryCategoryComponent implements OnInit {
 
     setTimeout( _ =>{
       let el = document.getElementById('history');
-      //console.log("​publictoggleHistory -> el", el)
       if (el){
-        //el.scrollTop = el.scrollHeight + 200;
-        window.scrollBy(0, 200);
+        window.scrollBy(0, 400);
       }
     }, 250)
 
@@ -263,7 +261,6 @@ export class EntryCategoryComponent implements OnInit {
   }
 
   public goToURL(url){
-    //window.location.href = url;
     window.open(url,'_blank');
   }
 
