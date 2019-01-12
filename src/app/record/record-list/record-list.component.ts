@@ -104,7 +104,7 @@ export class RecordListComponent implements OnInit {
     this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
     this.subscriptions.push(
         this.fs.records$.subscribe(x => {
-          this.matchingRecords = []; // prevent duplicate entries i.e. upon update record and other events(?)
+          this.matchingRecords = []; // prevent duplicate entries i.e. upon update record
           x.forEach(record => {
               this.matchingRecords.push(record);
               this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an array.

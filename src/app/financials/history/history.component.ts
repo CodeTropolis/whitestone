@@ -83,25 +83,32 @@ export class HistoryComponent implements OnInit {
         this.runningBalance = runningBalance;
       });
 
-    this.financialsService.transactions$.subscribe(x => {
-      if (x) {
-        this.tableData = new MatTableDataSource(x);
-        this.tableData.sort = this.sort;
-      } else {
-        this.tableData = null;
-      // console.log(`Table data issue with: ${x}`)
-      }
-    });
-
     this.setupHistory();
     
   } // end init()
 
   private setupHistory(){
+
+    this.subscriptions.push(
+      // Moving the subscription here may have fixed history sorting.
+      // Unsure at this point because sorting issue seemed intermittent.
+      this.financialsService.transactions$.subscribe(data => {
+      // console.log(data); // will show null then object
+  
+      // if(data) prevents 'Cannot read property 'slice' of null' error upon clicking 'View History'. 
+      // Reason: data property in subscription null for a moment until populated
+      if(data){ 
+          this.tableData = new MatTableDataSource(data);
+          this.tableData.sort = this.sort;
+        }
+      })
+    )
+
     this.financialsService.transactions = [];
     this.financialsService.transactions$.next(null);
     this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
     this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);
+
   }
 
   public deleteTransaction(id: string, type: string, amount: number) {
@@ -109,8 +116,6 @@ export class HistoryComponent implements OnInit {
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
 
     type === 'Payment' ? this.updatedBalance = (this.runningBalance + amount) : this.updatedBalance = (this.runningBalance - amount);
-		// console.log("​HistoryComponent -> publicdeleteTransaction -> type", type)
-		// console.log("​HistoryComponent -> publicdeleteTransaction -> this.updatedBalance ", this.updatedBalance );
 
     // Update the running balance in the DB
     this.currentFinancialDoc.ref.set({ [this.runningBalanceKey]: this.updatedBalance }, { merge: true })
