@@ -79,11 +79,22 @@ export class RecordListComponent implements OnInit {
     this.displayedColumns = ['surname', 'actions'];
 
     const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail","==", this.authService.user.email));
+		//console.log("​RecordListComponent -> ngOnInit -> matchFatherEmail", matchFatherEmail)
     const matchMotherEmail = this.afs.collection("records", ref => ref.where("motherEmail","==", this.authService.user.email));
+		//console.log("​RecordListComponent -> ngOnInit -> matchMotherEmail", matchMotherEmail)
+
 
     this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(switchMap(docs => {
+				console.log("​RecordListComponent -> ngOnInit -> docs", docs)
         const [docsFatherEmail, docsMotherEmail] = docs;
+				console.log("​RecordListComponent -> ngOnInit -> docsMotherEmail", docsMotherEmail)
+        console.log("​RecordListComponent -> ngOnInit -> docsFatherEmail", docsFatherEmail)
+        if(docsFatherEmail.length == 0 && docsMotherEmail.length == 0){
+          this.recordMatch = false;
+        }else{
+          this.recordMatch = true;
+        }
         const combined = docsFatherEmail.concat(docsMotherEmail);
         return of(combined);
       }));
@@ -93,8 +104,6 @@ export class RecordListComponent implements OnInit {
       this.subscriptions.push(
         this.records$.subscribe(records =>{
           this.ds = new MatTableDataSource(records);
-          this.recordMatch = true;
-
           this.ds.paginator = this.paginator;
           this.ds.sort = this.sort;
         })
