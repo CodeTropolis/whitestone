@@ -8,18 +8,21 @@ p.brand {margin-bottom: 0.25em;}
     text-align: center;
 }
 
-.button-group a {
+.button-group a.create-account {
     display: block;
     margin-top: 2em;
 }
+
+.button-group a.reset-password {font-size: 0.75em;}
+
 
 .button-group button {
     display: block;
     margin: 0 auto;
 }
 
-.create-acct {
-    padding-bottom: 0.5em;
+.instructions {
+   padding: 1em;
     text-align: center;
     }
 

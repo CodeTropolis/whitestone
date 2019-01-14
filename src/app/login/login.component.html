@@ -10,7 +10,8 @@
 		<img class="material-icons login-icon"src="assets/sttCircleLogo.png">
 	</ng-template>
 
-	<p *ngIf="creatingAccount" class="create-acct">Please create an account using the email address associated with your student and a password of your choosing.</p>
+	<p *ngIf="creatingAccount" class="instructions">Please create an account using the email address associated with your student and a password of your choosing.</p>
+	<p *ngIf="isResettingPassword$ | async" class="instructions">To reset your password, please enter the email address associated with your student.</p>
 	<!-- Call the St. Teresa School Administration office at 618.233.3500 if you need further assistance.  -->
 
 	<div class="account-response">
@@ -21,33 +22,60 @@
 
 	<!-- <button mat-raised-button color="primary" (click)="logIn()">Login Using Google</button> -->
 	<!-- <form [formGroup]="emailLoginForm" #formDirective="ngForm" (ngSubmit)="emailLogin(formDirective)"> -->
-	<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="creatingAccount ? signUp() : emailLogin(formDirective)">
-		<mat-form-field>
-			<input matInput placeholder="Email" formControlName="email">
-			<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
-				<div *ngIf="f.email.errors.required">
-					A valid email address is required.
-				</div>
-			</mat-error>
-		</mat-form-field>
-		<mat-form-field>
-			<input type="password" matInput placeholder="Password" formControlName="password">
-			<mat-error *ngIf="f.password.invalid && (f.password.dirty || f.password.touched)">
-				<div *ngIf="f.password.errors.required">
-					A password is required.
-				</div>
-			</mat-error>
-		</mat-form-field>
 
-		<div class="button-group">
-			<button *ngIf="creatingAccount; else login" [disabled]="!form.valid" type="submit" mat-flat-button color="primary">Create Account</button>
-			<ng-template #login>
-				<button type="submit" class="login" [disabled]="!form.valid" mat-flat-button color="primary">Login</button>
-				<a *ngIf="!creatingAccount" [routerLink]="" (click)="createAccount(formDirective)">Or Create Account</a>
-			</ng-template>
-		</div>
+	<div *ngIf="isResettingPassword$ | async; else fullForm">
+		<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="beginPasswordReset(formDirective)">
+			<mat-form-field>
+				<input matInput placeholder="Email" formControlName="email">
+				<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
+					<div *ngIf="f.email.errors.required">
+						A valid email address is required.
+					</div>
+				</mat-error>
+			</mat-form-field>
 
-	</form>
+			<div class="button-group">
+				<button type="submit" class="login" mat-flat-button color="primary">Submit</button>
+			</div>
+		</form>
+	</div>
+
+	<ng-template #fullForm>
+			<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="creatingAccount ? signUp() : emailLogin(formDirective)">
+					<mat-form-field>
+						<input matInput placeholder="Email" formControlName="email">
+						<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">
+							<div *ngIf="f.email.errors.required">
+								A valid email address is required.
+							</div>
+						</mat-error>
+					</mat-form-field>
+		
+					<mat-form-field>
+						<input type="password" matInput placeholder="Password" formControlName="password">
+						<mat-error *ngIf="f.password.invalid && (f.password.dirty || f.password.touched)">
+							<div *ngIf="f.password.errors.required">
+								A password is required.
+							</div>
+						</mat-error>
+					</mat-form-field>
+					<div class="button-group">
+						<button *ngIf="creatingAccount; else login" [disabled]="!form.valid" type="submit" mat-flat-button color="primary">Create Account</button>
+						<ng-template #login>
+							<button *ngIf="!resettingPassword" type="submit" class="login" [disabled]="!form.valid" mat-flat-button color="primary">Login</button>
+							<!-- <button *ngIf="resettingPassword" type="submit" class="login" mat-flat-button color="primary">Submit</button> -->
+							<span *ngIf="!creatingAccount">
+								<a class="reset-password"  [routerLink]="" (click)="beginPasswordReset(formDirective)">Forgot password?</a>
+								<a class ="create-account" [routerLink]="" (click)="createAccount(formDirective)">Or Create Account</a>
+							</span>
+						</ng-template>
+					</div>
+				</form>
+	</ng-template>
+	
+
+	
+
 	<p class="legal">&copy; 2018 ProDev, LLC</p>
 	<!-- <p class="legal">Release Branch</p> -->
 </mat-card>

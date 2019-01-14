@@ -18,6 +18,7 @@ export class AuthService {
   public user$: Observable<User>;
   public status$ = new BehaviorSubject<string>(null);
   public error$ = new BehaviorSubject<string>(null);
+  public isResettingPassword$ = new BehaviorSubject<boolean>(null);
   public creatingAccount$ = new BehaviorSubject<boolean>(false);
 
   public user: any;
@@ -101,7 +102,7 @@ export class AuthService {
       let user: any = this.afAuth.auth.currentUser;
       user.sendEmailVerification().then(_ => {
         this.creatingAccount$.next(false);
-        this.status$.next('Thank you. A verification email has been sent to your email address. Once verified, you may return to the app and login.');
+        this.status$.next('Thank you. A verification email has been sent to your email address. It is possible that the email was sent to your spam folder. Once verified, you may return to the app and login.');
       }
       ).catch(
         (err) => {
@@ -118,6 +119,16 @@ export class AuthService {
       this.disableLoginOrCreateButton$.next(false);
     });
 
+  }
+
+  resetPassword(email: string) {
+   // var auth = firebase.auth();
+    return this.afAuth.auth.sendPasswordResetEmail(email)
+      .then(() =>{ 
+        console.log("email sent");
+        this.status$.next('Password reset instructions have been sent.')
+      })
+      .catch((error) => console.log(error))
   }
 
   public logOut(link: string) {
