@@ -8,9 +8,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/user';
 import { ModalService } from '../../modal/modal.service';
 
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+import { AngularFirestore } from 'angularfire2/firestore';
 import { Observable, of, combineLatest } from 'rxjs'; // combineLatest works with this import only.
-import { switchMap, map} from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 
 @Component({
@@ -83,13 +83,12 @@ export class RecordListComponent implements OnInit {
     const matchMotherEmail = this.afs.collection("records", ref => ref.where("motherEmail","==", this.authService.user.email));
 		//console.log("​RecordListComponent -> ngOnInit -> matchMotherEmail", matchMotherEmail)
 
-
     this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(switchMap(docs => {
 				console.log("​RecordListComponent -> ngOnInit -> docs", docs)
         const [docsFatherEmail, docsMotherEmail] = docs;
-				console.log("​RecordListComponent -> ngOnInit -> docsMotherEmail", docsMotherEmail)
-        console.log("​RecordListComponent -> ngOnInit -> docsFatherEmail", docsFatherEmail)
+				// console.log("​RecordListComponent -> ngOnInit -> docsMotherEmail", docsMotherEmail)
+        // console.log("​RecordListComponent -> ngOnInit -> docsFatherEmail", docsFatherEmail)
         if(docsFatherEmail.length == 0 && docsMotherEmail.length == 0){
           this.recordMatch = false;
         }else{
