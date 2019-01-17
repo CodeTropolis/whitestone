@@ -22,9 +22,10 @@ p.brand {margin-bottom: 0.25em;}
 }
 
 .instructions {
-   padding: 1em;
+    /* margin-bottom: -1em; */
+    padding: 1em;
     text-align: center;
-    }
+}
 
 form {
     margin: 0 auto;

@@ -10,14 +10,16 @@
 		<img class="material-icons login-icon"src="assets/sttCircleLogo.png">
 	</ng-template>
 
-	<p *ngIf="creatingAccount" class="instructions">Please create an account using the email address associated with your student and a password of your choosing.</p>
-	<p *ngIf="isResettingPassword$ | async" class="instructions">To reset your password, please enter the email address associated with your student.</p>
-	<!-- Call the St. Teresa School Administration office at 618.233.3500 if you need further assistance.  -->
-
-	<div class="account-response">
-		<p *ngIf="status$ | async as status">{{status}}</p>
-		<mat-error *ngIf="error$ | async as error">{{error}}</mat-error>
-	</div>
+<div class="instructions">
+		<p *ngIf="creatingAccount">Please create an account using the email address associated with your student and a password of your choosing.</p>
+		<p *ngIf="isResettingPassword$ | async">To reset your password, please enter the email address associated with your student.</p>
+		<!-- Call the St. Teresa School Administration office at 618.233.3500 if you need further assistance.  -->
+	
+		<div class="account-response">
+			<p *ngIf="status$ | async as status">{{status}}</p>
+			<mat-error *ngIf="error$ | async as error">{{error}}</mat-error>
+		</div>
+</div>
 
 
 	<!-- <button mat-raised-button color="primary" (click)="logIn()">Login Using Google</button> -->
