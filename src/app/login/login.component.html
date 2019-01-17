@@ -24,7 +24,7 @@
 	<!-- <form [formGroup]="emailLoginForm" #formDirective="ngForm" (ngSubmit)="emailLogin(formDirective)"> -->
 
 	<div *ngIf="isResettingPassword$ | async; else fullForm">
-		<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="beginPasswordReset(formDirective)">
+		<form [formGroup]="form" #formDirective="ngForm" (ngSubmit)="passwordReset(formDirective)">
 			<mat-form-field>
 				<input matInput placeholder="Email" formControlName="email">
 				<mat-error *ngIf="f.email.invalid && (f.email.dirty || f.email.touched)">

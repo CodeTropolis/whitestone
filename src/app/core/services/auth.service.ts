@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, switchMap, tap, shareReplay } from 'rxjs/operators';
+import {  switchMap } from 'rxjs/operators';
 
 import { firebase } from '@firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { User } from '../user';
-import { FirebaseService } from './firebase.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +30,7 @@ export class AuthService {
   private userData: User;
 
 
-  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private firebaseService: FirebaseService, private router: Router) {
+  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private router: Router) {
 
     // Subscribe to user$ in a component that may need to 
     // identify the user's role i.e. `user['roles'].subscriber`
@@ -126,7 +126,7 @@ export class AuthService {
     return this.afAuth.auth.sendPasswordResetEmail(email)
       .then(() =>{ 
         console.log("email sent");
-        this.status$.next('Password reset instructions have been sent.')
+        this.status$.next(`Password reset instructions have been to ${email}.  Please first reset your password then return here to login with your new password.`)
       })
       .catch((error) => console.log(error))
   }

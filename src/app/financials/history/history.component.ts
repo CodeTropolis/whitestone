@@ -69,7 +69,7 @@ export class HistoryComponent implements OnInit {
       this.financialsService.currentCategory$.subscribe(cat => {
         if(cat){
           this.currentCategory = cat.val;
-          this.runningBalanceKey = cat.key + 'RunningBalance';
+          this.runningBalanceKey = cat.key + 'Balance'; // ensure keys always match other components.  ToDo: Single source of truth.
           this.chargesCollection = cat.key + 'Charges';
           this.paymentsCollection = cat.key + 'Payments';
         }

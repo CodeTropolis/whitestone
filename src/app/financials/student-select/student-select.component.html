@@ -33,7 +33,7 @@
     </h4>
     <ng-template #selectStudent>(Select a student)</ng-template>
     
-    <button *ngFor="let student of studentsOfRecord"  mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
+    <button *ngFor="let student of studentsOfRecord" mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
     
     <div *ngIf="enableCatButtons">
       <h5>Select a category:</h5>

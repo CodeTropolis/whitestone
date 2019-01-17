@@ -7,7 +7,7 @@
 button {margin: 1em 0.5em 0 0;}
 
 button.student { 
-  float:right;
+  /* float:right;  On IE 11, this cause buttons to align horiz versus stack. */
   width: 150px;
   margin: 0.5em 0 0 0;
 }
