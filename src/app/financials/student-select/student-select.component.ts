@@ -42,6 +42,7 @@ export class StudentSelectComponent implements OnInit {
    this.subscriptions.push(
     this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
       if(doc){
+			//	console.log("​StudentSelectComponent -> ngOnInit -> doc", doc)
         this.currentFinancialDoc = doc;
         this.enableCatButtons = true;
       }else {
@@ -64,12 +65,17 @@ export class StudentSelectComponent implements OnInit {
   }
 
   public setCurrentStudentAndFinancialDoc(student){ 
+
+
     // Existing financial record may not yet have child's first and last name, however,
     //  it will once admin clicks on student.  Until then, get the current student's from 
     //  what is being pased in from student select button.
+
     this.financialsService.setCurrentStudent(student); 
-    
+
+    // Will yield permission errors if non admin executes this.
     this.financialsService.setupFinancialDoc(student);
+
      // Set currentCategory$ to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
     this.financialsService.showHistory$.next(false); // Do not show history from previously selected student after clicking on another student

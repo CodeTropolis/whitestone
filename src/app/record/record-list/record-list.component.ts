@@ -85,7 +85,7 @@ export class RecordListComponent implements OnInit {
 
     this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(switchMap(docs => {
-				console.log("​RecordListComponent -> ngOnInit -> docs", docs)
+			//	console.log("​RecordListComponent -> ngOnInit -> docs", docs)
         const [docsFatherEmail, docsMotherEmail] = docs;
 				// console.log("​RecordListComponent -> ngOnInit -> docsMotherEmail", docsMotherEmail)
         // console.log("​RecordListComponent -> ngOnInit -> docsFatherEmail", docsFatherEmail)

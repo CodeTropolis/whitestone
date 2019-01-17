@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
+import {take } from 'rxjs/operators';
 import { FirebaseService } from '../core/services/firebase.service';
 import { AuthService } from '../core/services/auth.service';
 import { DataService } from '../core/services/data.service';
@@ -43,7 +44,7 @@ export class FinancialsService {
 
   public setupFinancialDoc(student) {
     // Only admin user can write per Firestore rule and financial doc should only be created if user admin role is true.
-    if (this.authService.user['roles'].admin) {
+    if (this.authService.user['roles'].admin) {   
       this.firebaseService.financialsCollection.doc(student.id)
         .set({
           recordId: this.dataService.currentRecord.realId,
@@ -62,22 +63,20 @@ export class FinancialsService {
         })
     } else { // Else a non-admin user so retrieve only.
 
-      console.log('user is subscriber only');
-  
-      // // It is possible that a financial doc has not yet been created by admin.
-      // this.firebaseService.financialsCollection.ref.where('fatherEmail', "==", student.email).get()
-      //   .then(querySnapshot => {
-			// 		console.log("​FinancialsService -> publicsetupFinancialDoc -> querySnapshot", querySnapshot)
-          
-      //   })
+      console.log('user is a non-admin');
 
+      console.log("​FinancialsService -> publicsetupFinancialDoc -> this.firebaseService.financialsCollection.doc(student.id)", this.firebaseService.financialsCollection.doc(student.id))
+  
       // finanical collection rules will prevent this if incoming user's email has no match on the fin doc.
+      // This will fail if the student is selected by a parent prior to admin creating a that doc in the financials collection
+
       this.firebaseService.financialsCollection.doc(student.id).ref.get() 
         .then(doc => {
+					console.log("​FinancialsService -> publicsetupFinancialDoc -> doc", doc)
           if(doc.data()){
               this.currentFinancialDoc$.next(doc); 
           }else{ 
-           console.log('No financial data for this student.');
+           console.log('No financial data for this student!');
           } 
         })
     }

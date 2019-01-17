@@ -14,7 +14,8 @@
            <div class="desktop">
                 <strong>{{currentCategory.val | uppercase}} </strong>
                <span style="color:darkgray;"> Starting Balance: {{startingBalance | currency}} | </span>
-                Running Balance: <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
+               <span *ngIf="currentCategory.key === 'tuition' && tuitionRequiredMonthlyPayment"><span class="monthly-payment" >Required Monthly Pymt.: {{tuitionRequiredMonthlyPayment | currency}}</span> |</span>
+                Balance Due: <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span>
                 <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span>
                 <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && currentCategory" mat-flat-button color="primary" type="button" (click)="toggleHistory()">View History</button>
             </div>
@@ -22,7 +23,7 @@
            <div class="mobile">
                 <strong>{{currentCategory.val | uppercase}} </strong>
                 <div style="color:darkgray;"> Starting Balance: {{startingBalance | currency}}  </div>
-                <div>Running Balance: <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span> <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></div>
+                <div>Balance Due: <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span> <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></div>
                 <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && currentCategory"mat-flat-button color="primary" type="button" (click)="toggleHistory()">View History</button>
             </div>
             
@@ -31,27 +32,46 @@
         <p *ngIf="currentCategory && !userIsAdmin && showStartingBalanceInput">Financial data for {{currentCategory.val}} is pending.</p>
 
         <form *ngIf="currentCategory && userIsAdmin" [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
-            <!-- Now that form is ready, check for a starting balance to determine which form controls to show -->
+
+            <!-- Now that form is ready, check for a starting balance to determine which form controls to show -->   
+
            <div *ngIf="showStartingBalanceInput else transaction">  
-                <h5>Enter starting balance for {{currentCategory.val}}</h5>
+                <h5>Enter financials for {{currentCategory.val}}</h5>
                 <mat-form-field>
                     <input matInput type=number step=0.01 placeholder="{{currentCategory.val}} Start Bal." formControlName="amount">
                 </mat-form-field>
+
+              <!-- Ideally, tuition required monthly payment would only be entered upon enter a starting balance for a student, however, 
+              this needs to be done for students with starting balance already present. -->
+                <mat-form-field *ngIf="currentCategory.key === 'tuition' && !tuitionRequiredMonthlyPayment">
+                    <input matInput type=number step=0.01 placeholder="Required Monthly Pymt." formControlName="tuitionRequiredMonthlyPayment">
+                </mat-form-field>
+
             </div>
     
             <ng-template #transaction>
+
+                
                 <div>
                     <button mat-flat-button type="button" (click)="enterPayment()">Enter Payment</button>
                     <button mat-flat-button type="button" (click)="enterCharge()">Enter Charge</button>
                 </div>
+
+             <!-- Ideally, tuition required monthly payment would only be entered upon enter a starting balance for a student, however, 
+              this needs to be done for students with starting balance already present. -->
+                 <mat-form-field *ngIf="currentCategory.key === 'tuition' && !tuitionRequiredMonthlyPayment && (isEnteringPayment || isEnteringCharge)">
+                    <input matInput type=number step=0.01 placeholder="Required Monthly Pymt." formControlName="tuitionRequiredMonthlyPayment">
+                </mat-form-field>
+
                 <mat-form-field *ngIf="isEnteringPayment">
                     <input matInput type=number step=0.01 placeholder="{{currentCategory.val}} Payment" formControlName="amount">
                 </mat-form-field>
                 <mat-form-field *ngIf="isEnteringCharge">
                     <input matInput type=number step=0.01 placeholder="{{currentCategory.val}} Charge" formControlName="amount">
                 </mat-form-field>
+
             </ng-template>
-    
+
             <!-- Date picker and memo will show for entering balance, payment and charge -->
          
               <div *ngIf="showStartingBalanceInput || (isEnteringCharge || isEnteringPayment)">
@@ -61,9 +81,11 @@
                         <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
                         <mat-datepicker #transactionDatePicker></mat-datepicker>
                     </mat-form-field>
+
                     <mat-form-field>
                         <input matInput type=text placeholder="Memo" formControlName="memo">
-                    </mat-form-field>
+                    </mat-form-field>         
+
               </div>
           
             <button mat-flat-button color="primary" [disabled]="!formGroup.valid || disableSubmitButton" type="submit">Submit</button>

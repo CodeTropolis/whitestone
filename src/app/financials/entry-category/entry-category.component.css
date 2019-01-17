@@ -4,6 +4,8 @@ button {margin:1em 0.25em;}
 
 .credit {color: green;}
 
+.monthly-payment { color: var(--ws-blue);}
+
 p {font-size: 1.25em;}
 
 mat-form-field {

@@ -13,6 +13,9 @@ export class EntryCategoryComponent implements OnInit {
   public currentCategory: any;
   public currentFinancialDoc: any;
 
+  public tuitionMonthlyPaymentKey: string;
+  public tuitionRequiredMonthlyPayment: number;
+
   public startingBalanceKey: string;
   public startingBalanceDateKey: string;
   public startingBalanceMemoKey: string;
@@ -53,6 +56,8 @@ export class EntryCategoryComponent implements OnInit {
 
   ngOnInit() {
 
+    this.tuitionMonthlyPaymentKey = 'tuitionRequiredMonthlyPayment';
+
     // Listen for current financial doc set in student-select.component
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
@@ -70,8 +75,7 @@ export class EntryCategoryComponent implements OnInit {
         this.isEnteringCharge = false;
         this.isEnteringPayment = false;
         this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
-        // Check if financial doc exists as a non admin user will possilby click a student for which there is no financial data.
-        if(cat){
+        if(cat){  
           this.startingBalanceKey = cat.key + 'StartingBalance';
           this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
           this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
@@ -82,6 +86,7 @@ export class EntryCategoryComponent implements OnInit {
            //  checkForTransactions - do this here as subcollecton may exist upon selecting cat and 
             //  do this after processing a transaction as the subcollecton will exist after a transaction
           this.checkForTransactions();
+          this.getTuitionMonthlyPaymentAmount()
           this.showHistory = false;
           this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another category
         }
@@ -122,8 +127,10 @@ export class EntryCategoryComponent implements OnInit {
   private checkForBalance(){
     this.currentFinancialDoc.ref.get().then( 
       snapshot => { 
+
         if (snapshot.data()[this.startingBalanceKey] || snapshot.data()[this.startingBalanceKey] === 0) { // Important to check for a balance value of zero.
           this.startingBalance = snapshot.data()[this.startingBalanceKey];
+          
           this.runningBalance = snapshot.data()[this.runningBalanceKey];
           this.financialsService.runningBalanceForCurrentCategory$.next(snapshot.data()[this.runningBalanceKey]);
 
@@ -140,6 +147,21 @@ export class EntryCategoryComponent implements OnInit {
       }
     )
   }
+
+   // Determine if tuition monthly payment will show.
+
+  private getTuitionMonthlyPaymentAmount(){
+    this.currentFinancialDoc.ref.get().then( 
+      snapshot => { 
+        if (snapshot.data()[this.tuitionMonthlyPaymentKey]) {
+          this.tuitionRequiredMonthlyPayment = snapshot.data()[this.tuitionMonthlyPaymentKey];
+        }else{
+          this.tuitionRequiredMonthlyPayment = null;
+        }
+      })
+
+  }
+
     // Check if any of the transaction subcollections (payments or charges) exist for the
     //  the current financial doc and set booleans. 
   private checkForTransactions() {
@@ -170,6 +192,7 @@ export class EntryCategoryComponent implements OnInit {
 
   private setFormControls() {
     this.formGroup = this.fb.group({
+      tuitionRequiredMonthlyPayment: [''],
       amount: ['', Validators.required],
       date: ['', Validators.required],
       memo: ['', Validators.required],
@@ -179,6 +202,13 @@ export class EntryCategoryComponent implements OnInit {
   public submitHandler(formDirective) {
     this.formValue = this.formGroup.value;
     this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
+
+    if (this.formValue.tuitionRequiredMonthlyPayment) {
+      this.currentFinancialDoc.ref.set({ 
+        [this.tuitionMonthlyPaymentKey]: this.formValue.tuitionRequiredMonthlyPayment},
+       { merge: true }
+      )
+    }
 
     if(this.showStartingBalanceInput){
       this.currentFinancialDoc.ref.set({
@@ -197,7 +227,7 @@ export class EntryCategoryComponent implements OnInit {
       this.processTransaction(formDirective);
       console.log('process transaction')
     }
-  
+    this.getTuitionMonthlyPaymentAmount();
   }
 
   private processTransaction(formDirective){
