@@ -23,6 +23,7 @@
            <div class="mobile">
                 <strong>{{currentCategory.val | uppercase}} </strong>
                 <div style="color:darkgray;"> Starting Balance: {{startingBalance | currency}}  </div>
+                <span *ngIf="currentCategory.key === 'tuition' && tuitionRequiredMonthlyPayment" class="monthly-payment"> Required Monthly Pymt.: {{tuitionRequiredMonthlyPayment | currency}}</span>
                 <div>Balance Due: <span [class.credit] = "balanceIsNegative">{{runningBalance | currency}} </span> <span *ngIf="balanceIsNegative" class="credit"> (Student Credit)</span></div>
                 <button *ngIf="(paymentsCollectionExists || chargesCollectionExists) && currentCategory"mat-flat-button color="primary" type="button" (click)="toggleHistory()">View History</button>
             </div>
