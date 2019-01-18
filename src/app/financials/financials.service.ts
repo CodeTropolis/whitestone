@@ -63,9 +63,9 @@ export class FinancialsService {
         })
     } else { // Else a non-admin user so retrieve only.
 
-      console.log('user is a non-admin');
+      //console.log('user is a non-admin');
 
-      console.log("​FinancialsService -> publicsetupFinancialDoc -> this.firebaseService.financialsCollection.doc(student.id)", this.firebaseService.financialsCollection.doc(student.id))
+     // console.log("​FinancialsService -> publicsetupFinancialDoc -> this.firebaseService.financialsCollection.doc(student.id)", this.firebaseService.financialsCollection.doc(student.id))
   
       // finanical collection rules will prevent this if incoming user's email has no match on the fin doc.
       // This will fail if the student is selected by a parent prior to admin creating a that doc in the financials collection
