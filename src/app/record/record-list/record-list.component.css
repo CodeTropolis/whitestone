@@ -30,6 +30,6 @@ ng-container.admin {margin-bottom: 5em;}
 .close-modal {
   display: block;
   margin: 1em auto 0 auto;
-  width: 46px;
+  width: 100px;
 }
 
