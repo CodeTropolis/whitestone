@@ -165,8 +165,9 @@ export class EntryCategoryComponent implements OnInit {
     // Check if any of the transaction subcollections (payments or charges) exist for the
     //  the current financial doc and set booleans. 
   private checkForTransactions() {
-    // this.charges | payments Collection will be the proper collection based on selected category i.e. tutionCharges
-    // per https://stackoverflow.com/a/49597381: .collection(..).get() returns a QuerySnapshot which has the property size
+    // this.charges | payments Collection will be the proper collection based on selected category i.e. tutionCharges.
+
+    // Per https://stackoverflow.com/a/49597381: .collection(..).get() returns a QuerySnapshot which has the property size
 
     this.currentFinancialDoc.ref.collection(this.chargesCollection).get()
       .then(query => {
