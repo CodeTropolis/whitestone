@@ -32,7 +32,7 @@ button[color=financial] {background:var(--ws-green);}
 
 button.close-modal {
     display: block;
-    margin: 0 auto;
+    margin: 1em auto;
 }
 
 .legal {

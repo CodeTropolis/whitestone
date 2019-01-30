@@ -13,18 +13,16 @@ export class TaxFormsComponent implements OnInit {
 
   public currentFinancialDoc: any;
   public currentCategory: string;
+  public payments: number[]=[];
+  public paymentTotal: number;
 
   private paymentsCollection: string;
   private subscriptions: any[] = [];
-
-  public payments: number[]=[];
 
   constructor(private financialsService: FinancialsService, private modalService: ModalService, private firebaseService: FirebaseService) { }
 
   ngOnInit() {
 
-  console.log('TCL: TaxFormsComponent -> ngOnInit -> ngOnInit')
-  
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc => {
         if(doc){
@@ -37,9 +35,26 @@ export class TaxFormsComponent implements OnInit {
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
         if(cat){
-          console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
+          //console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
           this.currentCategory = cat.val;
           this.paymentsCollection = cat.key + 'Payments';
+          console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
+        }
+      })
+    );
+
+    this.subscriptions.push(
+      this.financialsService.transactions$.subscribe(transactions => { 
+        this.payments = [];
+        this.paymentTotal = null;
+        if(transactions){
+          transactions.forEach(payment => {
+            this.payments.push(payment); // an array of payment objects
+          });
+          this.paymentTotal = 0;
+          for (var key in this.payments){
+            this.paymentTotal += this.payments[key]['amount'];
+          }
         }
       })
     );
@@ -47,26 +62,13 @@ export class TaxFormsComponent implements OnInit {
   }
 
     openModal(id: string) {
-
-			// console.log('TCL: TaxFormsComponent -> openModal -> id', id)
+ 
       this.modalService.open(id);
 
       this.financialsService.transactions = []; //  wipe out anything that may have been populated by history.component.  
-      //this.financialsService.transactions$.next(null);
-      
-      this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
+      this.financialsService.transactions$.next(null);
 
-      this.subscriptions.push(
-        this.financialsService.transactions$.subscribe(transactions => { 
-          if(transactions){
-            this.payments = [];
-            transactions.forEach(payment => {
-              //console.log(payment.amount);
-              this.payments.push(payment);
-            });
-          }
-        })
-      );
+      this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
 
     }
   
