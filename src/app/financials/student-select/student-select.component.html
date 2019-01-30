@@ -13,6 +13,7 @@
             <ng-template #selectStudent>(Select a student)</ng-template>
             <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
             (click)="setCategory(cat)">{{cat.val}}</button>
+            <app-tax-forms></app-tax-forms>
           </mat-card-title>
         <!-- </mat-card-header> -->
       
@@ -21,7 +22,7 @@
           <div *ngFor="let student of studentsOfRecord">
             <button class="student" mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
           </div>
-          <button class="student payment" mat-flat-button color="primary" type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
+          <button class="student payment" mat-flat-button type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
         </div>
     </div>
 </div>
@@ -39,6 +40,7 @@
       <h5>Select a category:</h5>
         <button mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"(click)="setCategory(cat)">{{cat.val}}</button>
     </div>
+    <app-tax-forms></app-tax-forms>
     <button class="payment" mat-flat-button type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
   </div>
 </mat-card>

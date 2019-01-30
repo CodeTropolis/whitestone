@@ -93,7 +93,7 @@ export class HistoryComponent implements OnInit {
       // Moving the subscription here may have fixed history sorting.
       // Unsure at this point because sorting issue seemed intermittent.
       this.financialsService.transactions$.subscribe(data => {
-      // console.log(data); // will show null then object
+      //console.log(data); // will show null then object
   
       // if(data) prevents 'Cannot read property 'slice' of null' error upon clicking 'View History'. 
       // Reason: data property in subscription null for a moment until populated
@@ -104,7 +104,7 @@ export class HistoryComponent implements OnInit {
       })
     )
 
-    this.financialsService.transactions = [];
+    this.financialsService.transactions = []; //  to prevent dup entries. 
     this.financialsService.transactions$.next(null);
     this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
     this.financialsService.getTransactions(this.currentFinancialDoc, this.chargesCollection);

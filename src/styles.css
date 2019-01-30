@@ -30,6 +30,11 @@ button[color=basic] {background: #eff1f1;}
 
 button[color=financial] {background:var(--ws-green);} 
 
+button.close-modal {
+    display: block;
+    margin: 0 auto;
+}
+
 .legal {
     color: var(--ws-light-grey);
     text-align: center;
@@ -45,6 +50,12 @@ input:-webkit-autofill {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) { 
     .mobile {display:none;}
+
+    /* app-tax-forms {
+        position: absolute;
+        top: 240px;
+        left: 80px;
+    } */
  }
 
 

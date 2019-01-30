@@ -6,6 +6,7 @@ import { StudentSelectComponent } from './student-select/student-select.componen
 import { EntryCategoryComponent } from './entry-category/entry-category.component';
 import { HistoryComponent } from './history/history.component';
 import { BaseComponent } from './base/base.component';
+import { TaxFormsComponent } from './tax-forms/tax-forms.component';
 
 
 @NgModule({
@@ -13,7 +14,7 @@ import { BaseComponent } from './base/base.component';
     CoreModule,
     FinancialsRoutingModule,
   ],
-  declarations: [StudentSelectComponent, EntryCategoryComponent, HistoryComponent, BaseComponent],
+  declarations: [StudentSelectComponent, EntryCategoryComponent, HistoryComponent, BaseComponent, TaxFormsComponent],
   providers: [FinancialsService]
 })
 export class FinancialsModule { }

@@ -72,7 +72,7 @@ export class FinancialsService {
 
       this.firebaseService.financialsCollection.doc(student.id).ref.get() 
         .then(doc => {
-					console.log("​FinancialsService -> publicsetupFinancialDoc -> doc", doc)
+				//	console.log("​FinancialsService -> publicsetupFinancialDoc -> doc", doc)
           if(doc.data()){
               this.currentFinancialDoc$.next(doc); 
           }else{ 
@@ -84,7 +84,7 @@ export class FinancialsService {
 
   public getTransactions(currentFinancialDoc, collection){
       // Get transactions (amounts from <cat.key>payments | charges collections)
-      const type = collection.includes('Payment') ? 'Payment' : 'Charge'
+      const type = collection.includes('Payment') ? 'Payment' : 'Charge';
       currentFinancialDoc.ref.collection(collection).get()
       .then(snapshot => {
           snapshot.forEach(item => {
@@ -94,10 +94,11 @@ export class FinancialsService {
               amount: item.data().amount, 
               type: type, 
               date: date,
-               memo: item.data().memo 
+              memo: item.data().memo 
             }
             this.transactions.push(transactionObj);
             this.transactions$.next(this.transactions);
+
           });
       });
   }

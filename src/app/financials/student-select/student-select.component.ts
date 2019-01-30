@@ -36,7 +36,7 @@ export class StudentSelectComponent implements OnInit {
       // Get all the children of the currentRecord. 
      this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children)
    }else{
-     console.log('There is an issue with obtaining the current record');
+     console.log('There is an issue obtaining the current record');
    }
 
    this.subscriptions.push(
@@ -69,7 +69,7 @@ export class StudentSelectComponent implements OnInit {
 
     // Existing financial record may not yet have child's first and last name, however,
     //  it will once admin clicks on student.  Until then, get the current student's from 
-    //  what is being pased in from student select button.
+    //  what is being passed in from student select button.
 
     this.financialsService.setCurrentStudent(student); 
 
