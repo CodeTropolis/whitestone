@@ -62,6 +62,8 @@ export class TaxFormsComponent implements OnInit {
   }
 
     openModal(id: string) {
+
+      this.financialsService.showHistory$.next(false);
  
       this.modalService.open(id);
 

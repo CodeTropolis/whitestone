@@ -55,6 +55,17 @@ export class EntryCategoryComponent implements OnInit {
     private authService: AuthService) { }
 
   ngOnInit() {
+  console.log('TCL: EntryCategoryComponent -> ngOnInit')
+  
+    // subscribe to get the current value of showHistory$ as another component i.e. tax-forms, may have changed it.
+    // Otherwise, when tax-form hides history, 'View History' ( which triggers toggleHistory method) button would need to be clicked twice in order for history to show.
+
+    this.subscriptions.push( 
+      this.financialsService.showHistory$.subscribe(x => {
+				console.log('showHistory$.subscribe(x =>', x)
+        this.showHistory = x;  
+      })
+    );
 
     this.tuitionMonthlyPaymentKey = 'tuitionRequiredMonthlyPayment';
 
@@ -277,13 +288,14 @@ export class EntryCategoryComponent implements OnInit {
   }
 
   public toggleHistory() {
+ 
     this.showHistory = !this.showHistory;
     this.financialsService.showHistory$.next(this.showHistory);
 
     setTimeout( _ =>{
       let el = document.getElementById('history');
       if (el){
-        window.scrollBy(0, 400);
+        window.scrollBy(0, 300);
       }
     }, 250)
 

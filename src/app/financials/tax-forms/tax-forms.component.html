@@ -8,7 +8,6 @@
               <mat-card-header>
                 <mat-card-title>TAX CREDIT INFORMATION for <strong>{{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</strong> </mat-card-title>
                 <mat-card-subtitle >Payments Received for <strong>{{currentCategory}}</strong></mat-card-subtitle>
-                <!-- <mat-card-subtitle *ngIf="currentCategory == 'Extended Care'">Payments Received for <strong>Extended Care</strong></mat-card-subtitle> -->
                 <mat-card-subtitle>January 1, 2018 - December 31, 2018</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
@@ -21,7 +20,7 @@
                 <div *ngFor="let payment of payments">{{payment.amount | currency}}</div>
                 <p class="total">
                   <strong><span *ngIf="paymentTotal == null; else pymtTotal">No payments have been made towards {{currentCategory}}</span></strong>
-                  <ng-template #pymtTotal>Payments Total: {{paymentTotal | currency}}</ng-template>
+                  <ng-template #pymtTotal>Total Payments for {{currentCategory}}: {{paymentTotal | currency}}</ng-template>
                 </p>
         
               </mat-card-content>
