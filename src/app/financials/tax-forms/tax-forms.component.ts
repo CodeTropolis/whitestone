@@ -55,6 +55,7 @@ export class TaxFormsComponent implements OnInit {
         this.paymentTotal = null;
         if(transactions){
           transactions.forEach(payment => {
+            if(payment.date.getFullYear() === this.taxYear)
             this.payments.push(payment); // an array of payment objects
           });
           this.paymentTotal = 0;
