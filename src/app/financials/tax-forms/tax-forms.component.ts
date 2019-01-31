@@ -16,12 +16,18 @@ export class TaxFormsComponent implements OnInit {
   public payments: number[]=[];
   public paymentTotal: number;
 
+  public taxYear: any;
+
   private paymentsCollection: string;
   private subscriptions: any[] = [];
 
   constructor(private financialsService: FinancialsService, private modalService: ModalService, private firebaseService: FirebaseService) { }
 
   ngOnInit() {
+
+    let date = new Date();
+    this.taxYear = date.getFullYear() -1;
+    //console.log(this.taxYear);
 
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc => {
