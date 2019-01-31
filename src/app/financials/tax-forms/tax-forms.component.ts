@@ -78,6 +78,10 @@ export class TaxFormsComponent implements OnInit {
       this.modalService.close(id);
     }
 
+    print(){
+      window.print();
+    }
+
     ngOnDestroy() {
       this.subscriptions.forEach(sub => {
         sub.unsubscribe();

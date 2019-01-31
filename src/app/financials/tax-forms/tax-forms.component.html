@@ -4,31 +4,33 @@
       <button class="tax-form" mat-flat-button color="financial" (click)="openModal('tax-form-modal');">2018 Tax Form for {{currentCategory}}</button>
 
       <jw-modal id="tax-form-modal">
-        <mat-card style="font-size:1.25em;">
-              <mat-card-header>
-                <mat-card-title>TAX CREDIT INFORMATION for <strong>{{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</strong> </mat-card-title>
-                <mat-card-subtitle >Payments Received for <strong>{{currentCategory}}</strong></mat-card-subtitle>
-                <mat-card-subtitle>January 1, 2018 - December 31, 2018</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
+        <mat-card>
+          <div id="print-content">
+            <mat-card-header>
+              <mat-card-title>TAX CREDIT INFORMATION for <strong>{{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</strong> </mat-card-title>
+              <mat-card-subtitle >Payments Received for <strong>{{currentCategory}}</strong></mat-card-subtitle>
+              <mat-card-subtitle>January 1, 2018 - December 31, 2018</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                St. Teresa Catholic School <br>
+                1108 Lebanon Ave. <br>
+                Belleville, IL 62221 <br>
+              <strong>Tax Id#: 37-0673539</strong> <br><br>
 
-                  St. Teresa Catholic School <br>
-                  1108 Lebanon Ave. <br>
-                  Belleville, IL 62221 <br>
-                <strong>Tax Id#: 37-0673539</strong> <br><br>
+              <div *ngFor="let payment of payments">{{payment.amount | currency}}</div>
+              <p class="total">
+                <strong><span *ngIf="paymentTotal == null; else pymtTotal">No payments have been made towards {{currentCategory}}</span></strong>
+                <ng-template #pymtTotal>Total Payments for {{currentCategory}}: {{paymentTotal | currency}}</ng-template>
+              </p>
+          </mat-card-content>
+         </div>
 
-                <div *ngFor="let payment of payments">{{payment.amount | currency}}</div>
-                <p class="total">
-                  <strong><span *ngIf="paymentTotal == null; else pymtTotal">No payments have been made towards {{currentCategory}}</span></strong>
-                  <ng-template #pymtTotal>Total Payments for {{currentCategory}}: {{paymentTotal | currency}}</ng-template>
-                </p>
-        
-              </mat-card-content>
-          
-          </mat-card>
-          <button class="close-modal" (click)="closeModal('tax-form-modal');">Close</button>
+          <mat-card-footer>
+              <button (click)="closeModal('tax-form-modal');">Close</button>
+              <button (click)="print();">Print</button>
+          </mat-card-footer>
+        </mat-card>
       </jw-modal>
-
     </div>
 </div>
 

@@ -35,6 +35,8 @@ button.close-modal {
     margin: 1em auto;
 }
 
+
+
 .legal {
     color: var(--ws-light-grey);
     text-align: center;
@@ -50,12 +52,6 @@ input:-webkit-autofill {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) { 
     .mobile {display:none;}
-
-    /* app-tax-forms {
-        position: absolute;
-        top: 240px;
-        left: 80px;
-    } */
  }
 
 
@@ -72,5 +68,17 @@ input:-webkit-autofill {
     mat-cell button {
         margin-top: 1em !important;
         width: 100px !important;
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden;  
+    }
+
+    #print-content * {
+        visibility: visible;
+        /* padding:0.5em;
+        transform: scale(1.25); */
     }
 }
