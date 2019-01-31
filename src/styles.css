@@ -73,7 +73,10 @@ input:-webkit-autofill {
 
 @media print {
 
-    @page {size: A4 landscape; }
+    @page {
+        size: A4 portrait; 
+        margin: 0;
+    }
 
     body * {
         visibility: hidden;  
@@ -81,7 +84,9 @@ input:-webkit-autofill {
 
     #print-content * {
         visibility: visible;
-        /* padding:0.5em; */
-        transform: scale(1.12);
+    }
+
+    #print-content {
+        font-size: 1.25em;
     }
 }
