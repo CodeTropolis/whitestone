@@ -63,20 +63,29 @@ export class FinancialsService {
         })
     } else { // Else a non-admin user so retrieve only.
 
-      //console.log('user is a non-admin');
+      // console.log('user is a non-admin');
 
-     // console.log("​FinancialsService -> publicsetupFinancialDoc -> this.firebaseService.financialsCollection.doc(student.id)", this.firebaseService.financialsCollection.doc(student.id))
+      // console.log("​FinancialsService -> publicsetupFinancialDoc -> this.firebaseService.financialsCollection.doc(student.id)", this.firebaseService.financialsCollection.doc(student.id))
   
-      // finanical collection rules will prevent this if incoming user's email has no match on the fin doc.
-      // This will fail if the student is selected by a parent prior to admin creating a that doc in the financials collection
+      // ...ref.get() yields permission errors if the student is selected by a parent prior to admin creating a doc in the financials collection.
+      // This is because of trying to read a document that doesn't exist thus the following rules for financials collection will not pass:
+      
+      // match /financials/{financial=**} {
+      //   allow read: if isAuth() && getRole('subscriber') == true
+      //   && getUserEmail() == resource.data.fatherEmail  <========= here
+      //   || getUserEmail() == resource.data.motherEmail; <========= and here
+        
+      //   allow read, write: if isAuth() && getRole('admin') == true;
+      // }
+
+      //console.log(this.firebaseService.financialsCollection.doc(student.id))
 
       this.firebaseService.financialsCollection.doc(student.id).ref.get() 
         .then(doc => {
-				//	console.log("​FinancialsService -> publicsetupFinancialDoc -> doc", doc)
           if(doc.data()){
               this.currentFinancialDoc$.next(doc); 
           }else{ 
-           console.log('No financial data for this student!');
+           console.log('No financial data for this student!'); 
           } 
         })
     }
