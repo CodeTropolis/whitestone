@@ -62,10 +62,6 @@ export class FinancialsService {
             })
         })
     } else { // Else a non-admin user so retrieve only.
-
-      // console.log('user is a non-admin');
-
-      // console.log("​FinancialsService -> publicsetupFinancialDoc -> this.firebaseService.financialsCollection.doc(student.id)", this.firebaseService.financialsCollection.doc(student.id))
   
       // ...ref.get() yields permission errors if the student is selected by a parent prior to admin creating a doc in the financials collection.
       // This is because of trying to read a document that doesn't exist thus the following rules for financials collection will not pass:
@@ -78,7 +74,10 @@ export class FinancialsService {
       //   allow read, write: if isAuth() && getRole('admin') == true;
       // }
 
-      //console.log(this.firebaseService.financialsCollection.doc(student.id))
+      // joaquin cid [3:15 PM]
+      // right, but from the functions scope, you’ll bypass all rules (edited) 
+      
+      // if you write a firebase function, you’ll use firebase-admin library that connects to the firestore database and has full-access (edited) 
 
       this.firebaseService.financialsCollection.doc(student.id).ref.get() 
         .then(doc => {
