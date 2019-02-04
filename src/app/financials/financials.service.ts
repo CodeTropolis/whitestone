@@ -76,7 +76,6 @@ export class FinancialsService {
 
       // joaquin cid [3:15 PM]
       // right, but from the functions scope, you’ll bypass all rules (edited) 
-      
       // if you write a firebase function, you’ll use firebase-admin library that connects to the firestore database and has full-access (edited) 
 
       this.firebaseService.financialsCollection.doc(student.id).ref.get() 
