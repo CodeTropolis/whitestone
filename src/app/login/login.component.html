@@ -65,7 +65,6 @@
 						<button *ngIf="creatingAccount; else login" [disabled]="!form.valid" type="submit" mat-flat-button color="primary">Create Account</button>
 						<ng-template #login>
 							<button *ngIf="!resettingPassword" type="submit" class="login" [disabled]="!form.valid" mat-flat-button color="primary">Login</button>
-							<!-- <button *ngIf="resettingPassword" type="submit" class="login" mat-flat-button color="primary">Submit</button> -->
 							<span *ngIf="!creatingAccount">
 								<a class="reset-password"  [routerLink]="" (click)="beginPasswordReset(formDirective)">Forgot password?</a>
 								<a class ="create-account" [routerLink]="" (click)="createAccount(formDirective)">Or Create Account</a>
@@ -74,10 +73,5 @@
 					</div>
 				</form>
 	</ng-template>
-	
-
-	
-
 	<p class="legal">&copy; 2018 ProDev, LLC</p>
-	<!-- <p class="legal">Release Branch</p> -->
 </mat-card>

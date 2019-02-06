@@ -3,6 +3,7 @@ import { AuthService } from '../core/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FirebaseService } from '../core/services/firebase.service';
 import { Subject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -21,11 +22,17 @@ export class LoginComponent implements OnInit {
   public isResettingPassword$: Observable<boolean>;
 
   public disableButton: boolean;
-  //public isResettingPassword: boolean;
 
-  constructor(private auth: AuthService, private fb: FormBuilder, private fs: FirebaseService) {}
+  constructor(private auth: AuthService, private fb: FormBuilder, private fs: FirebaseService, private router: Router) {}
 
   ngOnInit() {
+
+    this.auth.user$.subscribe(user =>{ 
+      console.log('this.auth.user$.subscribe(user =>', user);
+      if(user){
+        this.router.navigate(['record-list']);
+      }
+    })
 
     this.auth.disableLoginOrCreateButton$.subscribe(x => {
       this.disableButton = x;
@@ -62,8 +69,6 @@ export class LoginComponent implements OnInit {
 
     })
 
-
-    
     this.loading = this.fs.loading;
   }
 
@@ -78,7 +83,8 @@ export class LoginComponent implements OnInit {
     this.auth.status$.next('');
     const e = this.form.value.email;
     const p = this.form.value.password;
-    this.auth.emailLogin(e, p, 'record-list');
+    // this.auth.emailLogin(e, p, 'record-list');
+    this.auth.emailLogin(e, p);
     this.resetForm(formDirective);
   }
 

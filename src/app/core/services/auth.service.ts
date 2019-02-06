@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import {  switchMap } from 'rxjs/operators';
@@ -21,19 +20,9 @@ export class AuthService {
   public isResettingPassword$ = new BehaviorSubject<boolean>(null);
   public creatingAccount$ = new BehaviorSubject<boolean>(false);
 
-  public user: any;
-  public userIsSubcriber$ = new BehaviorSubject<boolean>(null);
-  public userIsAdmin$ = new BehaviorSubject<boolean>(null);
-
   public disableLoginOrCreateButton$ = new BehaviorSubject<boolean>(null);
 
-  private userData: User;
-
-
-  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private router: Router) {
-
-    // Subscribe to user$ in a component that may need to 
-    // identify the user's role i.e. `user['roles'].subscriber`
+  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore) {
 
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
@@ -45,44 +34,16 @@ export class AuthService {
       })
     )
 
-    this.user$.subscribe(user => {
-      this.user = user;
-      if (user) {
-        if (user['roles'].subscriber && !user['roles'].admin) {
-          this.userIsSubcriber$.next(true);
-          this.userIsAdmin$.next(false);
-        }
-        if (user['roles'].admin) {
-          this.userIsAdmin$.next(true);
-        }
-      }
-    });
-
   }
 
-  public googleLogin(link: string) {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    return this.oAuthLogin(provider, link);
-  }
-
-  private oAuthLogin(provider, link: string) {
-    return this.afAuth.auth.signInWithPopup(provider)
-      .then(() => {
-        this.router.navigate([link]);
-      })
-  }
-
-
-  public emailLogin(e, p, link) {
+  public emailLogin(e, p) {
     this.disableLoginOrCreateButton$.next(true);
     this.status$.next('');
     const promise = this.afAuth.auth.signInWithEmailAndPassword(e, p);
     promise.then(credential => {
       this.disableLoginOrCreateButton$.next(false);
       if (this.afAuth.auth.currentUser.emailVerified) {
-        //console.log(`credential: ${JSON.stringify(credential)}`);
-        this.updateUserData(credential.user, link);
-        // this.router.navigate([link]);
+        this.setUserData(credential.user);
       } else {
         this.error$.next('Email not verfied. If you have already signed up, please visit your inbox and verify your email.  Once verified, you may return to the app and login.');
       }
@@ -97,7 +58,6 @@ export class AuthService {
     this.disableLoginOrCreateButton$.next(true);
     const promise = this.afAuth.auth.createUserWithEmailAndPassword(e, p);
     promise.then(success => {
-    //console.log('TCL: AuthService -> publicsignUp -> success', success);
       this.error$.next('');
       let user: any = this.afAuth.auth.currentUser;
       user.sendEmailVerification().then(_ => {
@@ -121,8 +81,7 @@ export class AuthService {
 
   }
 
-  resetPassword(email: string) {
-   // var auth = firebase.auth();
+  public resetPassword(email: string) {
     return this.afAuth.auth.sendPasswordResetEmail(email)
       .then(() =>{ 
         console.log("email sent");
@@ -132,50 +91,40 @@ export class AuthService {
   }
 
   public logOut(link: string) {
-    this.afAuth.auth.signOut().then(() => {
-      this.router.navigate([link]);
-    });
+    this.afAuth.auth.signOut()
+    // .then(() => {
+    //    this.router.navigate([link]);
+    // });
   }
 
   public get authState() {
     return this.afAuth.authState;
   }
 
-  private updateUserData(user, link) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`); // ToDo: Lock down users collection.
+  private setUserData(user) {
 
-    this.userIsAdmin$.subscribe(x => {
-      if (x){
-        const userData = {
-          uid: user.uid,
-          email: user.email,
-          roles: {
-            subscriber: true,
-            admin: true, // This property must be present and set to *true* for the back end rule to pass.
-          }
-        }
+    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
 
-        userRef.set(userData, { merge: true })
-        .then(_ => {
-          this.router.navigate([link]);
-        })
+    // Every user should have the same custom data in regards to roles.  
+    // At this point, users are converted to admin users via Firebase console.
 
-      }else{
-        const userData = {
-          uid: user.uid,
-          email: user.email,
-          roles: {
-            subscriber: true,
-            admin: false, // This property must be present and set to *false* for the back end rule to pass.
-          }
-        }
-        userRef.set(userData, { merge: true })
-        .then(_ => {
-          this.router.navigate([link]);
-        })
+    const data: User = {
+      uid: user.uid,
+      email: user.email,
+      roles: {
+        admin: false,
+        subscriber: true
+      }
+    }
+
+    // Only set user data if user doesn't exist.
+    userRef.ref.get().then(doc => {
+      if(!doc.exists){
+        console.log('Setting user data.');
+        userRef.set(data, { merge: true })
       }
     })
-  
+    
   }
 
 }
