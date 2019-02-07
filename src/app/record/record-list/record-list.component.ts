@@ -38,7 +38,6 @@ export class RecordListComponent implements OnInit {
   public displayedColumnsModal = ['fatherEmail','motherEmail', 'address', 'catholic'];
 
   private subscriptions: any[] = [];
-  private matchingRecords: any[] = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -70,30 +69,6 @@ export class RecordListComponent implements OnInit {
     })
 
 
- 
-  // if (this.userIsSubcriber && !this.userIsAdmin) {
-
-  //   this.displayedColumns = ['surname', 'actions'];
-
-  //   const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail","==", this.authService.user.email));
-	// 	//console.log("​RecordListComponent -> ngOnInit -> matchFatherEmail", matchFatherEmail)
-  //   const matchMotherEmail = this.afs.collection("records", ref => ref.where("motherEmail","==", this.authService.user.email));
-	// 	//console.log("​RecordListComponent -> ngOnInit -> matchMotherEmail", matchMotherEmail)
-
-  //   this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
-  //     .pipe(switchMap(docs => {
-  //       const [docsFatherEmail, docsMotherEmail] = docs;
-  //       const combined = docsFatherEmail.concat(docsMotherEmail);
-  //       return of(combined);
-  //     }));
-
-  //     this.subscriptions.push(
-  //       this.records$.subscribe(records =>{
-  //         this.ds = new MatTableDataSource(records);
-  //         this.ds.paginator = this.paginator;
-  //         this.ds.sort = this.sort;
-  //       })
-  //     )
 
   // }else if(this.userIsAdmin){
   //   this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
@@ -125,12 +100,10 @@ export class RecordListComponent implements OnInit {
   }
 
   private getAllRecords(){
-
-    console.log('getAllRecords()');
-
     this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
 
     this.fs.records$.subscribe(records => {
+      if(records){this.recordMatch = true;}
       this.ds = new MatTableDataSource(records);
       this.ds.sort = this.sort;
     })
@@ -139,8 +112,6 @@ export class RecordListComponent implements OnInit {
 
   private getMatchingRecords(){
 
-   console.log (this.user.email)
-
     this.displayedColumns = ['surname', 'actions'];
 
     const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail","==", this.user.email));
@@ -148,18 +119,21 @@ export class RecordListComponent implements OnInit {
 	
     this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(switchMap(docs => {
-        //console.log(docs)
         const [docsFatherEmail, docsMotherEmail] = docs;
-        //console.log([docsFatherEmail, docsMotherEmail]);
         const combined = docsFatherEmail.concat(docsMotherEmail);
-        //console.log(combined) // [{...}, {...}]
+
+        if(combined.length > 0 ){
+          this.recordMatch = true;
+        }else{
+          this.recordMatch = false;
+        }
         return of(combined);
       }));
 
       this.records$.subscribe(records =>{
       this.ds = new MatTableDataSource(records);
-      // this.ds.paginator = this.paginator;
-      // this.ds.sort = this.sort;
+      this.ds.paginator = this.paginator;
+      this.ds.sort = this.sort;
     })
 
   }

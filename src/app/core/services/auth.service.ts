@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import {  switchMap } from 'rxjs/operators';
 
-import { firebase } from '@firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { User } from '../user';
@@ -112,7 +111,7 @@ export class AuthService {
       uid: user.uid,
       email: user.email,
       roles: {
-        admin: false,
+        admin: false, 
         subscriber: true
       }
     }
