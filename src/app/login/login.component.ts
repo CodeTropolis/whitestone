@@ -28,7 +28,6 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
 
     this.auth.user$.subscribe(user =>{ 
-      console.log('this.auth.user$.subscribe(user =>', user);
       if(user){
         this.router.navigate(['record-list']);
       }
@@ -48,27 +47,18 @@ export class LoginComponent implements OnInit {
     })
 
     this.auth.isResettingPassword$.subscribe(x =>{
-		//	console.log("isResettingPassword$ payload:", x)
-      
 
       if(x){
-				console.log("​isResettingPassword$ payload is true");
-        
         this.form = this.fb.group({
           email: ['', [Validators.required, Validators.email]],
         })
-
       }else{
-        console.log("​isResettingPassword$ payload is false");
         this.form = this.fb.group({
           email: ['', [Validators.required, Validators.email]],
           password: ['', Validators.required],
         })
-
       }
-
     })
-
     this.loading = this.fs.loading;
   }
 

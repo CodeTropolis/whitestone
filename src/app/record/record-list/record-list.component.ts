@@ -27,6 +27,8 @@ export class RecordListComponent implements OnInit {
   public isDeleting: boolean[] = [];
   public showForm: boolean;
 
+  public loading: boolean = true;
+
   // public user: User;
   public userIsAdmin: boolean = false;  // for view
   public userIsSubcriber: boolean = false;
@@ -68,33 +70,6 @@ export class RecordListComponent implements OnInit {
       }
     })
 
-
-
-  // }else if(this.userIsAdmin){
-  //   this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
-  //   this.subscriptions.push(
-  //       this.fs.records$.subscribe(x => {
-  //         this.matchingRecords = []; // prevent duplicate entries i.e. upon update record
-  //         x.forEach(record => {
-  //             this.matchingRecords.push(record);
-  //             this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an array.
-  //             this.ds.paginator = this.paginator;
-  //             this.ds.sort = this.sort;
-  //         })
-
-  //           this.ds.filterPredicate = (data, filter) => {
-  //             let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
-  //             const children = this.dataService.convertMapToArray(data.children);
-  //             children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-  //             dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-  //             return dataStr.indexOf(filter) != -1;
-  //           }
-            
-  //      })
-  //   )
-    
-  // }
-
     // Get state from service for button state: disable upon edit.
     this.subscriptions.push(this.res.isUpdating$.subscribe(x => this.isUpdating = x));
   }
@@ -103,9 +78,21 @@ export class RecordListComponent implements OnInit {
     this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
 
     this.fs.records$.subscribe(records => {
-      if(records){this.recordMatch = true;}
+      if(records){
+        this.recordMatch = true;
+        this.loading = false;
+      }
       this.ds = new MatTableDataSource(records);
       this.ds.sort = this.sort;
+
+      this.ds.filterPredicate = (data, filter) => {
+        let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
+        const children = this.dataService.convertMapToArray(data.children);
+        children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
+        dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+        return dataStr.indexOf(filter) != -1;
+      }
+
     })
     
   }
@@ -127,6 +114,7 @@ export class RecordListComponent implements OnInit {
         }else{
           this.recordMatch = false;
         }
+        this.loading = false;
         return of(combined);
       }));
 
