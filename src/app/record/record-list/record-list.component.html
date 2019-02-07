@@ -5,9 +5,9 @@
 	<app-progress-spinner></app-progress-spinner>
 </div>
 
-<app-record-entry *ngIf="showForm"></app-record-entry>
-
 <ng-template #display>
+	<app-record-entry *ngIf="showForm"></app-record-entry>
+
 	<div *ngIf="recordMatch else noRecords" class="mat-elevation-z8">
 	
 		<div *ngIf="user">

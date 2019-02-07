@@ -59,16 +59,19 @@ export class RecordListComponent implements OnInit {
 
   ngOnInit() {
 
-    this.authService.user$.subscribe(user =>{
-      if (user){
-        this.user = user; // Custom user object.
-        if (user['roles'].admin){
-          this.getAllRecords();
-        }else{
-          this.getMatchingRecords();
+    this.subscriptions.push(
+        this.authService.user$.subscribe(user =>{
+        if (user){
+          this.user = user; // Custom user object.
+          if (user['roles'].admin){
+            this.getAllRecords();
+            this.recordMatch = true;
+          }else{
+            this.getMatchingRecords();
+          }
         }
-      }
-    })
+      })
+    );
 
     // Get state from service for button state: disable upon edit.
     this.subscriptions.push(this.res.isUpdating$.subscribe(x => this.isUpdating = x));
@@ -77,23 +80,24 @@ export class RecordListComponent implements OnInit {
   private getAllRecords(){
     this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
 
-    this.fs.records$.subscribe(records => {
-      if(records){
-        this.recordMatch = true;
-        this.loading = false;
-      }
-      this.ds = new MatTableDataSource(records);
-      this.ds.sort = this.sort;
+    this.subscriptions.push(
+      this.fs.records$.subscribe(records => {
+        if(records){
+          this.loading = false;
+        }
+        this.ds = new MatTableDataSource(records);
+        this.ds.sort = this.sort;
 
-      this.ds.filterPredicate = (data, filter) => {
-        let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
-        const children = this.dataService.convertMapToArray(data.children);
-        children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-        dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-        return dataStr.indexOf(filter) != -1;
-      }
+        this.ds.filterPredicate = (data, filter) => {
+          let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
+          const children = this.dataService.convertMapToArray(data.children);
+          children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
+          dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+          return dataStr.indexOf(filter) != -1;
+        }
 
-    })
+      })
+    );
     
   }
 
@@ -118,11 +122,12 @@ export class RecordListComponent implements OnInit {
         return of(combined);
       }));
 
-      this.records$.subscribe(records =>{
-      this.ds = new MatTableDataSource(records);
-      this.ds.paginator = this.paginator;
-      this.ds.sort = this.sort;
-    })
+      this.subscriptions.push(this.records$.subscribe(records =>{
+        this.ds = new MatTableDataSource(records);
+        this.ds.paginator = this.paginator;
+        this.ds.sort = this.sort;
+      })
+    );
 
   }
 
@@ -161,12 +166,6 @@ export class RecordListComponent implements OnInit {
     this.showForm = !this.showForm;
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => {
-      sub.unsubscribe();
-    });
-  }
-
   // Family Record Modal
   openModal(id: string, record) {
     this.currentRecord = record;
@@ -175,6 +174,12 @@ export class RecordListComponent implements OnInit {
 
   closeModal(id: string) {
     this.modalService.close(id);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => {
+      sub.unsubscribe();
+    });
   }
 
 }

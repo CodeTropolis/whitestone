@@ -89,11 +89,13 @@ export class AuthService {
       .catch((error) => console.log(error))
   }
 
-  public logOut(link: string) {
+  public logOut() {
     this.afAuth.auth.signOut()
-    // .then(() => {
-    //    this.router.navigate([link]);
-    // });
+    .then(() => {
+      // Prevent 'Missing or insufficient permissions...' errors upon logout. 
+      // See https://medium.com/@dalenguyen/handle-missing-or-insufficient-permissions-firestore-error-on-angular-or-ionic-bf4edb7a7c68
+      window.location.reload(); 
+    });
   }
 
   public get authState() {

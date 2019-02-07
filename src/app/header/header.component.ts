@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -18,16 +19,16 @@ export class HeaderComponent implements OnInit {
 
   public currentUser$: Observable<any>;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService,  private router: Router) { }
 
   ngOnInit() {
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
-    
   }
 
   public logOut() {
-    this.authService.logOut('');
+    this.authService.logOut();
+    this.router.navigate(['login']);
   }
 
 }
