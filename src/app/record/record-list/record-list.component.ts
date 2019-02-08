@@ -8,7 +8,8 @@ import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/user';
 import { ModalService } from '../../modal/modal.service';
 
-import { AngularFirestore } from 'angularfire2/firestore';
+//import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore} from '@angular/fire/firestore';
 import { Observable, of, combineLatest } from 'rxjs'; // combineLatest works with this import only.
 import { switchMap } from 'rxjs/operators';
 

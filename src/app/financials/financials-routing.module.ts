@@ -4,7 +4,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { BaseComponent } from './base/base.component';
 
 const routes: Routes = [
-  // {path: '',component: StudentSelectComponent},
   {path: '',component: BaseComponent},
 ];
 

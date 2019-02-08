@@ -6,7 +6,8 @@ import { RecordService } from '../record.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
 
-import { AngularFirestore } from 'angularfire2/firestore';
+// import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore} from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-record-entry',
@@ -219,7 +220,7 @@ export class RecordEntryComponent implements OnInit {
   }
 
   public logOut() {
-    this.authService.logOut('');
+    this.authService.logOut();
   }
 
   ngOnDestroy() {

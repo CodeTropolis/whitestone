@@ -119,17 +119,17 @@ export class EntryCategoryComponent implements OnInit {
 
     this.setFormControls();
 
-    this.subscriptions.push(
-      this.authService.userIsAdmin$.subscribe(x => {
-        this.userIsAdmin = x;
-      })
-    );
+    // this.subscriptions.push(
+    //   this.authService.userIsAdmin$.subscribe(x => {
+    //     this.userIsAdmin = x;
+    //   })
+    // );
 
-    this.subscriptions.push(
-      this.authService.userIsSubcriber$.subscribe(x => {
-        this.userIsSubcriber = x;
-      })
-    );
+    // this.subscriptions.push(
+    //   this.authService.userIsSubcriber$.subscribe(x => {
+    //     this.userIsSubcriber = x;
+    //   })
+    // );
 
     this.formReady = false;
 

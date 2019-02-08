@@ -3,8 +3,13 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import {  switchMap } from 'rxjs/operators';
 
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
+// import { AngularFireAuth } from 'angularfire2/auth';
+// import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
+
+
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+
 import { User } from '../user';
 
 

@@ -1,9 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AngularFireModule } from 'angularfire2';
-import { AngularFirestoreModule } from 'angularfire2/firestore';
-import { AngularFireAuthModule } from 'angularfire2/auth';
-import { AngularFireStorageModule } from 'angularfire2/storage';
+
+// imports per npm i @angular/fire
+// Also need to  npm i firebase
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import {AngularFireStorageModule} from '@angular/fire/storage'
+
+// old imports
+// import { AngularFireModule } from 'angularfire2';
+// import { AngularFireAuthModule } from 'angularfire2/auth';
+// import { AngularFirestoreModule } from 'angularfire2/firestore';
+// import { AngularFireStorageModule } from 'angularfire2/storage';
+
 import { MaterialModule } from './material.module';
 import { ReactiveFormsModule }   from '@angular/forms';
 import { ProgressSpinnerComponent } from '../progress-spinner/progress-spinner.component';
