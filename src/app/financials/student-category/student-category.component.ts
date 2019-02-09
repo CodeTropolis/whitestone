@@ -67,11 +67,6 @@ export class StudentCategoryComponent implements OnInit {
 
   public setCurrentStudentAndFinancialDoc(student){ 
 
-
-    // Existing financial record may not yet have child's first and last name, however,
-    //  it will once admin clicks on student.  Until then, get the current student's from 
-    //  what is being passed in from student select button.
-
     this.financialsService.setCurrentStudent(student); 
 
     // Will yield permission errors if non admin executes this.

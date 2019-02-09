@@ -62,7 +62,7 @@ export class EntryComponent implements OnInit {
     
         this.subscriptions.push( 
           this.financialsService.showHistory$.subscribe(x => {
-            console.log('showHistory$.subscribe(x =>', x)
+           // console.log('showHistory$.subscribe(x =>', x)
             this.showHistory = x;  
           })
         );
