@@ -3,12 +3,13 @@ import { DataService } from '../../core/services/data.service';
 import { FinancialsService } from '../financials.service';
 import { BehaviorSubject } from 'rxjs';
 
+
 @Component({
-  selector: 'app-student-select',
-  templateUrl: './student-select.component.html',
-  styleUrls: ['./student-select.component.css']
+  selector: 'app-student-category',
+  templateUrl: './student-category.component.html',
+  styleUrls: ['./student-category.component.css']
 })
-export class StudentSelectComponent implements OnInit {
+export class StudentCategoryComponent implements OnInit {
 
   public currentRecord: any;
   public currentFinancialDoc: any;
@@ -18,7 +19,7 @@ export class StudentSelectComponent implements OnInit {
   public enableCatButtons: boolean;
   
   private subscriptions: any[] = [];
-  
+
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
   ngOnInit() {

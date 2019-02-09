@@ -69,7 +69,7 @@ export class EntryCategoryComponent implements OnInit {
 
     this.tuitionMonthlyPaymentKey = 'tuitionRequiredMonthlyPayment';
 
-    // Listen for current financial doc set in student-select.component
+    // Listen for current financial doc set in student-category.component
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
         if(doc){

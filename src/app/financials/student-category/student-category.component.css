@@ -1,0 +1,31 @@
+button {margin: 1em 0.5em 0 0;}
+
+button.student {width: 150px;}
+
+.mat-card-avatar {width: 120px;}
+
+.flex-container {
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.categories {margin-left: 3em;}
+
+button.student.payment {margin-top: 2em;}
+
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+
+.material-icons.account-circle {display:none;}
+
+button {
+    margin: 0 0 0.5em 0;
+    width: 100%;
+}
+
+button.payment {
+    margin-top:2em;
+}
+
+}

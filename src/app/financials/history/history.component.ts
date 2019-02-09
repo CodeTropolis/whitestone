@@ -55,7 +55,7 @@ export class HistoryComponent implements OnInit {
     this.tableColumns = ['amount', 'type', 'date', 'memo'];
    }
 
-    // currentFinancialDoc$ next'd by student-select.component
+    // currentFinancialDoc$ next'd by student-category.component
     this.subscriptions.push(
     this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
       if(doc){
