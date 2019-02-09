@@ -26,7 +26,7 @@ export class StudentCategoryComponent implements OnInit {
     // Set current financial doc to null else category buttons will be 
     //  active prior to selecting student which enables the buttons.
     this.financialsService.currentFinancialDoc$.next(null); 
-    // Set current category to null else entry-category.component will 
+    // Set current category to null else entry.component will 
     //  detect a category and run through checks for balance and tranactions.
     this.financialsService.currentCategory$.next(null);
 

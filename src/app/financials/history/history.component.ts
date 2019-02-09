@@ -76,7 +76,7 @@ export class HistoryComponent implements OnInit {
       })
     );
 
-    // Get the running balance which is next'd by entry-category.component. 
+    // Get the running balance which is next'd by entry.component. 
     //  Trying to get it via this.currentFinancialDoc.data()[this.runningBalanceKey] sometimes returns as undefined
       this.financialsService.runningBalanceForCurrentCategory$.subscribe(runningBalance => {
         //console.log(runningBalance);
