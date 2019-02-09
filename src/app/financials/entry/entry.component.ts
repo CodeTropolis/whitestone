@@ -32,8 +32,10 @@ export class EntryComponent implements OnInit {
 
   public disableSubmitButton: boolean;
 
-  public userIsAdmin: boolean = false; 
-  public userIsSubcriber: boolean = false;
+  // public userIsAdmin: boolean = false; 
+  // public userIsSubcriber: boolean = false;
+
+  public user: any;
 
   public isEnteringPayment: boolean = false;
   public isEnteringCharge: boolean = false;
@@ -56,6 +58,15 @@ export class EntryComponent implements OnInit {
 
     ngOnInit() {
       console.log('TCL: EntryCategoryComponent -> ngOnInit')
+
+      this.subscriptions.push(
+          this.authService.user$.subscribe(user =>{
+            //console.log('TCL: EntryComponent -> ngOnInit -> user', user)
+            if (user){
+              this.user = user; // For conitionals in view i.e. *ngIf="user['roles].admin"
+            }
+          })
+      );
       
         // subscribe to get the current value of showHistory$ as another component i.e. tax-forms, may have changed it.
         // Otherwise, when tax-form hides history, 'View History' ( which triggers toggleHistory method) button would need to be clicked twice in order for history to show.
@@ -80,7 +91,7 @@ export class EntryComponent implements OnInit {
           })
         );
     
-       // Listen for category selection (from student-select.component)   
+       // Listen for category selection (from student-category.component)   
         this.subscriptions.push(
           this.financialsService.currentCategory$.subscribe(cat => {
             this.isEnteringCharge = false;
@@ -118,19 +129,6 @@ export class EntryComponent implements OnInit {
         this.isEnteringPayment = false;
     
         this.setFormControls();
-    
-        // this.subscriptions.push(
-        //   this.authService.userIsAdmin$.subscribe(x => {
-        //     this.userIsAdmin = x;
-        //   })
-        // );
-    
-        // this.subscriptions.push(
-        //   this.authService.userIsSubcriber$.subscribe(x => {
-        //     this.userIsSubcriber = x;
-        //   })
-        // );
-    
         this.formReady = false;
     
       }

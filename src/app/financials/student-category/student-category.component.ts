@@ -43,7 +43,6 @@ export class StudentCategoryComponent implements OnInit {
    this.subscriptions.push(
     this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
       if(doc){
-			//	console.log("​StudentSelectComponent -> ngOnInit -> doc", doc)
         this.currentFinancialDoc = doc;
         this.enableCatButtons = true;
       }else {

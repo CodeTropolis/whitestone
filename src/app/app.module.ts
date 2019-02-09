@@ -6,16 +6,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 
-// So we can eagerly load to test record query in record-list.component
-// import { RecordListComponent } from './record/record-list/record-list.component';
-// import {RecordService } from './record/record.service';
-
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    //RecordListComponent
   ],
   imports: [
     //CommonModule, // Imported in core.module.  
