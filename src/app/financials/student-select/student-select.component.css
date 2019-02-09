@@ -21,6 +21,8 @@ button.student {
     margin: 0;
     display: flex;
   }
+/* 
+  .categories, .students {float:left;} */
 
   h2 {margin: 1em 0 0 0;}
   h3 {margin: 0 0 0.5em 0;}
