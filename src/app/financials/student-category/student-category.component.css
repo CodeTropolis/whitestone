@@ -12,8 +12,6 @@ button.student {width: 150px;}
 
 .categories {margin-left: 3em;}
 
-button.student.payment {margin-top: 2em;}
-
 /* Small devices (landscape phones, less than 768px) */
 @media (max-width: 767.98px) { 
 

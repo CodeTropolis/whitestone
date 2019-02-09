@@ -61,7 +61,7 @@ export class FinancialsService {
       .then(_ => { // Set the current financial doc
         this.firebaseService.financialsCollection.doc(student.id).ref.get()
           .then(doc => {
-						console.log('Data writtine -> doc', doc.data());
+						//console.log('Data written -> doc', doc.data());
             this.currentFinancialDoc$.next(doc);
           })
       })
@@ -78,23 +78,6 @@ export class FinancialsService {
         })
       }
     }
-
-    //   // ...ref.get() yields permission errors if the student is selected by a parent prior to admin creating a doc in the financials collection.
-    //   // This is because of trying to read a document that doesn't exist thus the following rules for financials collection will not pass:
-      
-    //   // match /financials/{financial=**} {
-    //   //   allow read: if isAuth() && getRole('subscriber') == true
-    //   //   && getUserEmail() == resource.data.fatherEmail  <========= here
-    //   //   || getUserEmail() == resource.data.motherEmail; <========= and here
-        
-    //   //   allow read, write: if isAuth() && getRole('admin') == true;
-    //   // }
-
-    //   // joaquin cid [3:15 PM]
-    //   // right, but from the functions scope, you’ll bypass all rules (edited) 
-    //   // if you write a firebase function, you’ll use firebase-admin library that connects to the firestore database and has full-access (edited) 
-
-
 
   public getTransactions(currentFinancialDoc, collection){
       // Get transactions (amounts from <cat.key>payments | charges collections)
