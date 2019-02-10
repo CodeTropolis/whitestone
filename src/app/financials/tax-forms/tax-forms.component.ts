@@ -44,7 +44,7 @@ export class TaxFormsComponent implements OnInit {
           //console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
           this.currentCategory = cat.val;
           this.paymentsCollection = cat.key + 'Payments';
-          console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
+          //console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
         }
       })
     );
