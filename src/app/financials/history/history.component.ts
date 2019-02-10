@@ -23,6 +23,7 @@ export class HistoryComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   public disableDelete: boolean[] = [];
   public user: any;
+  public viewIsReady: boolean;
 
   private runningBalance: number;
   private updatedBalance: number;
@@ -32,19 +33,19 @@ export class HistoryComponent implements OnInit {
   constructor(private financialsService: FinancialsService, private authService: AuthService) { }
 
   ngOnInit() {
-
   
     this.subscriptions.push(
       this.authService.user$.subscribe(user =>{
         if (user){
           this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
-
+          this.viewIsReady = true; // So that in *ngIf="user['roles].admin" user doesn't end up undefined
           if(this.user['roles'].admin){
             this.tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
            }else{
             this.tableColumns = ['amount', 'type', 'date', 'memo'];
            }
-
+        }else{
+          this.viewIsReady = false;
         }
       })
   );
