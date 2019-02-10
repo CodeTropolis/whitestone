@@ -71,6 +71,7 @@ export class FinancialsService {
       this.firebaseService.financialsCollection.doc(student.id).ref.get() 
         .then(doc => {
           if(doc.data()){
+            //console.log('Non-admin ref.get().then(doc) -> doc', doc.data());
               this.currentFinancialDoc$.next(doc); 
           }else{ 
            console.log('No financial data for this student!'); 

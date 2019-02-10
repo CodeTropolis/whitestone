@@ -26,7 +26,7 @@
           <mat-cell *matCellDef="let row"> {{row.memo}} </mat-cell>
         </ng-container>
       
-        <ng-container *ngIf="userIsAdmin" matColumnDef="delete">
+        <ng-container *ngIf="user['roles'].admin" matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Delete Transaction</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <button [disabled]="disableDelete[row.id]" (click)="deleteTransaction(row.id, row.type, row.amount)">Delete</button>

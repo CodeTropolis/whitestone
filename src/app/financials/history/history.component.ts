@@ -13,47 +13,43 @@ export class HistoryComponent implements OnInit {
 
   private subscriptions: any[] = [];
 
-  public userIsAdmin: boolean = false;
-  public userIsSubcriber: boolean = false;
-
   public currentFinancialDoc: any;
   public currentCategory: string;
   public currentChild: string;
   public runningBalanceKey: string;
-  private chargesCollection: string;
-  private paymentsCollection: string;
   public transactions$: BehaviorSubject<any[]>;
-
   public tableData: MatTableDataSource<any>;
   public tableColumns;
   @ViewChild(MatSort) sort: MatSort;
-
   public disableDelete: boolean[] = [];
+  public user: any;
 
   private runningBalance: number;
   private updatedBalance: number;
+  private chargesCollection: string;
+  private paymentsCollection: string;
 
   constructor(private financialsService: FinancialsService, private authService: AuthService) { }
 
   ngOnInit() {
 
-  //   this.subscriptions.push(
-  //     this.authService.userIsAdmin$.subscribe(x => {
-  //      this.userIsAdmin = x;
-  //    } )
-  //  );
+  
+    this.subscriptions.push(
+      this.authService.user$.subscribe(user =>{
+        if (user){
+          this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
 
-  //  this.subscriptions.push(
-  //    this.authService.userIsSubcriber$.subscribe(x => {
-  //      this.userIsSubcriber = x;
-  //    })
-  //  )
+          if(this.user['roles'].admin){
+            this.tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
+           }else{
+            this.tableColumns = ['amount', 'type', 'date', 'memo'];
+           }
 
-   if(this.userIsAdmin){
-    this.tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
-   }else{
-    this.tableColumns = ['amount', 'type', 'date', 'memo'];
-   }
+        }
+      })
+  );
+
+ 
 
     // currentFinancialDoc$ next'd by student-category.component
     this.subscriptions.push(

@@ -32,9 +32,6 @@ export class EntryComponent implements OnInit {
 
   public disableSubmitButton: boolean;
 
-  // public userIsAdmin: boolean = false; 
-  // public userIsSubcriber: boolean = false;
-
   public user: any;
 
   public isEnteringPayment: boolean = false;
@@ -63,7 +60,7 @@ export class EntryComponent implements OnInit {
           this.authService.user$.subscribe(user =>{
             //console.log('TCL: EntryComponent -> ngOnInit -> user', user)
             if (user){
-              this.user = user; // For conitionals in view i.e. *ngIf="user['roles].admin"
+              this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
             }
           })
       );
@@ -108,7 +105,7 @@ export class EntryComponent implements OnInit {
                //  checkForTransactions - do this here as subcollecton may exist upon selecting cat and 
                 //  do this after processing a transaction as the subcollecton will exist after a transaction
               this.checkForTransactions();
-              this.getTuitionMonthlyPaymentAmount()
+              this.getTuitionMonthlyPaymentAmount();
               this.showHistory = false;
               this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another category
             }
@@ -136,21 +133,14 @@ export class EntryComponent implements OnInit {
       private checkForBalance(){
         this.currentFinancialDoc.ref.get().then( 
           snapshot => { 
-    
             if (snapshot.data()[this.startingBalanceKey] || snapshot.data()[this.startingBalanceKey] === 0) { // Important to check for a balance value of zero.
               this.startingBalance = snapshot.data()[this.startingBalanceKey];
-              
               this.runningBalance = snapshot.data()[this.runningBalanceKey];
               this.financialsService.runningBalanceForCurrentCategory$.next(snapshot.data()[this.runningBalanceKey]);
-    
               this.showStartingBalanceInput = false;
-             
-    
             } else {
               this.startingBalance = null;
-    
               this.showStartingBalanceInput = true;
-              
             }
             this.formReady = true;
           }
@@ -172,10 +162,10 @@ export class EntryComponent implements OnInit {
       }
     
         // Check if any of the transaction subcollections (payments or charges) exist for the
-        //  the current financial doc and set booleans. 
+        // the current financial doc and set booleans. 
       private checkForTransactions() {
-        // this.charges | payments Collection will be the proper collection based on selected category i.e. tutionCharges
-        // per https://stackoverflow.com/a/49597381: .collection(..).get() returns a QuerySnapshot which has the property size
+        // this.charges | payments Collection will be the proper collection based on selected category i.e. tutionCharges.
+        // Per https://stackoverflow.com/a/49597381: .collection(..).get() returns a QuerySnapshot which has the property size
     
         this.currentFinancialDoc.ref.collection(this.chargesCollection).get()
           .then(query => {
