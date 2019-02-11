@@ -6,15 +6,9 @@ import { AuthGuard } from './core/guards/auth.guard';
 const routes: Routes = [
   {path: '', component: LoginComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'record-list', loadChildren: './record/record.module#RecordModule', 
-  canLoad:[AuthGuard],
-  },
-  {path: 'financials', loadChildren: './financials/financials.module#FinancialsModule', 
-  canLoad:[AuthGuard],
-  },
-  {path: 'grades', loadChildren: './grades/grades.module#GradesModule', 
-  canLoad:[AuthGuard],
-  }
+  {path: 'record-list', loadChildren: './record/record.module#RecordModule', canLoad:[AuthGuard]},
+  {path: 'financials', loadChildren: './financials/financials.module#FinancialsModule', canLoad:[AuthGuard]},
+  {path: 'grades', loadChildren: './grades/grades.module#GradesModule', canLoad:[AuthGuard]}
 ];
 
 @NgModule({
