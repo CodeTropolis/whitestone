@@ -10,6 +10,8 @@ export class StudentListComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // Get listing of *all* students. Allow sorting by grade level.
+    // Intitially build from records collection.
   }
 
 }
