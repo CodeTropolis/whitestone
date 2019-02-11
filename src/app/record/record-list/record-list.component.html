@@ -83,7 +83,7 @@
 							<mat-cell class="actions" *matCellDef="let row">
 								<div></div>
 									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../financials']">Financials</button>
-									<button mat-flat-button color="primary" [disabled]="true">Grades</button>
+									<button mat-flat-button color="primary" [routerLink]="['../grades']">Grades</button>
 									<button mat-flat-button color="primary" [disabled]="true">Attendance</button>
 							</mat-cell>
 						</ng-container>
