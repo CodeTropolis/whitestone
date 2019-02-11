@@ -39,14 +39,12 @@ export class FinancialsService {
     });
   }
 
-  public setCurrentStudent(student){
-    this.currentStudent$.next(student); 
-  }
-
   // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
   // Outside of if (!snapshot.exists) because, in addition to future financial docs, this also needs to be done for existing financial docs.
 
   public setupFinancialDoc(student) {
+
+    this.currentFinancialDoc$.next(null); 
 
     if (this.user['roles'].admin){
 
@@ -61,7 +59,7 @@ export class FinancialsService {
       .then(_ => { // Set the current financial doc
         this.firebaseService.financialsCollection.doc(student.id).ref.get()
           .then(doc => {
-						//console.log('Data written -> doc', doc.data());
+						//console.log('TCL: publicsetupFinancialDoc -> doc.data()', doc.data())
             this.currentFinancialDoc$.next(doc);
           })
       })

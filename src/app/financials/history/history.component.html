@@ -1,4 +1,4 @@
-<mat-card *ngIf="tableData && viewIsReady">
+<mat-card *ngIf="currentFinancialDoc && tableData && viewIsReady">
     <p class="info"><strong>{{currentChild}}'s</strong> Transaction History for <strong>{{currentCategory}}</strong></p>
     <mat-table *ngIf="currentCategory" [dataSource]="tableData" matSort>
         <ng-container matColumnDef="amount">

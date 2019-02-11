@@ -40,14 +40,16 @@ export class StudentCategoryComponent implements OnInit {
      console.log('There is an issue obtaining the current record');
    }
 
+   // Listen for the currentFinancialDoc.
    this.subscriptions.push(
     this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
       if(doc){
         this.currentFinancialDoc = doc;
+				//console.log('TCL: StudentCategoryComponent -> ngOnInit -> his.currentFinancialDoc', this.currentFinancialDoc.data())
         this.enableCatButtons = true;
       }else {
         this.enableCatButtons = false;
-        console.log('financial doc null')
+        //console.log('financial doc null')
       }
     })
   );
@@ -64,9 +66,7 @@ export class StudentCategoryComponent implements OnInit {
 
   }
 
-  public setCurrentStudentAndFinancialDoc(student){ 
-
-    this.financialsService.setCurrentStudent(student); 
+  public setFinancialDoc(student){ 
 
     // Will yield permission errors if non admin executes this.
     this.financialsService.setupFinancialDoc(student);
