@@ -12,7 +12,7 @@
           </div>
     
           <div *ngIf="currentFinancialDoc" class="categories">
-            <h5>Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
+            <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
             <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
             (click)="setCategory(cat)">{{cat.val}}</button>
             <app-tax-forms></app-tax-forms>
@@ -28,8 +28,7 @@
         <button *ngFor="let student of studentsOfRecord" mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
         
         <div *ngIf="currentFinancialDoc">
-          <h5>Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
-
+          <h5  class="financial-for" [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
           <h5>Select a category:</h5>
           <button  [disabled]="!enableCatButtons"  mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"(click)="setCategory(cat)">{{cat.val}}</button>
           <app-tax-forms></app-tax-forms>

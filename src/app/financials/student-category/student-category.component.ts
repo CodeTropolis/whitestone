@@ -31,7 +31,7 @@ export class StudentCategoryComponent implements OnInit {
     this.financialsService.currentCategory$.next(null);
 
     this.enableCatButtons = false;
-    // currentRecord set by the 'more' menu on available records.
+    // currentRecord set by the 'more' menu on available records or Financial and Grades buttons, and soon to be Attendance button on non-admin UI.
     this.currentRecord = this.dataService.currentRecord;
     if (this.currentRecord){
       // Get all the children of the currentRecord. 

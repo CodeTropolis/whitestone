@@ -1,3 +1,25 @@
+
+h5.student-name {
+    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 0.75s; /* Safari 4.0 - 8.0 */
+    animation-name: studentName;
+    animation-duration: 0.75s;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes studentName {
+    0% {transform: scale(1.0);  color: var(--ws-blue);}
+    25% {transform: scale(1.05); color: var(--ws-blue);}
+    100% {transform: scale(1.0); color: black;}
+  }
+  
+  /* Standard syntax */
+@keyframes studentName {
+    0% {transform: scale(1.0);  color: var(--ws-blue);}
+    25% {transform: scale(1.05); color: var(--ws-blue);}
+    100% {transform: scale(1.0); color: black;}
+  }
+
 button {margin: 1em 0.5em 0 0;}
 
 button.student {width: 150px;}
@@ -15,15 +37,17 @@ button.student {width: 150px;}
 /* Small devices (landscape phones, less than 768px) */
 @media (max-width: 767.98px) { 
 
-.material-icons.account-circle {display:none;}
+    h5.financial-for {margin: 1em 0;}
 
-button {
-    margin: 0 0 0.5em 0;
-    width: 100%;
-}
+    .material-icons.account-circle {display:none;}
 
-button.payment {
-    margin-top:2em;
-}
+    button {
+        margin: 0 0 0.5em 0;
+        width: 100%;
+    }
+
+    button.payment {
+        margin-top:2em;
+    }
 
 }
