@@ -50,10 +50,8 @@ export class HistoryComponent implements OnInit {
       })
   );
 
- 
-
     // currentFinancialDoc$ next'd by student-category.component
-    this.subscriptions.push(
+  this.subscriptions.push(
     this.financialsService.currentFinancialDoc$.subscribe(doc =>{ 
       if(doc){
         this.currentFinancialDoc = doc;
@@ -62,29 +60,35 @@ export class HistoryComponent implements OnInit {
     })
   );
 
-    this.subscriptions.push(
-      this.financialsService.currentCategory$.subscribe(cat => {
-        if(cat){
-          this.currentCategory = cat.val;
-          this.runningBalanceKey = cat.key + 'Balance'; // ensure keys always match other components.  ToDo: Single source of truth.
-          this.chargesCollection = cat.key + 'Charges';
-          this.paymentsCollection = cat.key + 'Payments';
+  this.subscriptions.push(
+    this.financialsService.currentCategory$.subscribe(cat => {
+      if(cat){
+        this.currentCategory = cat.val;
+        this.runningBalanceKey = cat.key + 'Balance'; // ensure keys always match other components.  ToDo: Single source of truth.
+        this.chargesCollection = cat.key + 'Charges';
+        this.paymentsCollection = cat.key + 'Payments';
+
+        if (this.currentFinancialDoc && this.chargesCollection && this.paymentsCollection){
+          this.setupHistory();
+        }else {
+          console.log('Issue with setting currentFinancialDoc, and/or payments/charges collection strings');
         }
-      })
-    );
+      }
+    })
+  );
 
-    // Get the running balance which is next'd by entry.component. 
-    //  Trying to get it via this.currentFinancialDoc.data()[this.runningBalanceKey] sometimes returns as undefined
-      this.financialsService.runningBalanceForCurrentCategory$.subscribe(runningBalance => {
-        //console.log(runningBalance);
-        this.runningBalance = runningBalance;
-      });
-
-    this.setupHistory();
+  // Get the running balance which is next'd by entry.component. 
+  //  Trying to get it via this.currentFinancialDoc.data()[this.runningBalanceKey] sometimes returns as undefined
+    this.financialsService.runningBalanceForCurrentCategory$.subscribe(runningBalance => {
+      //console.log(runningBalance);
+      this.runningBalance = runningBalance;
+    });
     
   } // end init()
 
   private setupHistory(){
+
+    console.log('setupHIstory()')
 
     this.subscriptions.push(
       // Moving the subscription here may have fixed history sorting.

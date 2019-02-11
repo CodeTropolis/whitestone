@@ -6,13 +6,15 @@
           <div class="students">
             <h5>Select a Student:</h5>
             <div *ngFor="let student of studentsOfRecord">
-              <button class="student" mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
+              <button class="student" mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
             </div>
             <button class="student payment" mat-flat-button type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
           </div>
     
-          <div *ngIf="currentStudent$ | async as currentStudent" class="categories">
-            <h5>Financial status for {{currentStudent.fname}} {{currentStudent.lname}}</h5>
+          <!-- <div *ngIf="currentStudent$ | async as currentStudent" class="categories"> -->
+              <div *ngIf="currentFinancialDoc" class="categories">
+
+            <h5>Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
             <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
             (click)="setCategory(cat)">{{cat.val}}</button>
             <app-tax-forms></app-tax-forms>
@@ -28,7 +30,7 @@
         </h4>
         <ng-template #selectStudent>(Select a student)</ng-template>
         
-        <button *ngFor="let student of studentsOfRecord" mat-flat-button color="primary" (click)="setCurrentStudentAndFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
+        <button *ngFor="let student of studentsOfRecord" mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
         
         <div *ngIf="enableCatButtons">
           <h5>Select a category:</h5>
