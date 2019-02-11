@@ -78,11 +78,23 @@ export class StudentCategoryComponent implements OnInit {
 
    public setCategory(cat){
     this.financialsService.currentCategory$.next(cat);
+
+    setTimeout( _ =>{
+      window.scrollBy(0, 500);
+    }, 250)
+
   }
 
   public goToURL(url){
     //window.location.href = url;
     window.open(url,'_blank');
   }
+
+  // setTimeout( _ =>{
+  //   let el = document.getElementById('history');
+  //   if (el){
+  //     window.scrollBy(0, 300);
+  //   }
+  // }, 250)
 
 }
