@@ -1,3 +1,6 @@
-<p>
-  student-list works!
-</p>
+<!-- {{students$ | async | json}} -->
+Student List
+<div *ngFor="let student of students$ | async">
+  <pre>{{student.fname}} | Grade: {{student.grade}}</pre>
+</div>
+
