@@ -45,18 +45,17 @@
 								</button>
 								<mat-menu #menu="matMenu">
 									<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal', row)">
-										<span>Family Contact Info</span>
+										Family Contact Info
 									</button>
 									<button *ngIf="user['roles'].admin" [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
-										<span>Update Family Record</span>
+										Update Family Record
 									</button>
 									<button [disabled]="isUpdating" mat-menu-item (click)="toggleChildTable(row)">
 										<span *ngIf="!showChildren[row.realId]">Show Children</span>
 										<span *ngIf="showChildren[row.realId]">Hide Children</span>
 									</button>
-									<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../financials']">
-										<span>Financials</span>
-									</button>
+									<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../financials']">Financials</button>
+									<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../grades']">Grades</button>
 								</mat-menu>
 			
 							</mat-cell>
