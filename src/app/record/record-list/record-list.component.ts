@@ -21,18 +21,15 @@ import { switchMap } from 'rxjs/operators';
 })
 export class RecordListComponent implements OnInit {
 
+  public user: any;
+  public records$: Observable<any[]>;
   public isUpdating: boolean;
   public ds: MatTableDataSource<any>;
   public displayedColumns;
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] = [];
   public showForm: boolean;
-
   public loading: boolean = true;
-
-  // public user: User;
-  public userIsAdmin: boolean = false;  // for view
-  public userIsSubcriber: boolean = false;
   public recordMatch: boolean;
 
   // For modal
@@ -44,10 +41,6 @@ export class RecordListComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-
-  public records$: Observable<any[]>;
-
-  public  user: any;
 
   constructor(
     private fs: FirebaseService,
