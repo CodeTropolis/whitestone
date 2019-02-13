@@ -1,6 +1,16 @@
-<!-- {{students$ | async | json}} -->
+
 Student List
-<div *ngFor="let student of students$ | async">
-  <pre>{{student.fname}} | Grade: {{student.grade}}</pre>
+
+<div *ngIf="students$ | async as students; else loading"> <!-- this wait until students$ | async has evaluated -->
+ <!-- <div *ngFor="let student of students$ | async"> This works but need else for loader -->
+  <div *ngFor="let student of students">
+    <pre>{{student.lname}}, {{student.fname}} | Grade: {{student.grade}}</pre>
+  </div>
 </div>
+
+<ng-template #loading>
+    <app-progress-spinner></app-progress-spinner>
+</ng-template>
+
+
 

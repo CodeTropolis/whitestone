@@ -16,8 +16,6 @@ export class StudentListComponent implements OnInit {
 
   private subscriptions: any[] = [];
   private studentsFromRecord: any[] = [];
-  private currentRecord: any;
-  private mergedStudents: any[] = [];
 
   constructor(private authService: AuthService, private firebaseService: FirebaseService, private dataService: DataService) { }
 
@@ -58,7 +56,6 @@ export class StudentListComponent implements OnInit {
           this.firebaseService.studentsCollection.doc(student.id).ref.get()
           .then(snapshot =>{
             if(!snapshot.exists){
-              console.log('writting...')
               this.firebaseService.studentsCollection.doc(student.id).set(student);
             }
           });

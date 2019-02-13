@@ -29,7 +29,7 @@ export class RecordListComponent implements OnInit {
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] = [];
   public showForm: boolean;
-  public loading: boolean = true;
+  //public loading: boolean = true;
   public recordMatch: boolean;
 
   // For modal
@@ -52,6 +52,8 @@ export class RecordListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
+    this.ds = null;
 
     this.subscriptions.push(
         this.authService.user$.subscribe(user =>{
@@ -76,9 +78,6 @@ export class RecordListComponent implements OnInit {
 
     this.subscriptions.push(
       this.fs.records$.subscribe(records => {
-        if(records){
-          this.loading = false;
-        }
         this.ds = new MatTableDataSource(records);
         this.ds.sort = this.sort;
 
@@ -112,7 +111,7 @@ export class RecordListComponent implements OnInit {
         }else{
           this.recordMatch = false;
         }
-        this.loading = false;
+       // this.loading = false;
         return of(combined);
       }));
 
