@@ -32,36 +32,40 @@ export class StudentListComponent implements OnInit {
         }
       })
     );
-    this.students$ = this.firebaseService.studentsCollection.valueChanges();
+    this.students$ = this.firebaseService.studentsCollection.valueChanges(); // for view
   }
 
   private writeStudents(){
-    // Read all students (children) from records collection
+    
     this.subscriptions.push(
-      this.firebaseService.records$.subscribe(docs =>{ 
-        this.studentsFromRecord = []; // Prevent duplicates upon record updates / additions.
+      // Read all students (children) from records collection
+      // Extract the map of children from each record and write to the students collection
+      this.firebaseService.records$.subscribe(docs =>{
         docs.forEach(doc =>{
-          console.log('writeStudents -> doc.fatherEmail', doc.fatherEmail);
-          console.log('writeStudents -> doc.motherEmail', doc.motherEmail);
-          this.studentsFromRecord.push(this.dataService.convertMapToArray(doc.children)); // This will yield an array of arrays.
-          // I need to add doc.fatherEmail and doc.motherEmail properties to each object
+          // Get children from each doc in records by converting children map to array and flatten
+          const children = this.dataService.convertMapToArray(doc.children).reduce((acc, arr) => [...acc, ...arr], [])
+          children.forEach(child => {
+            // Build a new object using the email address(es) from the current doc iteration (docs.forEach(doc..)) and 
+            // the child object from the current child iteration
+            this.studentsFromRecord.push({recordId: doc.realId, fatherEmail: doc.fatherEmail, motherEmail: doc.motherEmail, ...child})
+          })   
         })
-        // Flatten the array of arrays
-        this.mergedStudents = [].concat.apply([], this.studentsFromRecord);
-        //console.log('this.mergedStudents', this.mergedStudents)
-        
-        // Write mergedStudents (if doc doesn't exist) to the students collection
-        this.mergedStudents.forEach(student =>{
+
+        console.log('studentsFromRecord: ', this.studentsFromRecord);
+
+        //Write students (if doc doesn't exist) to the students collection
+        this.studentsFromRecord.forEach(student => {
           this.firebaseService.studentsCollection.doc(student.id).ref.get()
           .then(snapshot =>{
             if(!snapshot.exists){
+              console.log('writting...')
               this.firebaseService.studentsCollection.doc(student.id).set(student);
             }
           });
-          // admin may update child info from within record-list
-          this.firebaseService.studentsCollection.doc(student.id).update(student); 
         });
+
       })
+
     );
   }
 
