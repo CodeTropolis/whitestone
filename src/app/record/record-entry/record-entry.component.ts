@@ -154,7 +154,7 @@ export class RecordEntryComponent implements OnInit {
     this.childrenForm.removeAt(i);
   }
 
-  async submitHandler(formDirective) {
+   submitHandler(formDirective) {
 
     if (this.myForm.invalid) { return; }
 
@@ -176,7 +176,7 @@ export class RecordEntryComponent implements OnInit {
     if (!this.isUpdating) {
       try {
         // Add a new record
-        await this.fs.recordCollection.add(data)
+         this.fs.recordCollection.add(data)
           .then(() => {
             this.resetForm(formDirective);
           });
@@ -187,7 +187,7 @@ export class RecordEntryComponent implements OnInit {
     if (this.isUpdating) {
       try {
         // Update current record
-        await this.fs.recordCollection.doc(this.currentRecordId).update(data) 
+         this.fs.recordCollection.doc(this.currentRecordId).update(data) 
           .then(() => {
 
             this.rs.isUpdating$.next(false);
@@ -212,7 +212,7 @@ export class RecordEntryComponent implements OnInit {
             this.subscriptions.push( 
                 studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
                 actions.forEach(action => {                                        
-                  this.afs.collection("students").doc(action.payload.doc.id).update({
+                  this.afs.collection("students").doc(action.payload.doc.id).set({
                     dob: currentRecord.children[action.payload.doc.id].dob, 
                     fname: currentRecord.children[action.payload.doc.id].fname,
                     lname: currentRecord.children[action.payload.doc.id].lname,
@@ -225,8 +225,6 @@ export class RecordEntryComponent implements OnInit {
                 });
               })
             )
-
-						
           });
       } catch (err) {
         console.log(err);

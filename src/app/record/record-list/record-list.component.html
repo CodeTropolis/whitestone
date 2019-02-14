@@ -13,7 +13,8 @@
 <div *ngIf="ds else loading">
 		<app-record-entry *ngIf="showForm"></app-record-entry>
 	
-		<div *ngIf="recordMatch else noRecords" class="mat-elevation-z8">
+		<!-- <div *ngIf="recordMatch else noRecords" class="mat-elevation-z8"> -->
+		<div *ngIf="records$ else noRecords" class="mat-elevation-z8">
 		
 			<div *ngIf="user">
 		
