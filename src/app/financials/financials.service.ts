@@ -47,7 +47,10 @@ export class FinancialsService {
     this.currentFinancialDoc$.next(null); 
 
     if (this.user['roles'].admin){
-
+      // { merge: true } true prevents destructive overwrite of financial doc.
+      // If changes are made to the current doc from the record collection (currentRecord), this will cause
+      // the write to update the current financial doc with any changes that are coming from
+      // values pulled from this.dataService.currentRecord.<property>
       this.firebaseService.financialsCollection.doc(student.id)
       .set({
         recordId: this.dataService.currentRecord.realId,

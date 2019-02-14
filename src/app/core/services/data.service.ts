@@ -16,6 +16,7 @@ export class DataService {
   }
 
   public setCurrentRecord(record) {
+		//console.log('TCL: publicsetCurrentRecord -> record', record);
     this.currentRecord = record;
   }
 

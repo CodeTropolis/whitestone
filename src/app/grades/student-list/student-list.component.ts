@@ -40,18 +40,19 @@ export class StudentListComponent implements OnInit {
       // Extract the map of children from each record and write to the students collection
       this.firebaseService.records$.subscribe(docs =>{
         docs.forEach(doc =>{
-          // Get children from each doc in records by converting children map to array and flatten
+          // Generate an array of children - convert map to array and flatten the resultant array of arrays via .reduce()
           const children = this.dataService.convertMapToArray(doc.children).reduce((acc, arr) => [...acc, ...arr], [])
           children.forEach(child => {
-            // Build a new object using the email address(es) from the current doc iteration (docs.forEach(doc..)) and 
+            // Build a new object containing the email address(es) from the current doc iteration (docs.forEach(doc..)) and 
             // the child object from the current child iteration
             this.studentsFromRecord.push({recordId: doc.realId, fatherEmail: doc.fatherEmail, motherEmail: doc.motherEmail, ...child})
           })   
         })
 
-        console.log('studentsFromRecord: ', this.studentsFromRecord);
+        //console.log('studentsFromRecord: ', this.studentsFromRecord);
 
-        //Write students (if doc doesn't exist) to the students collection
+        // Write students (if doc doesn't exist) to the students collection
+        // ToDo: Need to update student doc if a changes are made to the corresponding record doc.
         this.studentsFromRecord.forEach(student => {
           this.firebaseService.studentsCollection.doc(student.id).ref.get()
           .then(snapshot =>{
@@ -67,7 +68,7 @@ export class StudentListComponent implements OnInit {
   }
 
   ngOnDestroy(){
-    console.log('student-list destroy');
+   // console.log('student-list destroy');
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { RecordService } from '../record.service';
+import { DataService } from '../../core/services/data.service';
 
 import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
@@ -57,6 +58,7 @@ export class RecordEntryComponent implements OnInit {
 
   constructor(
     private rs: RecordService,
+    private dataService: DataService,
     private fs: FirebaseService,
     private fb: FormBuilder,
     private authService: AuthService,
@@ -189,6 +191,33 @@ export class RecordEntryComponent implements OnInit {
           .then(() => {
             this.rs.isUpdating$.next(false);
             this.resetForm(formDirective);
+
+            let currentRecord: any;
+
+            this.fs.recordCollection.doc(this.currentRecordId).valueChanges()
+              .subscribe(doc =>{
+              console.log(doc);
+              currentRecord = doc;
+            })
+
+            // Query the students collection based on the currentRecordId and update each doc accordingly
+            const studentDocsToUpdate = this.afs.collection("students", ref => ref.where("recordId","==", this.currentRecordId));
+           
+            studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
+              actions.forEach(action => {                                        
+                this.afs.collection("students").doc(action.payload.doc.id).update({
+                  dob: currentRecord.children[action.payload.doc.id].dob, 
+                  fname: currentRecord.children[action.payload.doc.id].fname,
+                  lname: currentRecord.children[action.payload.doc.id].lname,
+                  gender: currentRecord.children[action.payload.doc.id].gender,
+                  grade: currentRecord.children[action.payload.doc.id].grade,
+                  race: currentRecord.children[action.payload.doc.id].race,
+                  fatherEmail: currentRecord.fatherEmail,
+                  motherEmail: currentRecord.motherEmail,
+                });
+              });
+            });
+						
           });
       } catch (err) {
         console.log(err);
