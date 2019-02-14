@@ -1,116 +1,106 @@
 
 <app-header color="primary" img="headerLogo.png" title="Available Records" [showUserEmail]="true"></app-header>
 
-<!-- <div *ngIf="loading; else display">
-	<app-progress-spinner></app-progress-spinner>
-</div> -->
-
 <ng-template #loading>
 	<app-progress-spinner></app-progress-spinner>
 </ng-template>
 
-<!-- <ng-template #display> -->
 <div *ngIf="ds else loading">
-		<app-record-entry *ngIf="showForm"></app-record-entry>
+	<app-record-entry *ngIf="showForm"></app-record-entry>
+	<div *ngIf="records$ else noRecords" class="mat-elevation-z8">
+		<div *ngIf="user">
+			<mat-card>
+				<button *ngIf="user['roles'].admin" class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i>Family Record</button>
 	
-		<!-- <div *ngIf="recordMatch else noRecords" class="mat-elevation-z8"> -->
-		<div *ngIf="records$ else noRecords" class="mat-elevation-z8">
-		
-			<div *ngIf="user">
-		
-				<mat-card>
-		
-					<button *ngIf="user['roles'].admin" class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i>Family Record</button>
-		
-					<mat-form-field *ngIf="user['roles'].admin">
-						<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-					</mat-form-field>
-		
-					<mat-table [dataSource]="ds" matSort>
-						<div *ngIf="user['roles'].admin; else viewForParents">
-							<ng-container matColumnDef="surname">
-								<mat-header-cell *matHeaderCellDef mat-sort-header> Surname </mat-header-cell>
-								<mat-cell *matCellDef="let row"> {{row.surname}} </mat-cell>
-							</ng-container>
-				
-							<ng-container matColumnDef="father">
-								<mat-header-cell *matHeaderCellDef mat-sort-header> Father / Guardian </mat-header-cell>
-								<mat-cell *matCellDef="let row">{{row.fatherFname}} {{row.fatherLname}}</mat-cell>
-							</ng-container>
-				
-							<ng-container matColumnDef="mother">
-								<mat-header-cell *matHeaderCellDef mat-sort-header> Mother / Guardian </mat-header-cell>
-								<mat-cell *matCellDef="let row"> {{row.motherFname}} {{row.motherLname}}</mat-cell>
-							</ng-container>
-				
-							<ng-container matColumnDef="actions">
-								<mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
-								<mat-cell class="actions" *matCellDef="let row">
-									<button mat-icon-button [matMenuTriggerFor]="menu" (click)="setCurrentRecord(row)">
-										<mat-icon>more_vert</mat-icon>
+				<mat-form-field *ngIf="user['roles'].admin">
+					<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+				</mat-form-field>
+	
+				<mat-table [dataSource]="ds" matSort>
+					<div *ngIf="user['roles'].admin; else viewForParents">
+						<ng-container matColumnDef="surname">
+							<mat-header-cell *matHeaderCellDef mat-sort-header> Surname </mat-header-cell>
+							<mat-cell *matCellDef="let row"> {{row.surname}} </mat-cell>
+						</ng-container>
+			
+						<ng-container matColumnDef="father">
+							<mat-header-cell *matHeaderCellDef mat-sort-header> Father / Guardian </mat-header-cell>
+							<mat-cell *matCellDef="let row">{{row.fatherFname}} {{row.fatherLname}}</mat-cell>
+						</ng-container>
+			
+						<ng-container matColumnDef="mother">
+							<mat-header-cell *matHeaderCellDef mat-sort-header> Mother / Guardian </mat-header-cell>
+							<mat-cell *matCellDef="let row"> {{row.motherFname}} {{row.motherLname}}</mat-cell>
+						</ng-container>
+			
+						<ng-container matColumnDef="actions">
+							<mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
+							<mat-cell class="actions" *matCellDef="let row">
+								<button mat-icon-button [matMenuTriggerFor]="menu" (click)="setCurrentRecord(row)">
+									<mat-icon>more_vert</mat-icon>
+								</button>
+								<mat-menu #menu="matMenu">
+									<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal', row)">
+										Family Contact Info
 									</button>
-									<mat-menu #menu="matMenu">
-										<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal', row)">
-											Family Contact Info
-										</button>
-										<button *ngIf="user['roles'].admin" [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
-											Update Family Record
-										</button>
-										<button [disabled]="isUpdating" mat-menu-item (click)="toggleChildTable(row)">
-											<span *ngIf="!showChildren[row.realId]">Show Children</span>
-											<span *ngIf="showChildren[row.realId]">Hide Children</span>
-										</button>
-										<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../financials']">Financials</button>
-										<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../grades']">Grades</button>
-									</mat-menu>
-				
-								</mat-cell>
-							</ng-container>
-							<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-				
-							<ng-container *matRowDef="let row; columns: displayedColumns;">
-								<div [class.expanded]="showChildren[row.realId]">
-									<mat-row></mat-row>
-									<app-child-table *ngIf="showChildren[row.realId]" [record]="row"></app-child-table>
-								</div>
-							</ng-container>
-						</div>
-		
-						<ng-template #viewForParents>
-		
-							<ng-container matColumnDef="surname">
-								<mat-header-cell *matHeaderCellDef mat-sort-header> Surname </mat-header-cell>
-								<mat-cell *matCellDef="let row"> {{row.surname}} </mat-cell>
-							</ng-container>
-		
-							<ng-container matColumnDef="actions">
-								<mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
-								<mat-cell class="actions" *matCellDef="let row">
-									<div></div>
-										<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../financials']">Financials</button>
-										<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../grades']">Grades</button>
-										<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [disabled]="true">Attendance</button>
-								</mat-cell>
-							</ng-container>
-		
-							<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-							<ng-container *matRowDef="let row; columns: displayedColumns;">
+									<button *ngIf="user['roles'].admin" [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
+										Update Family Record
+									</button>
+									<button [disabled]="isUpdating" mat-menu-item (click)="toggleChildTable(row)">
+										<span *ngIf="!showChildren[row.realId]">Show Children</span>
+										<span *ngIf="showChildren[row.realId]">Hide Children</span>
+									</button>
+									<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../financials']">Financials</button>
+									<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../grades']">Grades</button>
+								</mat-menu>
+			
+							</mat-cell>
+						</ng-container>
+						<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+			
+						<ng-container *matRowDef="let row; columns: displayedColumns;">
+							<div [class.expanded]="showChildren[row.realId]">
 								<mat-row></mat-row>
-							</ng-container>
-		
-						</ng-template>
-		
-					</mat-table>
-		
-					<mat-paginator *ngIf="user['roles'].admin" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-				</mat-card>
-		
-			</div>
+								<app-child-table *ngIf="showChildren[row.realId]" [record]="row"></app-child-table>
+							</div>
+						</ng-container>
+					</div>
+	
+					<ng-template #viewForParents>
+	
+						<ng-container matColumnDef="surname">
+							<mat-header-cell *matHeaderCellDef mat-sort-header> Surname </mat-header-cell>
+							<mat-cell *matCellDef="let row"> {{row.surname}} </mat-cell>
+						</ng-container>
+	
+						<ng-container matColumnDef="actions">
+							<mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
+							<mat-cell class="actions" *matCellDef="let row">
+								<div></div>
+									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../financials']">Financials</button>
+									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../grades']">Grades</button>
+									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [disabled]="true">Attendance</button>
+							</mat-cell>
+						</ng-container>
+	
+						<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+						<ng-container *matRowDef="let row; columns: displayedColumns;">
+							<mat-row></mat-row>
+						</ng-container>
+	
+					</ng-template>
+	
+				</mat-table>
+	
+				<mat-paginator *ngIf="user['roles'].admin" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+			</mat-card>
+	
 		</div>
-		<ng-template #noRecords>
-			<p>No records found for this user.</p>
-			<p>Please contact the St. Teresa School Administration office for further inquiry. 618.233.3500</p>
-		</ng-template>
+	</div>
+	<ng-template #noRecords>
+		<p>No records found for this user.</p>
+		<p>Please contact the St. Teresa School Administration office for further inquiry. 618.233.3500</p>
+	</ng-template>
 </div>
 
 <!-- </ng-template> -->

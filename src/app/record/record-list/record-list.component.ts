@@ -2,16 +2,12 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { RecordService } from '../record.service';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../core/services/data.service';
-import { AuthService } from '../../core/services/auth.service';
-import { User } from '../../core/user';
+import { AuthService } from '../../core/services/auth.service';;
 import { ModalService } from '../../modal/modal.service';
-
-//import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFirestore} from '@angular/fire/firestore';
-import { Observable, of, combineLatest } from 'rxjs'; // combineLatest works with this import only.
-import { switchMap, map } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs'; // combineLatest works with this import only.
+import {  map } from 'rxjs/operators';
 
 
 @Component({
@@ -102,24 +98,8 @@ export class RecordListComponent implements OnInit {
 
     this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(map(([fathers, mothers]) => {
-				console.log('TCL: RecordListComponent -> privategetMatchingRecords -> mothers', mothers)
-        console.log('TCL: RecordListComponent -> privategetMatchingRecords -> fathers', fathers);
-        return [...fathers, ...mothers]
+        return [...fathers, ...mothers];
       }));
-  
-    // this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
-    //   .pipe(switchMap(docs => {
-    //     const [docsFatherEmail, docsMotherEmail] = docs;
-    //     const combined = docsFatherEmail.concat(docsMotherEmail);
-
-    //     if(combined.length > 0 ){
-    //       this.recordMatch = true;
-    //     }else{
-    //       this.recordMatch = false;
-    //     }
-    //    // this.loading = false;
-    //     return of(combined);
-    //   }));
 
       this.subscriptions.push(this.records$.subscribe(records =>{
         this.ds = new MatTableDataSource(records);

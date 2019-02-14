@@ -206,13 +206,14 @@ export class RecordEntryComponent implements OnInit {
             )
 
             // Query the students collection based on the currentRecordId and update each doc accordingly
+            // ToDo: Make this a Cloud Function.
             const studentDocsToUpdate = this.afs.collection("students", ref => ref.where("recordId","==", this.currentRecordId));
            
             // Subscription B:
             this.subscriptions.push( 
                 studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
                 actions.forEach(action => {                                        
-                  this.afs.collection("students").doc(action.payload.doc.id).set({
+                  this.afs.collection("students").doc(action.payload.doc.id).update({
                     dob: currentRecord.children[action.payload.doc.id].dob, 
                     fname: currentRecord.children[action.payload.doc.id].fname,
                     lname: currentRecord.children[action.payload.doc.id].lname,
