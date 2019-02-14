@@ -61,7 +61,7 @@ export class RecordListComponent implements OnInit {
           this.user = user; // Custom user object.
           if (user['roles'].admin){
             this.getAllRecords();
-            this.recordMatch = true;
+            //this.recordMatch = true;
           }else{
             this.getMatchingRecords();
           }
@@ -76,8 +76,10 @@ export class RecordListComponent implements OnInit {
   private getAllRecords(){
     this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
 
+    this.records$ = this.fs.records$;
+
     this.subscriptions.push(
-      this.fs.records$.subscribe(records => {
+      this.records$.subscribe(records => {
         this.ds = new MatTableDataSource(records);
         this.ds.sort = this.sort;
 
