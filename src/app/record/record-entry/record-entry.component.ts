@@ -24,8 +24,8 @@ export class RecordEntryComponent implements OnInit {
 
   private subscriptions: any[] = [];
 
-  private isUpdatingSubscription: any;
-  private currentIdSubscription: any;
+  // private isUpdatingSubscription: any;
+  // private currentIdSubscription: any;
 
   public phoneTypes: any[] = [
     { value: 'home', display: 'Home' },
@@ -88,9 +88,9 @@ export class RecordEntryComponent implements OnInit {
     // be performed on the form in the record-entry.service
     this.rs.theForm = this.myForm;
     // State of isUpdated set by the service
-    this.subscriptions.push(this.isUpdatingSubscription = this.rs.isUpdating$.subscribe(x => this.isUpdating = x));
+    this.subscriptions.push(this.rs.isUpdating$.subscribe(x => this.isUpdating = x));
     // Subscribe to the currentId$ subject so that it is available to submit handler
-    this.subscriptions.push(this.currentIdSubscription = this.rs.currentRecordId$.subscribe(x => this.currentRecordId = x));
+    this.subscriptions.push(this.rs.currentRecordId$.subscribe(x => this.currentRecordId = x));
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
 
@@ -189,34 +189,43 @@ export class RecordEntryComponent implements OnInit {
         // Update current record
         await this.fs.recordCollection.doc(this.currentRecordId).update(data) 
           .then(() => {
+
             this.rs.isUpdating$.next(false);
+
             this.resetForm(formDirective);
 
             let currentRecord: any;
 
-            this.fs.recordCollection.doc(this.currentRecordId).valueChanges()
-              .subscribe(doc =>{
-              console.log(doc);
-              currentRecord = doc;
-            })
+            // Subscription A:
+            this.subscriptions.push(  
+              this.fs.recordCollection.doc(this.currentRecordId).valueChanges()
+                .subscribe(doc =>{
+                //console.log(doc);
+                currentRecord = doc; // Use properties from doc to update docs obtained from studentDocsToUpdate query
+                })
+            )
 
             // Query the students collection based on the currentRecordId and update each doc accordingly
             const studentDocsToUpdate = this.afs.collection("students", ref => ref.where("recordId","==", this.currentRecordId));
            
-            studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
-              actions.forEach(action => {                                        
-                this.afs.collection("students").doc(action.payload.doc.id).update({
-                  dob: currentRecord.children[action.payload.doc.id].dob, 
-                  fname: currentRecord.children[action.payload.doc.id].fname,
-                  lname: currentRecord.children[action.payload.doc.id].lname,
-                  gender: currentRecord.children[action.payload.doc.id].gender,
-                  grade: currentRecord.children[action.payload.doc.id].grade,
-                  race: currentRecord.children[action.payload.doc.id].race,
-                  fatherEmail: currentRecord.fatherEmail,
-                  motherEmail: currentRecord.motherEmail,
+            // Subscription B:
+            this.subscriptions.push( 
+                studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
+                actions.forEach(action => {                                        
+                  this.afs.collection("students").doc(action.payload.doc.id).update({
+                    dob: currentRecord.children[action.payload.doc.id].dob, 
+                    fname: currentRecord.children[action.payload.doc.id].fname,
+                    lname: currentRecord.children[action.payload.doc.id].lname,
+                    gender: currentRecord.children[action.payload.doc.id].gender,
+                    grade: currentRecord.children[action.payload.doc.id].grade,
+                    race: currentRecord.children[action.payload.doc.id].race,
+                    fatherEmail: currentRecord.fatherEmail,
+                    motherEmail: currentRecord.motherEmail,
+                  });
                 });
-              });
-            });
+              })
+            )
+
 						
           });
       } catch (err) {
@@ -255,7 +264,7 @@ export class RecordEntryComponent implements OnInit {
   ngOnDestroy() {
     this.subscriptions.forEach(sub =>{
       sub.unsubscribe();
-     // console.log('TCL: RecordEntryComponent -> ngOnDestroy -> sub', sub);
+     //console.log('TCL: RecordEntryComponent -> ngOnDestroy -> sub', sub);
     });
   }
 }
