@@ -29,8 +29,6 @@ export class RecordListComponent implements OnInit {
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] = [];
   public showForm: boolean;
-  //public loading: boolean = true;
-  public recordMatch: boolean;
 
   // For modal
   public currentRecord: any;
@@ -61,7 +59,6 @@ export class RecordListComponent implements OnInit {
           this.user = user; // Custom user object.
           if (user['roles'].admin){
             this.getAllRecords();
-            //this.recordMatch = true;
           }else{
             this.getMatchingRecords();
           }
