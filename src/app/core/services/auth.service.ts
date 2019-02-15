@@ -89,7 +89,7 @@ export class AuthService {
     return this.afAuth.auth.sendPasswordResetEmail(email)
       .then(() =>{ 
         console.log("email sent");
-        this.status$.next(`Password reset instructions have been to ${email}.`);
+        this.status$.next(`Password reset instructions have been sent to ${email}.`);
       })
       .catch((error) => console.log(error))
   }
