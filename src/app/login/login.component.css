@@ -3,10 +3,19 @@ a {color: var(--ws-blue);}
 
 p.brand {margin-bottom: 0.25em;}
 
+.button-group {text-align: center;}
 
-.button-group {
-    text-align: center;
+.button-group button {
+    display: block;
+    margin: 0 auto;
 }
+
+.button-group.password-reset button {
+    display: inline;
+    margin: 0 0 2em 0;
+}
+
+.button-group.button-group.password-reset  button[type="submit"] {margin-right: 1.5em;}
 
 .button-group a.create-account {
     display: block;
@@ -15,14 +24,7 @@ p.brand {margin-bottom: 0.25em;}
 
 .button-group a.reset-password {font-size: 0.75em;}
 
-
-.button-group button {
-    display: block;
-    margin: 0 auto;
-}
-
 .instructions {
-    /* margin-bottom: -1em; */
     padding: 1em;
     text-align: center;
 }
