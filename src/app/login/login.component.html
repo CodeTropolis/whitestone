@@ -36,8 +36,10 @@
 				</mat-error>
 			</mat-form-field>
 
-			<div class="button-group">
+			<div class="button-group password-reset">
 				<button type="submit" class="login" mat-flat-button color="primary">Submit</button>
+				<button type="button" mat-flat-button color="primary" (click)="cancelPasswordReset(formDirective)">Cancel</button>
+				<!-- <a class="reset-password"  [routerLink]="" (click)="cancelPasswordReset(formDirective)">Or Cancel</a> -->
 			</div>
 		</form>
 	</div>
@@ -66,8 +68,8 @@
 						<ng-template #login>
 							<button *ngIf="!resettingPassword" type="submit" class="login" [disabled]="!form.valid" mat-flat-button color="primary">Login</button>
 							<span *ngIf="!creatingAccount">
-								<a class="reset-password"  [routerLink]="" (click)="beginPasswordReset(formDirective)">Forgot password?</a>
-								<a class ="create-account" [routerLink]="" (click)="createAccount(formDirective)">Or Create Account</a>
+								<a class = "reset-password"  [routerLink]="" (click)="beginPasswordReset(formDirective)">Forgot password?</a>
+								<a class = "create-account" [routerLink]="" (click)="createAccount(formDirective)">Or Create Account</a>
 							</span>
 						</ng-template>
 					</div>

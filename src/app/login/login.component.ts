@@ -103,6 +103,15 @@ export class LoginComponent implements OnInit {
     this.resetForm(formDirective);
   }
 
+  public cancelPasswordReset(formDirective){
+    // Clear out previously displayed errors or status
+    this.auth.error$.next('');
+    this.auth.status$.next('');
+    this.auth.isResettingPassword$.next(false);
+   this.resetForm(formDirective);
+ }
+
+
   public passwordReset(formDirective){
     this.auth.resetPassword(this.form.value.email);
     this.auth.isResettingPassword$.next(false);
