@@ -6,6 +6,7 @@ import { DataService } from '../../core/services/data.service';
 
 import { AuthService } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
+import { switchMap, map, take } from 'rxjs/operators';
 
 // import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFirestore} from '@angular/fire/firestore';
@@ -89,8 +90,14 @@ export class RecordEntryComponent implements OnInit {
     this.rs.theForm = this.myForm;
     // State of isUpdated set by the service
     this.subscriptions.push(this.rs.isUpdating$.subscribe(x => this.isUpdating = x));
+
     // Subscribe to the currentId$ subject so that it is available to submit handler
-    this.subscriptions.push(this.rs.currentRecordId$.subscribe(x => this.currentRecordId = x));
+    this.subscriptions.push(this.rs.currentRecordId$
+      .subscribe(x => {this.currentRecordId = x;},
+      err => console.log(err),
+      () => console.log('currentRecordId$ subscribe complete')
+      ));
+
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
 
@@ -154,7 +161,7 @@ export class RecordEntryComponent implements OnInit {
     this.childrenForm.removeAt(i);
   }
 
-   submitHandler(formDirective) {
+  submitHandler(formDirective) {
 
     if (this.myForm.invalid) { return; }
 
@@ -186,47 +193,59 @@ export class RecordEntryComponent implements OnInit {
     }
     if (this.isUpdating) {
       try {
+
         // Update current record
-         this.fs.recordCollection.doc(this.currentRecordId).update(data) 
-          .then(() => {
+        this.fs.recordCollection.doc(this.currentRecordId).update(data).then(() => {
+			
+          this.rs.isUpdating$.next(false);
+          this.resetForm(formDirective);
 
-            this.rs.isUpdating$.next(false);
+          // ===== Update any of the student collection docs that contain a recordId property which matches the record being updated.
 
-            this.resetForm(formDirective);
+          // Subscription A:
 
-            let currentRecord: any;
+          let currentRecord: any;
+        
+          // let sub = this.fs.recordCollection.doc(this.currentRecordId).valueChanges().pipe(take(1));
+          // sub.subscribe(doc => currentRecord = doc);
 
-            // Subscription A:
-            this.subscriptions.push(  
-              this.fs.recordCollection.doc(this.currentRecordId).valueChanges()
-                .subscribe(doc =>{
-                //console.log(doc);
+          this.subscriptions.push(  
+            this.fs.recordCollection.doc(this.currentRecordId).valueChanges()
+              .subscribe(doc =>{
+                console.log('TCL: RecordEntryComponent -> ngOnInit -> doc', doc)
                 currentRecord = doc; // Use properties from doc to update docs obtained from studentDocsToUpdate query
-                })
+                },
+                err => console.log(err),
+                () => console.log('Subscription A completed')
             )
+          )
 
-            // Query the students collection based on the currentRecordId and update each doc accordingly
-            // ToDo: Make this a Cloud Function.
-            const studentDocsToUpdate = this.afs.collection("students", ref => ref.where("recordId","==", this.currentRecordId));
-           
-            // Subscription B:
-            this.subscriptions.push( 
-                studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
-                actions.forEach(action => {                                        
-                  this.afs.collection("students").doc(action.payload.doc.id).update({
-                    dob: currentRecord.children[action.payload.doc.id].dob, 
-                    fname: currentRecord.children[action.payload.doc.id].fname,
-                    lname: currentRecord.children[action.payload.doc.id].lname,
-                    gender: currentRecord.children[action.payload.doc.id].gender,
-                    grade: currentRecord.children[action.payload.doc.id].grade,
-                    race: currentRecord.children[action.payload.doc.id].race,
-                    fatherEmail: currentRecord.fatherEmail,
-                    motherEmail: currentRecord.motherEmail,
-                  });
+          // Query the students collection based on the currentRecordId and update each doc accordingly
+          const studentDocsToUpdate = this.afs.collection("students", ref => ref.where('recordId', '==', this.currentRecordId));
+    
+          // Subscription B:
+          this.subscriptions.push( 
+              studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
+              actions.forEach(action => {                                        
+              console.log('Students to update: ', action.payload.doc.data())
+                this.afs.collection("students").doc(action.payload.doc.id).update({
+                  dob: currentRecord.children[action.payload.doc.id].dob, 
+                  fname: currentRecord.children[action.payload.doc.id].fname,
+                  lname: currentRecord.children[action.payload.doc.id].lname,
+                  gender: currentRecord.children[action.payload.doc.id].gender,
+                  grade: currentRecord.children[action.payload.doc.id].grade,
+                  race: currentRecord.children[action.payload.doc.id].race,
+                  fatherEmail: currentRecord.fatherEmail,
+                  motherEmail: currentRecord.motherEmail,
                 });
-              })
-            )
-          });
+              });
+            }),
+            err => console.log(err),
+            () => console.log('Subscription B completed')
+          )
+
+         });
+
       } catch (err) {
         console.log(err);
       }
