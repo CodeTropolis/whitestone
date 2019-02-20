@@ -1,4 +1,9 @@
-<mat-card *ngIf="currentFinancialDoc && tableData && viewIsReady">
+<div *ngIf="!userIsReady || !tableData; else display">
+	<app-progress-spinner></app-progress-spinner>
+</div>
+<ng-template #display>
+  <mat-card>
+  <!-- <mat-card *ngIf="currentFinancialDoc && tableData && userIsReady"> -->
     <p class="info"><strong>{{currentChild}}'s</strong> Transaction History for <strong>{{currentCategory}}</strong></p>
     <mat-table *ngIf="currentCategory" [dataSource]="tableData" matSort matSortActive="date" matSortDirection="desc">
         <ng-container matColumnDef="amount">
@@ -34,4 +39,5 @@
         <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
       </mat-table>
-</mat-card>
+  </mat-card>
+</ng-template>

@@ -23,7 +23,8 @@ export class HistoryComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   public disableDelete: boolean[] = [];
   public user: any;
-  public viewIsReady: boolean;
+  public userIsReady: boolean;
+ //public loading: boolean;
 
   private runningBalance: number;
   private updatedBalance: number;
@@ -33,19 +34,22 @@ export class HistoryComponent implements OnInit {
   constructor(private financialsService: FinancialsService, private authService: AuthService) { }
 
   ngOnInit() {
+
+    //this.loading = true;
+    this.userIsReady = false;
   
     this.subscriptions.push(
       this.authService.user$.subscribe(user =>{
         if (user){
           this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
-          this.viewIsReady = true; // So that in *ngIf="user['roles].admin" user doesn't end up undefined
+          this.userIsReady = true; // So that in *ngIf="user['roles].admin" user doesn't end up undefined
           if(this.user['roles'].admin){
             this.tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
            }else{
             this.tableColumns = ['amount', 'type', 'date', 'memo'];
            }
         }else{
-          this.viewIsReady = false;
+          this.userIsReady = false;
         }
       })
   );
@@ -88,7 +92,7 @@ export class HistoryComponent implements OnInit {
 
   private setupHistory(){
 
-    console.log('setupHIstory()')
+    //console.log('setupHIstory()')
 
     this.subscriptions.push(
       // Moving the subscription here may have fixed history sorting.
@@ -101,6 +105,7 @@ export class HistoryComponent implements OnInit {
       if(data){ 
           this.tableData = new MatTableDataSource(data);
           this.tableData.sort = this.sort;
+          //this.loading = false;
         }
       })
     )
