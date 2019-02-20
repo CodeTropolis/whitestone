@@ -10,15 +10,12 @@
       
         <ng-container matColumnDef="type">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <!-- <span [class.deduction]="row.type === 'Deduction'">{{row.type}}</span> -->
-           {{row.type}}
-          </mat-cell>
+          <mat-cell *matCellDef="let row">{{row.type}}</mat-cell>
         </ng-container>
       
         <ng-container matColumnDef="date">
           <mat-header-cell *matHeaderCellDef mat-sort-header="date">Date</mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.date | date:"medium"}} </mat-cell>
+          <mat-cell *matCellDef="let row"> {{row.date | date:"longDate"}} </mat-cell>
         </ng-container>
       
         <ng-container matColumnDef="memo">
