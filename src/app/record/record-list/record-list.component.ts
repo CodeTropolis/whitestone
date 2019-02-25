@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { RecordService } from '../record.service';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
@@ -33,8 +33,21 @@ export class RecordListComponent implements OnInit {
 
   private subscriptions: any[] = [];
 
+
+  //@ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  
+  // Prevent sort from undefined
+  // https://stackoverflow.com/a/51084166
+  private sort;
+  @ViewChild(MatSort) set content(content: ElementRef) {
+    this.sort = content;
+    if (this.sort){
+       this.ds.sort = this.sort;
+       this.ds.paginator = this.paginator;
+    }
+  }
+
 
   constructor(
     private fs: FirebaseService,
@@ -67,14 +80,20 @@ export class RecordListComponent implements OnInit {
   }
 
   private getAllRecords(){
-    this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
+    // this.displayedColumns = ['surname', 'fatherLname', 'motherLname', 'actions'];
+    this.displayedColumns = ['fatherLname', 'motherLname', 'actions'];
 
     this.records$ = this.fs.records$;
 
     this.subscriptions.push(
       this.records$.subscribe(records => {
         this.ds = new MatTableDataSource(records);
-        this.ds.sort = this.sort;
+  
+        // setTimeout(() => {
+        //   this.ds.paginator = this.paginator;
+        //   this.ds.sort = this.sort;
+        // });
+
 
         this.ds.filterPredicate = (data, filter) => {
           let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
