@@ -50,6 +50,20 @@ export class RecordEntryComponent implements OnInit {
     { value: 'female', display: 'Female' },
   ]
 
+  public grade: any[] = [
+    { value: "PK3", display: "Pre K 3" },
+    { value: "PK4", display: "Pre K 4" },
+    { value: "K", display: "K" },
+    { value: "1", display: "1"},
+    { value: "2", display: "2" },
+    { value: "3", display: "3" },
+    { value: "4", display: "4" },
+    { value: "5", display: "5" },
+    { value: "6", display: "6" },
+    { value: "7", display: "7" },
+    { value: "8", display: "8" },
+  ]
+
   public catholic: any[] = [
     // value is Catholic in order to filter table by 'Catholic' versus
     // filtering by 'yes' or 'no'.  There may be other Yes/No options in the future.
@@ -173,12 +187,6 @@ export class RecordEntryComponent implements OnInit {
       motherPhones: this.convertArrayToMapWithUUid(formValue.motherPhones),
       children: this.convertArrayToMapWithUUid(formValue.children)
     }
-
-    // I guess my confusion is that the`children` key itself is not submitted to DB twice… 
-    // chris[10: 09 PM]
-    // yes, children should not be written twice because the line of 
-    // code: children: this.......will overwrite the previous value of 
-    // children like you mentioned, but you could always check the db to make sure it isnt appearing twice
 
     if (!this.isUpdating) {
       try {
