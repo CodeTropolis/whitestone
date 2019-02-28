@@ -8,7 +8,7 @@
 <div *ngIf="ds else loading">
 	<app-record-entry *ngIf="showForm"></app-record-entry>
 
-	<div *ngIf="recordMatch else noRecords">
+	<div *ngIf="recordMatch || user['roles'].admin; else noRecords">
 	
 		<div *ngIf="user">
 			<mat-card>
