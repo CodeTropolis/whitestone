@@ -205,7 +205,11 @@
 					</mat-form-field>
 
 					<mat-form-field>
-						<input matInput placeholder="Grade" formControlName="grade">
+						<mat-select placeholder="Grade" formControlName="grade">
+							<mat-option *ngFor="let g of grade" [value]="g.value">
+								{{ g.display }}
+							</mat-option>
+						</mat-select>
 						<mat-error *ngIf="child.controls.grade.invalid && (child.controls.grade.dirty || child.controls.grade.touched)">
 							<div *ngIf="child.controls.grade.errors.required">
 								Grade is required.
