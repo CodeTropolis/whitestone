@@ -3,6 +3,7 @@ import { FinancialsService } from '../financials.service';
 import { BehaviorSubject } from 'rxjs';
 import { MatSort, MatTableDataSource } from '@angular/material';
 import { AuthService } from '../../core/services/auth.service';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-history',
@@ -23,7 +24,7 @@ export class HistoryComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   public disableDelete: boolean[] = [];
   public user: any;
-  public userIsReady: boolean;
+  //public userIsReady: boolean;
  //public loading: boolean;
 
   private runningBalance: number;
@@ -36,20 +37,22 @@ export class HistoryComponent implements OnInit {
   ngOnInit() {
 
     //this.loading = true;
-    this.userIsReady = false;
+    //this.userIsReady = false;
   
     this.subscriptions.push(
-      this.authService.user$.subscribe(user =>{
+      this.authService.user$
+      //.pipe(delay(2000))
+      .subscribe(user =>{
         if (user){
           this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
-          this.userIsReady = true; // So that in *ngIf="user['roles].admin" user doesn't end up undefined
+         // this.userIsReady = true; // So that in *ngIf="user['roles].admin" user doesn't end up undefined
           if(this.user['roles'].admin){
             this.tableColumns = ['amount', 'type', 'date', 'memo', 'delete'];
            }else{
             this.tableColumns = ['amount', 'type', 'date', 'memo'];
            }
         }else{
-          this.userIsReady = false;
+          //this.userIsReady = false;
         }
       })
   );
@@ -97,9 +100,10 @@ export class HistoryComponent implements OnInit {
     this.subscriptions.push(
       // Moving the subscription here may have fixed history sorting.
       // Unsure at this point because sorting issue seemed intermittent.
-      this.financialsService.transactions$.subscribe(data => {
-      //console.log(data); // will show null then object
-  
+      this.financialsService.transactions$
+     // .pipe(delay(2000))
+      .subscribe(data => {
+    
       // if(data) prevents 'Cannot read property 'slice' of null' error upon clicking 'View History'. 
       // Reason: data property in subscription null for a moment until populated
       if(data){ 
