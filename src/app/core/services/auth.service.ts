@@ -2,10 +2,14 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { AngularFireAuth } from "@angular/fire/auth";
+<<<<<<< HEAD
 import {
   AngularFirestore,
   AngularFirestoreDocument
 } from "@angular/fire/firestore";
+=======
+import {AngularFirestore,AngularFirestoreDocument} from "@angular/fire/firestore";
+>>>>>>> r217
 import { User } from "../user";
 
 @Injectable({
@@ -58,7 +62,8 @@ export class AuthService {
     promise.then(success => {
       this.error$.next("");
       let user: any = this.afAuth.auth.currentUser;
-      user.sendEmailVerification()
+      user
+        .sendEmailVerification()
         .then(_ => {
           this.creatingAccount$.next(false);
           this.status$.next(
