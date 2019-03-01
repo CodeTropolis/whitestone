@@ -32,37 +32,6 @@
         <button (click)="closeModal('tax-form-modal');">Close</button>
         <button (click)="print();">Print</button>
       </div>
-    
-          
-        <!-- <mat-card>
-          <div id="print-content">
-            <mat-card-header>
-              <mat-card-title>TAX CREDIT INFORMATION for <strong>{{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</strong> </mat-card-title>
-              <mat-card-subtitle ><strong>{{currentCategory}} Payments for Jan. 1, {{taxYear}} - Dec. 31, {{taxYear}}</strong></mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-            <div id="address">
-                  St. Teresa Catholic School <br>
-                  1108 Lebanon Ave. <br>
-                  Belleville, IL 62221 <br>
-                <strong>Tax Id#: 37-0673539</strong>
-            </div>
-
-              <div *ngFor="let payment of payments">{{payment.amount | currency}} | {{payment.date | date}}</div>
-              <p class="total">
-                <strong><span *ngIf="paymentTotal == null; else pymtTotal">No payments have been made towards {{currentCategory}}</span></strong>
-                <ng-template #pymtTotal>Total Payments for {{currentCategory}}: {{paymentTotal | currency}}</ng-template>
-              </p>
-          </mat-card-content>
-         </div>
-
-          <mat-card-footer>
-            <div class="buttons">
-              <button (click)="closeModal('tax-form-modal');">Close</button>
-              <button (click)="print();">Print</button>
-            </div>
-          </mat-card-footer>
-        </mat-card> -->
     </jw-modal>
   </div>
 </div>
