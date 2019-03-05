@@ -134,11 +134,10 @@ export class RecordListComponent implements OnInit {
 
     this.subscriptions.push(
       this.records$.subscribe(records => {
-        console.log('TCL: RecordListComponent -> privategetMatchingRecords -> records', records)
         this.ds = new MatTableDataSource(records);
         this.ds.paginator = this.paginator;
         this.ds.sort = this.sort;
-    })
+      })
     );
   }
 
@@ -166,7 +165,7 @@ export class RecordListComponent implements OnInit {
 
   public setCurrentRecord(record) {
     this.dataService.setCurrentRecord(record);
-    this.modalTableDataSource = new MatTableDataSource([record]); // data source must be an arrray.
+    this.modalTableDataSource = new MatTableDataSource([record]); // data source must be an array.
   }
 
   toggleChildTable(row) {

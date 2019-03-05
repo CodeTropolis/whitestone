@@ -20,19 +20,12 @@
 	
 				<mat-table [dataSource]="ds" matSort>
 					<div *ngIf="user['roles'].admin; else viewForParents">
-						<!-- <ng-container matColumnDef="surname">
-							<mat-header-cell *matHeaderCellDef mat-sort-header> Surname </mat-header-cell>
-							<mat-cell *matCellDef="let row"> {{row.surname}} </mat-cell>
-						</ng-container> -->
-			
+				
+	
 						<ng-container matColumnDef="fatherLname">
 							<mat-header-cell *matHeaderCellDef mat-sort-header> Father / Guardian</mat-header-cell>
 							<mat-cell *matCellDef="let row">{{row.fatherLname}}, {{row.fatherFname}}</mat-cell>
 						</ng-container>
-						<!-- <ng-container matColumnDef="fatherFname">
-							<mat-header-cell *matHeaderCellDef mat-sort-header> Father / Guardian First Name </mat-header-cell>
-							<mat-cell *matCellDef="let row">{{row.fatherFname}}</mat-cell>
-						</ng-container> -->
 			
 						<ng-container matColumnDef="motherLname">
 							<mat-header-cell *matHeaderCellDef mat-sort-header> Mother / Guardian </mat-header-cell>
