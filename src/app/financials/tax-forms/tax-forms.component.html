@@ -1,39 +1,63 @@
-
 <div *ngIf="currentFinancialDoc">
-  <div *ngIf="currentCategory == 'Tuition' || currentCategory == 'Extended Care'">
-      <button class="tax-form" mat-flat-button color="financial" (click)="openModal('tax-form-modal');">{{taxYear}} Tax Form for {{currentCategory}}</button>
+  <div
+    *ngIf="currentCategory == 'Tuition' || currentCategory == 'Extended Care'"
+  >
+    <button
+      class="tax-form"
+      mat-flat-button
+      color="financial"
+      (click)="openModal('tax-form-modal')"
+    >
+      {{ taxYear }} Tax Form for {{ currentCategory }}
+    </button>
 
     <jw-modal id="tax-form-modal">
-         
       <div id="print-content">
+        <p>
+          TAX CREDIT INFORMATION for
+          <strong
+            >{{ currentFinancialDoc.data().childFirstName }}
+            {{ currentFinancialDoc.data().childLastName }}</strong
+          >
+        </p>
 
-        <p> TAX CREDIT INFORMATION for <strong>{{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</strong> </p>
+        <p>
+          St. Teresa Catholic School<br />
+          1108 Lebanon Ave. <br />
+          Belleville, IL 62221 <br />
+          Office: 618-235-4066 <br />
+          Tax Id#: <strong>37-0673539</strong>
+        </p>
 
-        <p>St. Teresa Catholic School<br>
-          1108 Lebanon Ave. <br>
-          Belleville, IL 62221 <br>
-          Office:  618-235-4066 <br>
-          Tax Id#:  <strong>37-0673539</strong> 
-       </p>
-
-        <p> <strong>{{currentCategory}} Payments for Tax Year: Jan. 1, {{taxYear}} - Dec. 31, {{taxYear}}</strong></p>
+        <p>
+          <strong
+            >{{ currentCategory }} Payments for Tax Year: Jan. 1,
+            {{ taxYear }} - Dec. 31, {{ taxYear }}</strong
+          >
+        </p>
 
         <!-- <div class="payment-list" *ngFor="let payment of payments">{{payment.amount | currency}} | {{payment.date | date}}</div> -->
         <p class="total">
-          <strong><span *ngIf="paymentTotal == null; else pymtTotal">No payments have been made towards {{currentCategory}}</span></strong>
-          <ng-template #pymtTotal>Total Payments for {{currentCategory}}: {{paymentTotal | currency}}</ng-template>
+          <strong
+            ><span *ngIf="paymentTotal == null; else pymtTotal"
+              >No payments have been made towards {{ currentCategory }}</span
+            ></strong
+          >
+          <ng-template #pymtTotal
+            >Total Payments for {{ currentCategory }}:
+            {{ paymentTotal | currency }}</ng-template
+          >
         </p>
-    
       </div>
 
-      <p class="note">Please view your student's history for a complete list of payments.</p>
+      <p class="note">
+        Please view your student's history for a complete list of payments.
+      </p>
 
       <div class="buttons">
-        <button (click)="closeModal('tax-form-modal');">Close</button>
-        <button (click)="print();">Print</button>
+        <button (click)="closeModal('tax-form-modal')">Close</button>
+        <button (click)="print()">Print</button>
       </div>
     </jw-modal>
   </div>
 </div>
-
-
