@@ -54,8 +54,7 @@ export class EntryComponent implements OnInit {
     private authService: AuthService) { }
 
     ngOnInit() {
-      //console.log('TCL: EntryCategoryComponent -> ngOnInit')
-
+     
       this.subscriptions.push(
           this.authService.user$.subscribe(user =>{
             //console.log('TCL: EntryComponent -> ngOnInit -> user', user)
@@ -70,7 +69,6 @@ export class EntryComponent implements OnInit {
     
         this.subscriptions.push( 
           this.financialsService.showHistory$.subscribe(x => {
-           // console.log('showHistory$.subscribe(x =>', x)
             this.showHistory = x;  
           })
         );
@@ -171,10 +169,8 @@ export class EntryComponent implements OnInit {
           .then(query => {
             if (query.size > 0){
               this.chargesCollectionExists = true;
-             // console.log(`${this.chargesCollection} exists`);
             }else{
               this.chargesCollectionExists = false;
-             // console.log(`${this.chargesCollection} does not exists`);
             }
           })
           this.currentFinancialDoc.ref.collection(this.paymentsCollection).get()

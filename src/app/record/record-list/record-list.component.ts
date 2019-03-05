@@ -2,16 +2,12 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { RecordService } from '../record.service';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../core/services/data.service';
-import { AuthService } from '../../core/services/auth.service';
-import { User } from '../../core/user';
+import { AuthService } from '../../core/services/auth.service';;
 import { ModalService } from '../../modal/modal.service';
-
-//import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFirestore} from '@angular/fire/firestore';
-import { Observable, of, combineLatest } from 'rxjs'; // combineLatest works with this import only.
-import { switchMap } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs'; // combineLatest works with this import only.
+import {  map } from 'rxjs/operators';
 
 
 @Component({
@@ -29,9 +25,6 @@ export class RecordListComponent implements OnInit {
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] = [];
   public showForm: boolean;
-
-  public loading: boolean = true;
-  public recordMatch: boolean;
 
   // For modal
   public currentRecord: any;
@@ -67,13 +60,14 @@ export class RecordListComponent implements OnInit {
 
   ngOnInit() {
 
+    this.ds = null;
+
     this.subscriptions.push(
         this.authService.user$.subscribe(user =>{
         if (user){
           this.user = user; // Custom user object.
           if (user['roles'].admin){
             this.getAllRecords();
-            this.recordMatch = true;
           }else{
             this.getMatchingRecords();
           }
@@ -89,11 +83,10 @@ export class RecordListComponent implements OnInit {
     // this.displayedColumns = ['surname', 'fatherLname', 'motherLname', 'actions'];
     this.displayedColumns = ['fatherLname', 'motherLname', 'actions'];
 
+    this.records$ = this.fs.records$;
+
     this.subscriptions.push(
-      this.fs.records$.subscribe(records => {
-        if(records){
-          this.loading = false;
-        }
+      this.records$.subscribe(records => {
         this.ds = new MatTableDataSource(records);
   
         // setTimeout(() => {
@@ -121,19 +114,10 @@ export class RecordListComponent implements OnInit {
 
     const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail","==", this.user.email));
     const matchMotherEmail = this.afs.collection("records", ref => ref.where("motherEmail","==", this.user.email));
-	
-    this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
-      .pipe(switchMap(docs => {
-        const [docsFatherEmail, docsMotherEmail] = docs;
-        const combined = docsFatherEmail.concat(docsMotherEmail);
 
-        if(combined.length > 0 ){
-          this.recordMatch = true;
-        }else{
-          this.recordMatch = false;
-        }
-        this.loading = false;
-        return of(combined);
+    this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
+      .pipe(map(([fathers, mothers]) => {
+        return [...fathers, ...mothers];
       }));
 
       this.subscriptions.push(this.records$.subscribe(records =>{

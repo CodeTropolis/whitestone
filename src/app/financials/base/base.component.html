@@ -1,4 +1,4 @@
-<app-header color="primary" title="Financials for Surname: {{currentRecord.surname}}" img="headerLogo.png" [showUserEmail]="false" link="/record-list" linkName="Back to Record List"></app-header>
+<app-header color="primary" title="Financials for Surname: {{currentRecord.surname}}" img="headerLogo.png" showUserEmail="true" link="/record-list" linkName="Back to Record List"></app-header>
 <app-student-category></app-student-category>
 <app-entry></app-entry>
 <app-history id="history" *ngIf="showHistory$ | async"></app-history>

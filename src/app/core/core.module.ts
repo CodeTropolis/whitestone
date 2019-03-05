@@ -2,10 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // imports per npm i @angular/fire
-// Also need to  npm i firebase
+// Also need to npm i firebase
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
+//import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFirestoreModule, FirestoreSettingsToken } from '@angular/fire/firestore';
 import {AngularFireStorageModule} from '@angular/fire/storage'
 
 // old imports
@@ -35,7 +36,11 @@ import { ModalComponent } from '../modal/modal.component';
     ReactiveFormsModule,
     RouterModule, // For app-header only at this point 9/10/18
   ],
-  providers: [],
+
+  // {provide: FirestoreSettingsToken, useValue: {} } is for clearing err Firestore (5.8.1): The timestampsInSnapshots setting now defaults to true
+  // https://github.com/angular/angularfire2/issues/1993#issuecomment-455830987
+  // Until `@angular/fire` is updated, there should be no harm in [clearing that setting yourself](https://github.com/angular/angularfire2/blob/master/src/firestore/firestore.ts#L21).
+  providers: [{provide: FirestoreSettingsToken, useValue: {} }], 
   declarations: [
     ProgressSpinnerComponent, 
     HeaderComponent,

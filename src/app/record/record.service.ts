@@ -25,10 +25,6 @@ export class RecordService {
 
   constructor(private fs: FirebaseService, private fb: FormBuilder, private dataService: DataService) { }
 
-  public setForm(form) {
-    this.theForm = form;
-  }
-
   get phoneFormsFather() {
     return this.theForm.get('fatherPhones') as FormArray;
   }
@@ -42,6 +38,7 @@ export class RecordService {
   }
 
   public prepFormToUpdate(record) {
+    console.log(this.theForm);
     //console.log('TCL: RecordService -> publicprepFormToUpdate -> record', record);
     this.isUpdating$.next(true);
     // Get the id of the document being editied so we know 
