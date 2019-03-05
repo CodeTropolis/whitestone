@@ -83,7 +83,6 @@ export class RecordListComponent implements OnInit {
   }
 
   private getAllRecords() {
-    // this.displayedColumns = ['surname', 'fatherLname', 'motherLname', 'actions'];
     this.displayedColumns = ["fatherLname", "motherLname", "actions"];
 
     this.records$ = this.fs.records$;
@@ -91,11 +90,6 @@ export class RecordListComponent implements OnInit {
     this.subscriptions.push(
       this.records$.subscribe(records => {
         this.ds = new MatTableDataSource(records);
-
-        // setTimeout(() => {
-        //   this.ds.paginator = this.paginator;
-        //   this.ds.sort = this.sort;
-        // });
 
         this.ds.filterPredicate = (data, filter) => {
           let dataStr =
@@ -129,19 +123,22 @@ export class RecordListComponent implements OnInit {
 
     this.records$ = combineLatest(matchFatherEmail.valueChanges(),matchMotherEmail.valueChanges())
       .pipe(map(([fathers, mothers]) => {
-          return [...fathers, ...mothers];
+          if(fathers.length || mothers.length != 0){
+            this.recordMatch = true;
+            return [...fathers, ...mothers];
+          }else{
+            this.recordMatch = false;
+          }
         })
       );
 
     this.subscriptions.push(
       this.records$.subscribe(records => {
-        if(records){
+        console.log('TCL: RecordListComponent -> privategetMatchingRecords -> records', records)
         this.ds = new MatTableDataSource(records);
         this.ds.paginator = this.paginator;
         this.ds.sort = this.sort;
-        this.recordMatch = true;
-        }
-      })
+    })
     );
   }
 
