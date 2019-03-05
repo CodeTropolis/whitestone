@@ -2,14 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { AngularFireAuth } from "@angular/fire/auth";
-<<<<<<< HEAD
-import {
-  AngularFirestore,
-  AngularFirestoreDocument
-} from "@angular/fire/firestore";
-=======
 import {AngularFirestore,AngularFirestoreDocument} from "@angular/fire/firestore";
->>>>>>> r217
 import { User } from "../user";
 
 @Injectable({
