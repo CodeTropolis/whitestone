@@ -1,12 +1,12 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, of } from "rxjs";
-import { switchMap } from "rxjs/operators";
-import { AngularFireAuth } from "@angular/fire/auth";
-import {AngularFirestore,AngularFirestoreDocument} from "@angular/fire/firestore";
-import { User } from "../user";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { AngularFireAuth } from '@angular/fire/auth';
+import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
+import { User } from '../user';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class AuthService {
   public user$: Observable<User>;
@@ -14,6 +14,8 @@ export class AuthService {
   public error$ = new BehaviorSubject<string>(null);
   public isResettingPassword$ = new BehaviorSubject<boolean>(null);
   public creatingAccount$ = new BehaviorSubject<boolean>(false);
+
+  public userDataWritten$ = new BehaviorSubject<boolean>(false);
 
   public disableLoginOrCreateButton$ = new BehaviorSubject<boolean>(null);
 
@@ -31,7 +33,7 @@ export class AuthService {
 
   public emailLogin(e, p) {
     this.disableLoginOrCreateButton$.next(true);
-    this.status$.next("");
+    this.status$.next('');
     const promise = this.afAuth.auth.signInWithEmailAndPassword(e, p);
     promise.then(credential => {
       this.disableLoginOrCreateButton$.next(false);
@@ -39,13 +41,18 @@ export class AuthService {
         this.setUserData(credential.user);
       } else {
         this.error$.next(
-          "Email not verified. If you have already signed up, please visit your inbox and verify your email.  Once verified, you may return to the app and login."
+          'Email not verified. If you have already signed up, please visit your inbox and verify your email.  Once verified, you may return to the app and login.'
         );
       }
     });
     promise.catch(err => {
-      console.log(err);
-      this.error$.next(err.message);
+
+      if (err.code === 'auth/user-not-found') {
+        this.error$.next('User account not found.  Please create an account.');
+      } else {
+        console.log(err);
+        this.error$.next(err.message);
+      }
     });
   }
 
@@ -53,14 +60,15 @@ export class AuthService {
     this.disableLoginOrCreateButton$.next(true);
     const promise = this.afAuth.auth.createUserWithEmailAndPassword(e, p);
     promise.then(success => {
-      this.error$.next("");
-      let user: any = this.afAuth.auth.currentUser;
+      this.error$.next('');
+      const user: any = this.afAuth.auth.currentUser;
       user
         .sendEmailVerification()
         .then(_ => {
           this.creatingAccount$.next(false);
           this.status$.next(
-            "Thank you. A verification email has been sent to your email address. It is possible that the email was sent to your spam folder. Once verified, you may return to the app and login."
+            `Verification email sent` +
+            ` It is possible that the email was sent to your spam folder. Once verified, you may return to the app and login.`
           );
         })
         .catch(err => {
@@ -72,7 +80,8 @@ export class AuthService {
     promise.catch(err => {
       console.log(err);
       this.error$.next(err);
-      this.creatingAccount$.next(false); // Perhaps the user tried to create an account when it already exists so switch back to login or create account UI.
+      // Perhaps the user tried to create an account when it already exists so switch back to login or create account UI.
+      this.creatingAccount$.next(false);
       this.disableLoginOrCreateButton$.next(false);
     });
   }
@@ -81,12 +90,20 @@ export class AuthService {
     return this.afAuth.auth
       .sendPasswordResetEmail(email)
       .then(() => {
-        console.log("email sent");
+        console.log('email sent');
         this.status$.next(
           `Password reset instructions have been sent to ${email}.`
         );
       })
-      .catch(error => console.log(error));
+      .catch(err => {
+        console.log(err);
+        if (err.code === 'auth/user-not-found') {
+          this.error$.next('User account not found.  Please create an account.');
+        } else {
+          console.log(err);
+          this.error$.next(err.message);
+        }
+      });
   }
 
   public logOut() {
@@ -121,8 +138,11 @@ export class AuthService {
     // Only set user data if user doesn't exist.
     userRef.ref.get().then(doc => {
       if (!doc.exists) {
-        console.log("Setting user data.");
-        userRef.set(data, { merge: true });
+        console.log('Setting user data...');
+        userRef.set(data, { merge: true }).then( _ => {
+          console.log('User data has been set.');
+          this.userDataWritten$.next(true);
+        });
       }
     });
   }

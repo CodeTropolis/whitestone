@@ -6,8 +6,8 @@ import { DataService } from "../../core/services/data.service";
 import { AuthService } from "../../core/services/auth.service";
 import { ModalService } from "../../modal/modal.service";
 import { AngularFirestore } from "@angular/fire/firestore";
-import { Observable, combineLatest } from "rxjs"; // combineLatest works with this import only.
-import { map } from "rxjs/operators";
+import { Observable, combineLatest, of } from "rxjs"; // combineLatest works with this import only.
+import { map, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-record-list",
@@ -63,6 +63,14 @@ export class RecordListComponent implements OnInit {
   ngOnInit() {
     this.ds = null;
 
+    // this.authService.userDataWritten$.pipe(
+    //   switchMap(val => {
+    //     console.log(val);
+    //     if(val){}
+    //     return of (val);
+    //   })
+    // ).subscribe()
+
     this.subscriptions.push(
       this.authService.user$.subscribe(user => {
         if (user) {
@@ -116,29 +124,35 @@ export class RecordListComponent implements OnInit {
   }
 
   private getMatchingRecords() {
+
     this.displayedColumns = ["surname", "actions"];
+    // Test hack to prevent firebase permissions error upon first login - occurs on first login only. 
+    // Hack does not work when emulating slow network connections.
+    setTimeout( _ => {
 
-    const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail", "==", this.user.email));
-    const matchMotherEmail = this.afs.collection("records", ref =>ref.where("motherEmail", "==", this.user.email));
+      const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail", "==", this.user.email));
+      const matchMotherEmail = this.afs.collection("records", ref =>ref.where("motherEmail", "==", this.user.email));
 
-    this.records$ = combineLatest(matchFatherEmail.valueChanges(),matchMotherEmail.valueChanges())
+      this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(map(([fathers, mothers]) => {
-          if(fathers.length || mothers.length != 0){
+          if(fathers.length || mothers.length != 0) {
             this.recordMatch = true;
             return [...fathers, ...mothers];
-          }else{
+          } else {
             this.recordMatch = false;
           }
         })
       );
 
-    this.subscriptions.push(
-      this.records$.subscribe(records => {
-        this.ds = new MatTableDataSource(records);
-        this.ds.paginator = this.paginator;
-        this.ds.sort = this.sort;
-      })
-    );
+      this.subscriptions.push(
+        this.records$.subscribe(records => {
+          this.ds = new MatTableDataSource(records);
+          this.ds.paginator = this.paginator;
+          this.ds.sort = this.sort;
+        })
+      );
+
+    }, 500);
   }
 
   applyFilter(filterValue: string) {

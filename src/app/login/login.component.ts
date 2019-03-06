@@ -117,7 +117,7 @@ export class LoginComponent implements OnInit {
   }
 
   private resetForm(formDirective) {
-    formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
+    formDirective.resetForm(); // See https://stackoverflow.com/a/48217303
     this.form.reset();
   }
 }

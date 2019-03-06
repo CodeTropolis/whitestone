@@ -6,12 +6,12 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyBuWI9F7DY-DlESWPn4jrR3JAiwy-cjO8s",
-    authDomain: "stackblitz-e7240.firebaseapp.com",
-    databaseURL: "https://stackblitz-e7240.firebaseio.com",
-    projectId: "stackblitz-e7240",
-    storageBucket: "stackblitz-e7240.appspot.com",
-    messagingSenderId: "548688526365"
+    apiKey: "AIzaSyCPbTjM978Y6c36O8whKMcHWu2u3v2n1TU",
+    authDomain: "proto-b03e2.firebaseapp.com",
+    databaseURL: "https://proto-b03e2.firebaseio.com",
+    projectId: "proto-b03e2",
+    storageBucket: "proto-b03e2.appspot.com",
+    messagingSenderId: "744369079723"
   }
 };
 

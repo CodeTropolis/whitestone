@@ -23,13 +23,11 @@ export class TaxFormsComponent implements OnInit {
 
   ngOnInit() {
 
-    let date = new Date();
+    const date = new Date();
     this.taxYear = date.getFullYear() -1;
-    //console.log(this.taxYear);
-
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc => {
-        if(doc){
+        if (doc) {
           this.currentFinancialDoc = doc;
         }
       })
@@ -38,27 +36,31 @@ export class TaxFormsComponent implements OnInit {
     // Get the subcollection for payments based on the current category.
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
-        if(cat){
-          //console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
+        if (cat) {
+          // console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
           this.currentCategory = cat.val;
           this.paymentsCollection = cat.key + 'Payments';
-          //console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
+          // console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
         }
       })
     );
 
     this.subscriptions.push(
-      this.financialsService.transactions$.subscribe(transactions => { 
+      this.financialsService.transactions$.subscribe(transactions => {
         this.payments = [];
         this.paymentTotal = null;
-        if(transactions){
+        if (transactions) {
           transactions.forEach(payment => {
-            if(payment.date.getFullYear() === this.taxYear)
+            if (payment.date.getFullYear() === this.taxYear) {
             this.payments.push(payment); // an array of payment objects
+            }
           });
           this.paymentTotal = 0;
-          for (var key in this.payments){
-            this.paymentTotal += this.payments[key]['amount'];
+          for (const key in this.payments) {
+            // https://stackoverflow.com/a/40789394  Satisfies TS Lint complaint about for in statements must be filtered w/ if.
+            if (this.payments.hasOwnProperty(key)) {
+              this.paymentTotal += this.payments[key]['amount'];
+            }
           }
         }
       })
@@ -69,7 +71,7 @@ export class TaxFormsComponent implements OnInit {
     openModal(id: string) {
 
       this.financialsService.showHistory$.next(false);
- 
+
       this.modalService.open(id);
 
       this.financialsService.transactions = []; //  wipe out anything that may have been populated by history.component.  
