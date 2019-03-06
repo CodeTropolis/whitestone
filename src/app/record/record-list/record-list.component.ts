@@ -163,9 +163,9 @@ export class RecordListComponent implements OnInit {
     this.res.deleteRecord(record);
   }
 
-  public setCurrentRecord(record) {
-    this.dataService.setCurrentRecord(record);
-    this.modalTableDataSource = new MatTableDataSource([record]); // data source must be an array.
+  public setCurrentRecord(record) { 
+    this.dataService.setCurrentRecord(record);// set current record for consumption by another component i.e. Financials
+    this.currentRecord = record; // For Family Contact modal
   }
 
   toggleChildTable(row) {
@@ -177,8 +177,8 @@ export class RecordListComponent implements OnInit {
   }
 
   // Family Record Modal
-  openModal(id: string, record) {
-    this.currentRecord = record;
+  openModal(id: string) {
+    // this.currentRecord = record;
     this.modalService.open(id);
   }
 

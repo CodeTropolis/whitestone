@@ -13,8 +13,7 @@
     
           <div *ngIf="currentFinancialDoc" class="categories">
             <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
-            <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"
-            (click)="setCategory(cat)">{{cat.val}}</button>
+            <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
             <app-tax-forms></app-tax-forms>
           </div>
         
@@ -30,7 +29,7 @@
         <div *ngIf="currentFinancialDoc">
           <h5  class="financial-for" [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
           <h5>Select a category:</h5>
-          <button  [disabled]="!enableCatButtons"  mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"(click)="setCategory(cat)">{{cat.val}}</button>
+          <button [disabled]="!enableCatButtons"  mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"(click)="setCategory(cat)">{{cat.val}}</button>
           <app-tax-forms></app-tax-forms>
         </div>
         <button class="payment" mat-flat-button type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>

@@ -39,7 +39,7 @@
 									<mat-icon>more_vert</mat-icon>
 								</button>
 								<mat-menu #menu="matMenu">
-									<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal', row)">
+									<button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal')">
 										Family Contact Info
 									</button>
 									<button *ngIf="user['roles'].admin" [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">
@@ -50,7 +50,7 @@
 										<span *ngIf="showChildren[row.realId]">Hide Children</span>
 									</button>
 									<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../financials']">Financials</button>
-									<button [disabled]="isUpdating" mat-menu-item [routerLink]="['../grades']">Grades</button>
+									<!-- <button [disabled]="isUpdating" mat-menu-item [routerLink]="['../grades']">Grades</button> -->
 								</mat-menu>
 			
 							</mat-cell>
@@ -77,8 +77,8 @@
 							<mat-cell class="actions" *matCellDef="let row">
 								<div></div>
 									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../financials']">Financials</button>
-									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../grades']">Grades</button>
-									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [disabled]="true">Attendance</button>
+									<!-- <button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../grades']">Grades</button>
+									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [disabled]="true">Attendance</button> -->
 							</mat-cell>
 						</ng-container>
 	

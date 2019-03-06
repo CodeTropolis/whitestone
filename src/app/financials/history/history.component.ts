@@ -32,7 +32,7 @@ export class HistoryComponent implements OnInit {
   constructor(
     private financialsService: FinancialsService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.subscriptions.push(

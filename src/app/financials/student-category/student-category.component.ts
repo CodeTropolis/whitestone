@@ -24,8 +24,7 @@ export class StudentCategoryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Set current financial doc to null else category buttons will be
-    //  active prior to selecting student which enables the buttons.
+    // Set current financial doc to null else category buttons will be active prior to selecting student.
     this.financialsService.currentFinancialDoc$.next(null);
     // Set current category to null else entry.component will
     //  detect a category and run through checks for balance and transactions.
@@ -36,9 +35,7 @@ export class StudentCategoryComponent implements OnInit {
     this.currentRecord = this.dataService.currentRecord;
     if (this.currentRecord) {
       // Get all the children of the currentRecord.
-      this.studentsOfRecord = this.dataService.convertMapToArray(
-        this.currentRecord.children
-      );
+      this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children);
     } else {
       console.log("There is an issue obtaining the current record");
     }
@@ -72,7 +69,7 @@ export class StudentCategoryComponent implements OnInit {
     // Will yield permission errors if non admin executes this.
     this.financialsService.setupFinancialDoc(student);
 
-    // Set currentCategory$ to prevent previously selected student's category entry form from showing
+    // Set currentCategory$ to null to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
     this.financialsService.showHistory$.next(false); // Do not show history from previously selected student after clicking on another student
   }

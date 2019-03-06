@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
-import { Observable, BehaviorSubject, pipe } from 'rxjs';
 import { ModalService } from '../../modal/modal.service';
-import { FirebaseService } from '../../core/services/firebase.service';
 
 @Component({
   selector: 'app-tax-forms',
@@ -21,7 +19,7 @@ export class TaxFormsComponent implements OnInit {
   private paymentsCollection: string;
   private subscriptions: any[] = [];
 
-  constructor(private financialsService: FinancialsService, private modalService: ModalService, private firebaseService: FirebaseService) { }
+  constructor(private financialsService: FinancialsService, private modalService: ModalService) { }
 
   ngOnInit() {
 
