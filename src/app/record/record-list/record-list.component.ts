@@ -78,7 +78,13 @@ export class RecordListComponent implements OnInit {
           if (user["roles"].admin) {
             this.getAllRecords();
           } else {
-            this.getMatchingRecords(); 
+             // Listen for user data to be written prior to attempting a record match else 'missing or insufficient perms...'.
+            this.authService.userDataWritten$.subscribe(x => { 
+              if(x){
+                console.log(x);
+                this.getMatchingRecords();
+              }
+          })
           }
       })
     );
