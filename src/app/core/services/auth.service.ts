@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/auth';
-import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { User } from '../user';
 
 @Injectable({
@@ -20,6 +20,7 @@ export class AuthService {
   public disableLoginOrCreateButton$ = new BehaviorSubject<boolean>(null);
 
   constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore) {
+
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user) {
@@ -38,7 +39,14 @@ export class AuthService {
     promise.then(credential => {
       this.disableLoginOrCreateButton$.next(false);
       if (this.afAuth.auth.currentUser.emailVerified) {
-        this.setUserData(credential.user);
+        // Determine if user exists as entry in the users collection.  If not, create user with custom data.
+        const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${credential.user.uid}`);
+
+        userRef.ref.get().then(doc => {
+          if (!doc.exists) {
+            this.writeCustomUserData(userRef, credential.user);
+          }
+        });
       } else {
         this.error$.next(
           'Email not verified. If you have already signed up, please visit your inbox and verify your email.  Once verified, you may return to the app and login.'
@@ -67,7 +75,7 @@ export class AuthService {
         .then(_ => {
           this.creatingAccount$.next(false);
           this.status$.next(
-            `Verification email sent` +
+            `Verification email sent.` +
             ` It is possible that the email was sent to your spam folder. Once verified, you may return to the app and login.`
           );
         })
@@ -118,10 +126,7 @@ export class AuthService {
     return this.afAuth.authState;
   }
 
-  private setUserData(user) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(
-      `users/${user.uid}`
-    );
+  private writeCustomUserData(userRef, user) {
 
     // Every user should have the same custom data in regards to roles.
     // At this point, users are converted to admin users via Firebase console.
@@ -135,15 +140,10 @@ export class AuthService {
       }
     };
 
-    // Only set user data if user doesn't exist.
-    userRef.ref.get().then(doc => {
-      if (!doc.exists) {
-        console.log('Setting user data...');
-        userRef.set(data, { merge: true }).then( _ => {
-          console.log('User data has been set.');
-          this.userDataWritten$.next(true);
-        });
-      }
+    userRef.set(data, { merge: true }).then( () => {
+      console.log('User data has been set.');
+      this.userDataWritten$.next(true);
     });
+
   }
 }

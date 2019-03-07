@@ -61,6 +61,7 @@ export class RecordListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+
     this.ds = null;
 
     // this.authService.userDataWritten$.pipe(
@@ -73,14 +74,12 @@ export class RecordListComponent implements OnInit {
 
     this.subscriptions.push(
       this.authService.user$.subscribe(user => {
-        if (user) {
           this.user = user; // Custom user object.
           if (user["roles"].admin) {
             this.getAllRecords();
           } else {
-            this.getMatchingRecords();
+            this.getMatchingRecords(); 
           }
-        }
       })
     );
 
@@ -126,9 +125,6 @@ export class RecordListComponent implements OnInit {
   private getMatchingRecords() {
 
     this.displayedColumns = ["surname", "actions"];
-    // Test hack to prevent firebase permissions error upon first login - occurs on first login only. 
-    // Hack does not work when emulating slow network connections.
-    setTimeout( _ => {
 
       const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail", "==", this.user.email));
       const matchMotherEmail = this.afs.collection("records", ref =>ref.where("motherEmail", "==", this.user.email));
@@ -151,8 +147,6 @@ export class RecordListComponent implements OnInit {
           this.ds.sort = this.sort;
         })
       );
-
-    }, 500);
   }
 
   applyFilter(filterValue: string) {
