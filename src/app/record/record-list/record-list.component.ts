@@ -82,7 +82,7 @@ export class RecordListComponent implements OnInit {
             this.subscriptions.push(
               this.authService.userDataWritten$.subscribe(x => { 
                 if(x || user['roles'].subscriber){
-                  console.log(x );
+                  console.log(x);
                   this.getMatchingRecords();
                 }
               })

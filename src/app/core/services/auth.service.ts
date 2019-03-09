@@ -48,7 +48,7 @@ export class AuthService {
           if (!doc.exists) {
             this.writeCustomUserData(userRef, credential.user);
           }else{
-            // For logins after first login set userDataWritten$ to true in since the user data is already present in DB.
+            // user data will exist for logins after first login so set userDataWritten$ to true.
             this.userDataWritten$.next(true);  
           }
         });
