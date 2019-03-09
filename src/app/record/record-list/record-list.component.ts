@@ -78,13 +78,15 @@ export class RecordListComponent implements OnInit {
           if (user["roles"].admin) {
             this.getAllRecords();
           } else {
-             // Listen for user data to be written prior to attempting a record match else 'missing or insufficient perms...'.
-            this.authService.userDataWritten$.subscribe(x => { 
-              if(x){
-                console.log(x);
-                this.getMatchingRecords();
-              }
-          })
+            // Listen for user data to be written prior to attempting a record match else 'missing or insufficient perms...'.
+            this.subscriptions.push(
+              this.authService.userDataWritten$.subscribe(x => { 
+                if(x || user['roles'].subscriber){
+                  console.log(x );
+                  this.getMatchingRecords();
+                }
+              })
+            )
           }
       })
     );

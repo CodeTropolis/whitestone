@@ -41,16 +41,15 @@ export class AuthService {
       if (this.afAuth.auth.currentUser.emailVerified) {
         // Determine if user exists as entry in the users collection.  If not, create user with custom data.
         const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${credential.user.uid}`);
-
         // Only set user data if new user. 
         // If the user does not yet exist in the users collection then determined to be first login.  
         // Did it this way because the additionalInfo.isNewUser property on the native auth object is always false.
-
         userRef.ref.get().then(doc => {
           if (!doc.exists) {
             this.writeCustomUserData(userRef, credential.user);
           }else{
-            this.userDataWritten$.next(true);  // For logins after first login.  Also true in since the user data is already present in DB.
+            // For logins after first login set userDataWritten$ to true in since the user data is already present in DB.
+            this.userDataWritten$.next(true);  
           }
         });
       } else {
