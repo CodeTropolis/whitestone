@@ -30,11 +30,20 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.auth.user$.subscribe(user => {
-      if (user) {
+
+    // this.auth.user$.subscribe(user => {
+    //   if (user) {
+    //     this.router.navigate(["record-list"]);
+    //   }
+    // });
+    
+    // Navigate only after custom user data write is confirmed else
+    // 'missing or insufficient perms...' upon first login.
+    this.auth.userDataWritten$.subscribe(x => {
+      if(x){
         this.router.navigate(["record-list"]);
       }
-    });
+    })
 
     this.auth.disableLoginOrCreateButton$.subscribe(x => {
       this.disableButton = x;
