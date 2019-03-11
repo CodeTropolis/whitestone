@@ -36,6 +36,10 @@ export class StudentCategoryComponent implements OnInit {
     if (this.currentRecord) {
       // Get all the children of the currentRecord.
       this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children);
+      if(this.studentsOfRecord.length === 1){
+        //console.log(this.studentsOfRecord[0]);
+        this.setFinancialDoc(this.studentsOfRecord[0])
+      }
     } else {
       console.log("There is an issue obtaining the current record");
     }
@@ -45,7 +49,6 @@ export class StudentCategoryComponent implements OnInit {
       this.financialsService.currentFinancialDoc$.subscribe(doc => {
         if (doc) {
           this.currentFinancialDoc = doc;
-          //console.log('TCL: StudentCategoryComponent -> ngOnInit -> his.currentFinancialDoc', this.currentFinancialDoc.data())
           this.enableCatButtons = true;
         } else {
           this.enableCatButtons = false;
@@ -66,6 +69,7 @@ export class StudentCategoryComponent implements OnInit {
   }
 
   public setFinancialDoc(student) {
+    console.log(student)
     // Will yield permission errors if non admin executes this.
     this.financialsService.setupFinancialDoc(student);
 
