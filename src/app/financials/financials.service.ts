@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { FirebaseService } from '../core/services/firebase.service';
 import { AuthService } from '../core/services/auth.service';
 import { DataService } from '../core/services/data.service';
-import { AngularFirestore } from '@angular/fire/firestore';
+
 
 @Injectable()
 export class FinancialsService {
@@ -18,12 +18,11 @@ export class FinancialsService {
   public transactions$ = new BehaviorSubject<any[]>(null);
   public financialDocs$: Observable<any[]>;
 
-  private user: any;
+  // private user: any;
 
   constructor(private firebaseService: FirebaseService, 
               private authService: AuthService, 
-              private dataService: DataService,
-              private afs: AngularFirestore) {
+              private dataService: DataService) {
 
     this.categories = {
       tuition: 'Tuition',
@@ -32,11 +31,12 @@ export class FinancialsService {
       misc: 'Misc',
     }
 
-    this.authService.user$.subscribe(user =>{
-      if (user){
-        this.user = user;
-      }
-    });
+    // this.authService.user$.subscribe(user =>{
+    //   if (user){
+		// 		console.log('TCL: user', user)
+    //     this.user = user;
+    //   }
+    // });
   }
 
   // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
@@ -44,42 +44,55 @@ export class FinancialsService {
 
   public setupFinancialDoc(student) {
 
-    this.currentFinancialDoc$.next(null); 
+    this.authService.user$.subscribe(user =>{
 
-    if (this.user && this.user['roles'].admin){ // Also this.user check to prevent "cannot read property 'roles' of undefined "
-      // { merge: true } true prevents destructive overwrite of financial doc.
-      // If changes are made to the current doc from the record collection (currentRecord), this will cause
-      // the write to update the current financial doc with any changes that are coming from
-      // values pulled from this.dataService.currentRecord.<property>
-      this.firebaseService.financialsCollection.doc(student.id)
-      .set({
-        recordId: this.dataService.currentRecord.realId,
-        fatherEmail: this.dataService.currentRecord.fatherEmail,
-        motherEmail: this.dataService.currentRecord.motherEmail,
-        childFirstName: student.fname,
-        childLastName: student.lname,
-      },  { merge: true })
-      .then(_ => { // Set the current financial doc
-        this.firebaseService.financialsCollection.doc(student.id).ref.get()
-          .then(doc => {
-						//console.log('TCL: publicsetupFinancialDoc -> doc.data()', doc.data())
-            this.currentFinancialDoc$.next(doc);
+      if (user){
+				// console.log('TCL: user', user)
+        // this.user = user;
+
+        this.currentFinancialDoc$.next(null); 
+
+        if (user.roles.admin){ 
+          console.log('setupFinancialDoc() User is admin:', user)
+          
+          // { merge: true } true prevents destructive overwrite of financial doc.
+          // If changes are made to the current doc from the record collection (currentRecord), this will cause
+          // the write to update the current financial doc with any changes that are coming from
+          // values pulled from this.dataService.currentRecord.<property>
+          this.firebaseService.financialsCollection.doc(student.id)
+          .set({
+            recordId: this.dataService.currentRecord.realId,
+            fatherEmail: this.dataService.currentRecord.fatherEmail,
+            motherEmail: this.dataService.currentRecord.motherEmail,
+            childFirstName: student.fname,
+            childLastName: student.lname,
+          },  { merge: true })
+          .then(_ => { // Set the current financial doc
+            this.firebaseService.financialsCollection.doc(student.id).ref.get()
+              .then(doc => {
+                //console.log('TCL: publicsetupFinancialDoc -> doc.data()', doc.data())
+                this.currentFinancialDoc$.next(doc);
+              })
           })
-      })
+    
+        }else{ // Non-admin so retrieve only.
+          console.log( console.log('setupFinancialDoc() User is non-admin:', user))
+          this.firebaseService.financialsCollection.doc(student.id).ref.get() 
+            .then(doc => {
+              if(doc.data()){
+                //console.log('Non-admin ref.get().then(doc) -> doc', doc.data());
+                  this.currentFinancialDoc$.next(doc); 
+              }else{ 
+                console.log('No financial data for this student!'); 
+              } 
+            })
+        }
 
-    }else{ // Non-admin so retrieve only.
 
-      this.firebaseService.financialsCollection.doc(student.id).ref.get() 
-        .then(doc => {
-          if(doc.data()){
-            //console.log('Non-admin ref.get().then(doc) -> doc', doc.data());
-              this.currentFinancialDoc$.next(doc); 
-          }else{ 
-           console.log('No financial data for this student!'); 
-          } 
-        })
       }
-    }
+    });
+
+  }
 
   public getTransactions(currentFinancialDoc, collection){
       // Get transactions (amounts from <cat.key>payments | charges collections)
