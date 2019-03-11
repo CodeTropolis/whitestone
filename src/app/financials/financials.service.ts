@@ -46,7 +46,7 @@ export class FinancialsService {
 
     this.currentFinancialDoc$.next(null); 
 
-    if (this.user && this.user['roles'].admin){
+    if (this.user && this.user['roles'].admin){ // Also this.user check to prevent "cannot read property 'roles' of undefined "
       // { merge: true } true prevents destructive overwrite of financial doc.
       // If changes are made to the current doc from the record collection (currentRecord), this will cause
       // the write to update the current financial doc with any changes that are coming from
