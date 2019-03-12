@@ -1,43 +1,58 @@
 <mat-card>
 
-    <div class="desktop">
-        <div class="flex-container">
-    
-          <div>
-            <div *ngIf="studentsOfRecord.length > 1">
-                  <h5>Select a Student:</h5>
-                  <div *ngFor="let student of studentsOfRecord">
-                    <button  mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
-                  </div>
-            </div>
-            <button mat-flat-button type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
-          </div>
-    
-          <div *ngIf="currentFinancialDoc" class="categories">
-            <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
-            <button [disabled]="!enableCatButtons" mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
-            <app-tax-forms></app-tax-forms>
-          </div>
-        
-        </div>
-    </div>
-    
-      <div class="mobile">
+  <div class="desktop">
+    <div class="flex-container">
 
+      <div>
         <div *ngIf="studentsOfRecord.length > 1">
-            <h5>Select a Student:</h5>
-            <div *ngFor="let student of studentsOfRecord">
-              <button mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}} {{student.lname}}</button>
-            </div>
+          <h5>Select a Student:</h5>
+          <div *ngFor="let student of studentsOfRecord">
+            <button mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}}
+              {{student.lname}}</button>
+          </div>
         </div>
-        
-        <div *ngIf="currentFinancialDoc">
-          <h5  class="financial-for" [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
-          <h5>Select a category:</h5>
-          <button [disabled]="!enableCatButtons"  mat-flat-button color="primary" *ngFor="let cat of categories | mapToIterable"(click)="setCategory(cat)">{{cat.val}}</button>
-          <app-tax-forms></app-tax-forms>
-        </div>
-        <button mat-flat-button type="button" color="financial" (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
-
+        <button mat-flat-button type="button" color="financial"
+          (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
       </div>
-    </mat-card>
+
+      <div *ngIf="currentFinancialDoc" class="categories">
+        <div class="student-name-menu">
+        <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}}{{currentFinancialDoc.data().childLastName}}</h5>
+        <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+        <mat-menu #menu="matMenu">
+          <button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal')">Family Contact Info</button>
+          <button [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">Update Family Record</button>
+        </mat-menu>
+       </div>
+
+        <button class="cat" [disabled]="!enableCatButtons" mat-flat-button color="primary"
+          *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
+        <app-tax-forms></app-tax-forms>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mobile">
+
+    <div *ngIf="studentsOfRecord.length > 1">
+      <h5>Select a Student:</h5>
+      <div *ngFor="let student of studentsOfRecord">
+        <button mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}}
+          {{student.lname}}</button>
+      </div>
+    </div>
+
+    <div *ngIf="currentFinancialDoc">
+      <h5 class="financial-for" [class.student-name]="enableCatButtons">Financial status for
+        {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
+      <h5>Select a category:</h5>
+      <button [disabled]="!enableCatButtons" mat-flat-button color="primary"
+        *ngFor="let cat of categories | mapToIterable" (click)="setCategory(cat)">{{cat.val}}</button>
+      <app-tax-forms></app-tax-forms>
+    </div>
+    <button mat-flat-button type="button" color="financial"
+      (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
+
+  </div>
+</mat-card>

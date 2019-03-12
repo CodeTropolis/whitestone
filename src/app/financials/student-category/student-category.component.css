@@ -1,9 +1,6 @@
 
 
-button {
-    margin: 0.5em 0.5em 0 0; 
-    width: 150px;
-}
+button.cat {margin: 0.5em 0.5em 0 0;}
 
 button.make-payment {
     margin-top:2em;
@@ -18,6 +15,8 @@ button.make-payment {
 }
 
 .categories {margin-left: 3em;}
+
+.student-name-menu {display: flex;}
 
 /* --- Animations --- */
 h5.student-name {
