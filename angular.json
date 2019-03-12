@@ -30,7 +30,8 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css",
               "src/mat-theme.scss",
-              "src/app/modal/modal.component.less"
+              "src/app/modal/modal.component.less",
+              "src/app/record/record-entry/record-entry.component.less"
             ],
             "scripts": []
           },

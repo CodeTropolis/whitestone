@@ -39,44 +39,40 @@ export class FinancialsService {
     // });
   }
 
-  // Pass the father/mother email addresses to the financial document in order to secure reads to match user email.  
-  // Outside of if (!snapshot.exists) because, in addition to future financial docs, this also needs to be done for existing financial docs.
-
   public setupFinancialDoc(student) {
 
     this.authService.user$.subscribe(user =>{
 
       if (user){
-				// console.log('TCL: user', user)
-        // this.user = user;
 
         this.currentFinancialDoc$.next(null); 
 
         if (user.roles.admin){ 
-          console.log('setupFinancialDoc() User is admin:', user)
+          //console.log('setupFinancialDoc() User is admin:', user)
           
-          // { merge: true } true prevents destructive overwrite of financial doc.
-          // If changes are made to the current doc from the record collection (currentRecord), this will cause
-          // the write to update the current financial doc with any changes that are coming from
-          // values pulled from this.dataService.currentRecord.<property>
+          // This will either create (.set({...}) )the financial doc or, because of merge: true, this will update the
+          // financial doc with the given properties from this.dataService.currentRecord.<property>
           this.firebaseService.financialsCollection.doc(student.id)
           .set({
             recordId: this.dataService.currentRecord.realId,
-            fatherEmail: this.dataService.currentRecord.fatherEmail,
+            // In the beginning, email properties did not exist on the financial doc. 
+            // This will ensure that email properties from the currentRecord are copied over and stay in sync.
+            fatherEmail: this.dataService.currentRecord.fatherEmail, 
             motherEmail: this.dataService.currentRecord.motherEmail,
-            childFirstName: student.fname,
+            childFirstName: student.fname, // Create / sync child's name as well admin may have corrected a misspelling.
             childLastName: student.lname,
           },  { merge: true })
-          .then(_ => { // Set the current financial doc
+          .then(_ => { 
+            // Now that doc has been written or updated, 
+            // get it and pass (next)it to the currentFinancialDoc$ observable.
             this.firebaseService.financialsCollection.doc(student.id).ref.get()
               .then(doc => {
-                //console.log('TCL: publicsetupFinancialDoc -> doc.data()', doc.data())
                 this.currentFinancialDoc$.next(doc);
               })
           })
     
         }else{ // Non-admin so retrieve only.
-          console.log( console.log('setupFinancialDoc() User is non-admin:', user))
+          // console.log( console.log('setupFinancialDoc() User is non-admin:', user))
           this.firebaseService.financialsCollection.doc(student.id).ref.get() 
             .then(doc => {
               if(doc.data()){
@@ -87,8 +83,6 @@ export class FinancialsService {
               } 
             })
         }
-
-
       }
     });
 

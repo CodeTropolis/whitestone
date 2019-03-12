@@ -9,6 +9,7 @@ import { AngularFirestore } from "@angular/fire/firestore";
 import { Observable, combineLatest, of } from "rxjs"; // combineLatest works with this import only.
 import { map, switchMap } from "rxjs/operators";
 
+
 @Component({
   selector: "app-record-list",
   templateUrl: "./record-list.component.html",
@@ -151,7 +152,7 @@ export class RecordListComponent implements OnInit {
   }
 
   public prepFormToUpdate(record) {
-    this.showForm = true;
+    this.modalService.open('record-entry-modal');
     setTimeout(() => this.res.prepFormToUpdate(record), 250); // Give form a chance to load prior to populating
   }
 

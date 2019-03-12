@@ -27,7 +27,7 @@ export class StudentCategoryComponent implements OnInit {
     // Set current financial doc to null else category buttons will be active prior to selecting student.
     this.financialsService.currentFinancialDoc$.next(null);
     // Set current category to null else entry.component will
-    //  detect a category and run through checks for balance and transactions.
+    // detect a category and run through checks for balance and transactions.
     this.financialsService.currentCategory$.next(null);
 
     this.enableCatButtons = false;
@@ -37,7 +37,6 @@ export class StudentCategoryComponent implements OnInit {
       // Get all the children of the currentRecord.
       this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children);
       if(this.studentsOfRecord.length === 1){
-        //console.log(this.studentsOfRecord[0]);
         this.setFinancialDoc(this.studentsOfRecord[0])
       }
     } else {
@@ -58,7 +57,6 @@ export class StudentCategoryComponent implements OnInit {
     );
 
     this.categories = this.financialsService.categories;
-
     // Set currentStudent to null so that we don't have a student set from previous use of this component.
     this.financialsService.currentStudent$.next(null);
     // Listen for currentStudent selection
@@ -69,13 +67,11 @@ export class StudentCategoryComponent implements OnInit {
   }
 
   public setFinancialDoc(student) {
-    console.log(student)
-    // Will yield permission errors if non admin executes this.
     this.financialsService.setupFinancialDoc(student);
-
     // Set currentCategory$ to null to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
-    this.financialsService.showHistory$.next(false); // Do not show history from previously selected student after clicking on another student
+    // Do not show history from previously selected student after clicking on another student
+    this.financialsService.showHistory$.next(false); 
   }
 
   public setCategory(cat) {

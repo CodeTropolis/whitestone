@@ -11,6 +11,9 @@ import { switchMap, map, take } from 'rxjs/operators';
 // import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFirestore} from '@angular/fire/firestore';
 
+import { ModalService } from '../../modal/modal.service';
+
+
 @Component({
   selector: 'app-record-entry',
   templateUrl: './record-entry.component.html',
@@ -73,11 +76,11 @@ export class RecordEntryComponent implements OnInit {
 
   constructor(
     private rs: RecordService,
-    private dataService: DataService,
     private fs: FirebaseService,
     private fb: FormBuilder,
     private authService: AuthService,
-    private afs: AngularFirestore) { }
+    private afs: AngularFirestore,
+    private modalService: ModalService) { }
 
   ngOnInit() {
 
@@ -191,9 +194,10 @@ export class RecordEntryComponent implements OnInit {
     if (!this.isUpdating) {
       try {
         // Add a new record
-         this.fs.recordCollection.add(data)
+        this.fs.recordCollection.add(data)
           .then(() => {
             this.resetForm(formDirective);
+            this.modalService.close('record-entry-modal');
           });
       } catch (err) {
         console.log(err);
@@ -201,61 +205,12 @@ export class RecordEntryComponent implements OnInit {
     }
     if (this.isUpdating) {
       try {
-
         // Update current record
         this.fs.recordCollection.doc(this.currentRecordId).update(data).then(() => {
-			
           this.rs.isUpdating$.next(false);
           this.resetForm(formDirective);
-
-          // ===== Update any of the student collection docs that contain a recordId property which matches the record being updated.
-
-          // REVISE via STACKBLIZ PoC
-
-          // Subscription A:
-
-          let currentRecord: any;
-        
-          // let sub = this.fs.recordCollection.doc(this.currentRecordId).valueChanges().pipe(take(1));
-          // sub.subscribe(doc => currentRecord = doc);
-
-          this.subscriptions.push(  
-            this.fs.recordCollection.doc(this.currentRecordId).valueChanges()
-              .subscribe(doc =>{
-                console.log('TCL: RecordEntryComponent -> ngOnInit -> doc', doc)
-                currentRecord = doc; // Use properties from doc to update docs obtained from studentDocsToUpdate query
-                },
-                err => console.log(err),
-                () => console.log('Subscription A completed')
-            )
-          )
-
-          // Query the students collection based on the currentRecordId and update each doc accordingly
-          const studentDocsToUpdate = this.afs.collection("students", ref => ref.where('recordId', '==', this.currentRecordId));
-    
-          // Subscription B:
-          this.subscriptions.push( 
-              studentDocsToUpdate.snapshotChanges().subscribe(actions =>{  
-              actions.forEach(action => {                                        
-              console.log('Students to update: ', action.payload.doc.data())
-                this.afs.collection("students").doc(action.payload.doc.id).update({
-                  dob: currentRecord.children[action.payload.doc.id].dob, 
-                  fname: currentRecord.children[action.payload.doc.id].fname,
-                  lname: currentRecord.children[action.payload.doc.id].lname,
-                  gender: currentRecord.children[action.payload.doc.id].gender,
-                  grade: currentRecord.children[action.payload.doc.id].grade,
-                  race: currentRecord.children[action.payload.doc.id].race,
-                  fatherEmail: currentRecord.fatherEmail,
-                  motherEmail: currentRecord.motherEmail,
-                });
-              });
-            }),
-            err => console.log(err),
-            () => console.log('Subscription B completed')
-          )
-
-         });
-
+          this.modalService.close('record-entry-modal');
+        });
       } catch (err) {
         console.log(err);
       }
@@ -266,7 +221,7 @@ export class RecordEntryComponent implements OnInit {
     const map = {};
     arr.forEach(obj => {
       const uuid = obj.id || this.afs.createId();
-       obj.id = uuid;
+      obj.id = uuid;
       map[`${uuid}`] = obj;
     })
     return map
@@ -275,6 +230,7 @@ export class RecordEntryComponent implements OnInit {
   public cancel(formDirective) {
     this.rs.isUpdating$.next(false);
     this.resetForm(formDirective);
+    this.modalService.close('record-entry-modal');
   }
 
   private resetForm(formDirective) {
@@ -289,10 +245,20 @@ export class RecordEntryComponent implements OnInit {
     this.authService.logOut();
   }
 
+  openModal(id: string, formDirective) {
+    this.rs.isUpdating$.next(false);
+    this.resetForm(formDirective);
+    this.modalService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.modalService.close(id);
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub =>{
       sub.unsubscribe();
-     //console.log('TCL: RecordEntryComponent -> ngOnDestroy -> sub', sub);
+      //console.log('TCL: RecordEntryComponent -> ngOnDestroy -> sub', sub);
     });
   }
 }

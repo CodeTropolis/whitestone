@@ -6,13 +6,15 @@
 </ng-template>
 
 <div *ngIf="ds else loading">
-	<app-record-entry *ngIf="showForm"></app-record-entry>
-
+	<!-- <app-record-entry *ngIf="showForm"></app-record-entry> -->
+	
 	<div *ngIf="recordMatch || user['roles'].admin; else noRecords">
 	
 		<div *ngIf="user">
 			<mat-card>
-				<button *ngIf="user['roles'].admin" class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i>Family Record</button>
+				<app-record-entry  *ngIf="user['roles'].admin"></app-record-entry>
+
+				<!-- <button *ngIf="user['roles'].admin" class="btn-add-record" (click)="toggleForm()" mat-flat-button color="basic"><i class="material-icons">add_circle</i>Family Record</button> -->
 	
 				<mat-form-field *ngIf="user['roles'].admin">
 					<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
@@ -131,5 +133,5 @@
 		</mat-card>
 
 	</div>
-	<button class="close-modal" (click)="closeModal('record-modal');">Close</button>
+	<button class="close-modal"  mat-flat-button color="basic" (click)="closeModal('record-modal');">Close</button>
 </jw-modal>

@@ -1,6 +1,14 @@
 
 button {margin: 1em 0.5em;}
 
+button.close-modal {
+    margin: 1em auto;
+    display: block;
+    /* transform: scale(0.75); */
+}
+
+.btn-add-record  {float: right;}
+
 .form {margin-bottom: 2em;}
 
 h4 {margin: 0.5em 0;}
@@ -22,3 +30,11 @@ mat-form-field {margin-right: 2em;}
 .remove-child {
     float:right;
 }
+
+/* jw-modal .jw-modal {
+        position: fixed;
+        width: 1000px !important;
+        height: 750px !important;
+        margin-left: -475px !important; 
+    } 
+    */
