@@ -9,7 +9,7 @@
 
 		<div *ngIf="user">
 			<mat-card>
-				<app-record-entry *ngIf="user.roles.admin"></app-record-entry>
+				<!-- <app-record-entry *ngIf="user.roles.admin"></app-record-entry> -->
 				<mat-form-field *ngIf="user['roles'].admin">
 					<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
 				</mat-form-field>
@@ -50,7 +50,7 @@
 									</button>
 									<button [disabled]="isUpdating" mat-menu-item
 										[routerLink]="['../financials']">Financials</button>
-									<!-- <button [disabled]="isUpdating" mat-menu-item [routerLink]="['../grades']">Grades</button> -->
+									
 								</mat-menu>
 
 							</mat-cell>
@@ -79,8 +79,7 @@
 								<div></div>
 								<button mat-flat-button color="primary" (click)="setCurrentRecord(row)"
 									[routerLink]="['../financials']">Financials</button>
-								<!-- <button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [routerLink]="['../grades']">Grades</button>
-									<button mat-flat-button color="primary" (click)="setCurrentRecord(row)" [disabled]="true">Attendance</button> -->
+							
 							</mat-cell>
 						</ng-container>
 

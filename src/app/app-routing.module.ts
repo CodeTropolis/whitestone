@@ -8,7 +8,6 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'record-list', loadChildren: './record/record.module#RecordModule', canLoad:[AuthGuard]},
   {path: 'financials', loadChildren: './financials/financials.module#FinancialsModule', canLoad:[AuthGuard]},
-  {path: 'grades', loadChildren: './grades/grades.module#GradesModule', canLoad:[AuthGuard]}
 ];
 
 @NgModule({
@@ -16,4 +15,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
- 
