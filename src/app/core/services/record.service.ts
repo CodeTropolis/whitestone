@@ -1,21 +1,12 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { FirebaseService } from '../core/services/firebase.service';
-import { DataService } from '../core/services/data.service';
+import { FirebaseService } from './firebase.service';
+import { DataService } from './data.service';
 import { Subject } from 'rxjs';
 
-
-// See https://github.com/angular/angular-cli/issues/10170#issuecomment-380673276
-//  @stefanzvonar commented on Jun 19
-// However, if you want to provide a service in any feature module (not the root), then 
-// you are better off using the providers array in the feature module's decorators, otherwise
-//  you will be plagued with circular dependency warnings.
-
-// @Injectable({
-//   //providedIn: RecordModule
-// })
-
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class RecordService {
 
   public theForm: FormGroup;
@@ -38,10 +29,8 @@ export class RecordService {
   }
 
   public prepFormToUpdate(record) {
-    //console.log(this.theForm);
-    //console.log('TCL: RecordService -> publicprepFormToUpdate -> record', record);
     this.isUpdating$.next(true);
-    // Get the id of the document being editied so we know 
+    // Get the id of the document being edited so we know 
     // which doc to update in the submitHandler method
     this.currentRecordId$.next(record.realId);
     // Populate the form with record being edited
@@ -110,5 +99,5 @@ export class RecordService {
     this.fs.recordCollection.doc(record.realId).delete()
       .then(_ => console.log("removed from DB"));
   }
-
+  
 }

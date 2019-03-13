@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { FirebaseService } from "../../core/services/firebase.service";
-import { RecordService } from "../record.service";
+import { RecordService } from "../../core/services/record.service";
 import { MatPaginator, MatSort, MatTableDataSource } from "@angular/material";
 import { DataService } from "../../core/services/data.service";
 import { AuthService } from "../../core/services/auth.service";
@@ -68,7 +68,7 @@ export class RecordListComponent implements OnInit {
     this.subscriptions.push(
       this.authService.user$.subscribe(user => {
           this.user = user; // Custom user object.
-          if (user["roles"].admin) {
+          if (user.roles.admin) {
             this.getAllRecords();
           } else {
             this.getMatchingRecords();
@@ -181,6 +181,9 @@ export class RecordListComponent implements OnInit {
   openModal(id: string) {
     // this.currentRecord = record;
     this.modalService.open(id);
+    if(id === 'record-entry-modal'){
+      this.res.isUpdating$.next(false);
+    }
   }
 
   closeModal(id: string) {

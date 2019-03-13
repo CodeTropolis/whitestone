@@ -31,7 +31,7 @@
               "src/styles.css",
               "src/mat-theme.scss",
               "src/app/modal/modal.component.less",
-              "src/app/record/record-entry/record-entry.component.less"
+              "src/app/record-entry/record-entry.component.less"
             ],
             "scripts": []
           },

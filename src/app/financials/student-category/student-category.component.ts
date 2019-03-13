@@ -3,7 +3,8 @@ import { DataService } from "../../core/services/data.service";
 import { FinancialsService } from "../financials.service";
 import { BehaviorSubject } from "rxjs";
 import { ModalService } from "../../modal/modal.service";
-import { RecordService } from "../../record/record.service";
+import { RecordService } from "../../core/services/record.service";
+
 
 @Component({
   selector: "app-student-category",
@@ -35,7 +36,11 @@ export class StudentCategoryComponent implements OnInit {
     this.financialsService.currentCategory$.next(null);
 
     this.enableCatButtons = false;
-    // currentRecord set by the 'more' menu on available records or if non-admin, Financial and Grades buttons, and soon to be Attendance button on non-admin UI.
+
+    // Issue: Upon updating record from this component, update does not reflect on the view of this component because
+    // this.currentRecord isn't updated.
+
+    // currentRecord set by the 'more' menu on available records or if non-admin, Financial button
     this.currentRecord = this.dataService.currentRecord;
     if (this.currentRecord) {
       // Get all the children of the currentRecord.
@@ -90,9 +95,18 @@ export class StudentCategoryComponent implements OnInit {
     window.open(url, "_blank");
   }
 
-  public prepFormToUpdate(record) {
+  public prepFormToUpdate() {
+    console.log('TCL: StudentCategoryComponent -> publicprepFormToUpdate -> this.currentRecord', this.currentRecord)
     this.modalService.open('record-entry-modal');
-    setTimeout(() => this.recordService.prepFormToUpdate(record), 250); // Give form a chance to load prior to populating
+    setTimeout(() => this.recordService.prepFormToUpdate(this.currentRecord), 250); // Give form a chance to load prior to populating
+  }
+
+  openModal(id: string) {
+    this.modalService.open(id);
+  }
+
+  closeModal(id: string) {
+    this.modalService.close(id);
   }
 
 }

@@ -1,3 +1,6 @@
+
+<app-record-entry></app-record-entry>
+
 <app-header color="primary" title="Available Records" img="headerLogo.png"></app-header>
 <ng-template #loading>
 	<app-progress-spinner></app-progress-spinner>
@@ -9,7 +12,8 @@
 
 		<div *ngIf="user">
 			<mat-card>
-				<!-- <app-record-entry *ngIf="user.roles.admin"></app-record-entry> -->
+				<button class="btn-add-record" (click)="openModal('record-entry-modal', formDirective)" mat-flat-button color="basic"><i class="material-icons">add_circle</i>Family Record</button>
+
 				<mat-form-field *ngIf="user['roles'].admin">
 					<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
 				</mat-form-field>
