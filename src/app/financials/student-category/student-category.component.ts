@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { DataService } from "../../core/services/data.service";
 import { FinancialsService } from "../financials.service";
 import { BehaviorSubject } from "rxjs";
+import { ModalService } from "../../modal/modal.service";
+import { RecordService } from "../../record/record.service";
 
 @Component({
   selector: "app-student-category",
@@ -20,7 +22,9 @@ export class StudentCategoryComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
-    private financialsService: FinancialsService
+    private financialsService: FinancialsService,
+    private modalService: ModalService,
+    private recordService: RecordService
   ) {}
 
   ngOnInit() {
@@ -85,4 +89,10 @@ export class StudentCategoryComponent implements OnInit {
   public goToURL(url) {
     window.open(url, "_blank");
   }
+
+  public prepFormToUpdate(record) {
+    this.modalService.open('record-entry-modal');
+    setTimeout(() => this.recordService.prepFormToUpdate(record), 250); // Give form a chance to load prior to populating
+  }
+
 }

@@ -1,5 +1,5 @@
+<app-record-entry *ngIf="user.roles.admin"></app-record-entry>
 <mat-card>
-
   <div class="desktop">
     <div class="flex-container">
 
@@ -7,21 +7,21 @@
         <div *ngIf="studentsOfRecord.length > 1">
           <h5>Select a Student:</h5>
           <div *ngFor="let student of studentsOfRecord">
-            <button mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}}
+            <button class="student" mat-flat-button color="primary" (click)="setFinancialDoc(student)"> {{student.fname}}
               {{student.lname}}</button>
           </div>
         </div>
-        <button mat-flat-button type="button" color="financial"
+        <button class="make-payment" mat-flat-button type="button" color="financial"
           (click)="goToURL('https://stteresabelleville.weshareonline.org/')">Make a Payment</button>
       </div>
 
       <div *ngIf="currentFinancialDoc" class="categories">
         <div class="student-name-menu">
-        <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}}{{currentFinancialDoc.data().childLastName}}</h5>
+        <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</h5>
         <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
         <mat-menu #menu="matMenu">
           <button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal')">Family Contact Info</button>
-          <button [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(row)">Update Family Record</button>
+          <button [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate(currentRecord)">Update Family Record</button>
         </mat-menu>
        </div>
 

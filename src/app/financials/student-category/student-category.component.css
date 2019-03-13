@@ -6,6 +6,13 @@ button.make-payment {
     margin-top:2em;
 }
 
+button.make-payment,
+button.student {
+    width: 140px;
+}
+
+button.student {margin-top: 0.5em;}
+
 .mat-card-avatar {width: 120px;}
 
 .flex-container {
