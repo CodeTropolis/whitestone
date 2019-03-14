@@ -4,6 +4,7 @@ import { FinancialsService } from "../financials.service";
 import { BehaviorSubject } from "rxjs";
 import { ModalService } from "../../modal/modal.service";
 import { RecordService } from "../../core/services/record.service";
+import { FirebaseService } from "../../core/services/firebase.service";
 
 
 @Component({
@@ -13,6 +14,7 @@ import { RecordService } from "../../core/services/record.service";
 })
 export class StudentCategoryComponent implements OnInit {
   public currentRecord: any;
+  public currentRecordId: string;
   public currentFinancialDoc: any;
   public studentsOfRecord: any[] = [];
   public categories: any[] = [];
@@ -25,7 +27,8 @@ export class StudentCategoryComponent implements OnInit {
     private dataService: DataService,
     private financialsService: FinancialsService,
     private modalService: ModalService,
-    private recordService: RecordService
+    private recordService: RecordService,
+    private firebaseService: FirebaseService
   ) {}
 
   ngOnInit() {
@@ -37,20 +40,38 @@ export class StudentCategoryComponent implements OnInit {
 
     this.enableCatButtons = false;
 
-    // Issue: Upon updating record from this component, update does not reflect on the view of this component because
-    // this.currentRecord isn't updated.
-
     // currentRecord set by the 'more' menu on available records or if non-admin, Financial button
-    this.currentRecord = this.dataService.currentRecord;
-    if (this.currentRecord) {
-      // Get all the children of the currentRecord.
-      this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children);
-      if(this.studentsOfRecord.length === 1){
-        this.setFinancialDoc(this.studentsOfRecord[0])
+    // this.currentRecord = this.dataService.currentRecord;
+    // if (this.currentRecord) {
+    //   // Get all the children of the currentRecord.
+    //   this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children);
+    //   if(this.studentsOfRecord.length === 1){
+    //     this.setFinancialDoc(this.studentsOfRecord[0])
+    //   }
+    // } else {
+    //   console.log("There is an issue obtaining the current record");
+    // }
+
+    this.dataService.currentRecord$.subscribe(record =>{
+      if (record){
+        //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
+        this.currentRecord = record;
+        this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
+        if(this.studentsOfRecord.length === 1){
+          this.setFinancialDoc(this.studentsOfRecord[0])
+        }
+      }else{
+        console.log("There is an issue obtaining the current record");
       }
-    } else {
-      console.log("There is an issue obtaining the current record");
-    }
+    })
+
+    // // This component can update the currentRecord.
+    // // Listen for changes on the currentRecord in order to update view.
+    // this.firebaseService.recordCollection.doc(this.currentRecord.realId).snapshotChanges()
+    //   .subscribe(doc => {
+    //    // console.log(doc);
+    //     //this.dataService.setCurrentRecord({realId: doc.payload.id, ...doc.payload.data()})
+    //   })
 
     // Listen for the currentFinancialDoc.
     this.subscriptions.push(
@@ -76,7 +97,7 @@ export class StudentCategoryComponent implements OnInit {
   }
 
   public setFinancialDoc(student) {
-    this.financialsService.setupFinancialDoc(student);
+    this.financialsService.setupFinancialDoc(student, this.currentRecord);
     // Set currentCategory$ to null to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
     // Do not show history from previously selected student after clicking on another student
@@ -96,7 +117,6 @@ export class StudentCategoryComponent implements OnInit {
   }
 
   public prepFormToUpdate() {
-    console.log('TCL: StudentCategoryComponent -> publicprepFormToUpdate -> this.currentRecord', this.currentRecord)
     this.modalService.open('record-entry-modal');
     setTimeout(() => this.recordService.prepFormToUpdate(this.currentRecord), 250); // Give form a chance to load prior to populating
   }

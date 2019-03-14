@@ -16,7 +16,15 @@ export class BaseComponent implements OnInit {
   constructor(private dataService: DataService,  private financialsService: FinancialsService) { }
 
   ngOnInit() {
-    this.currentRecord = this.dataService.currentRecord;
+
+    this.dataService.currentRecord$.subscribe(record =>{
+      if (record){
+        this.currentRecord = record;
+      }else{
+        console.log("There is an issue obtaining the current record");
+      }
+    })
+
     this.showHistory$ = this.financialsService.showHistory$;
   }
 

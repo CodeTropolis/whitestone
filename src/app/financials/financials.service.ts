@@ -31,15 +31,9 @@ export class FinancialsService {
       misc: 'Misc',
     }
 
-    // this.authService.user$.subscribe(user =>{
-    //   if (user){
-		// 		console.log('TCL: user', user)
-    //     this.user = user;
-    //   }
-    // });
   }
 
-  public setupFinancialDoc(student) {
+  public setupFinancialDoc(student, currentRecord) {
 
     this.authService.user$.subscribe(user =>{
 
@@ -54,11 +48,12 @@ export class FinancialsService {
           // financial doc with the given properties from this.dataService.currentRecord.<property>
           this.firebaseService.financialsCollection.doc(student.id)
           .set({
-            recordId: this.dataService.currentRecord.realId,
+            recordId: currentRecord.realId,
             // In the beginning, email properties did not exist on the financial doc. 
             // This will ensure that email properties from the currentRecord are copied over and stay in sync.
-            fatherEmail: this.dataService.currentRecord.fatherEmail, 
-            motherEmail: this.dataService.currentRecord.motherEmail,
+            fatherEmail: currentRecord.fatherEmail, 
+            motherEmail: currentRecord.motherEmail,
+
             childFirstName: student.fname, // Create / sync child's name as well admin may have corrected a misspelling.
             childLastName: student.lname,
           },  { merge: true })

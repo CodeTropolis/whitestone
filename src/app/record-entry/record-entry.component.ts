@@ -80,7 +80,8 @@ export class RecordEntryComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private afs: AngularFirestore,
-    private modalService: ModalService) { }
+    private modalService: ModalService,
+    private dataService: DataService) { }
 
   ngOnInit() {
 
@@ -109,11 +110,20 @@ export class RecordEntryComponent implements OnInit {
     this.subscriptions.push(this.rs.isUpdating$.subscribe(x => this.isUpdating = x));
 
     // Subscribe to the currentId$ subject so that it is available to submit handler
-    this.subscriptions.push(this.rs.currentRecordId$
-      .subscribe(x => {this.currentRecordId = x;},
-      err => console.log(err),
-      () => console.log('currentRecordId$ subscribe complete')
-      ));
+    // this.subscriptions.push(this.rs.currentRecordId$
+    //   .subscribe(x => {this.currentRecordId = x;},
+    //   err => console.log(err),
+    //   () => console.log('currentRecordId$ subscribe complete')
+    //   ));
+
+    // Get the id of the current record which is set by the more-menu on the record-list.component
+    this.dataService.currentRecord$.subscribe(currentRecord =>{
+      console.log(currentRecord)
+      if (currentRecord){
+        this.currentRecordId = currentRecord.realId;
+      }
+      
+    })
 
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
@@ -210,6 +220,10 @@ export class RecordEntryComponent implements OnInit {
           this.rs.isUpdating$.next(false);
           this.resetForm(formDirective);
           this.modalService.close('record-entry-modal');
+          // Set the current record to the updated values so the student-category view will pick up on the changes when
+          // the current record is updated from the student-category.component.
+            this.dataService.setCurrentRecord({realId:this.currentRecordId, ...data})
+
         });
       } catch (err) {
         console.log(err);

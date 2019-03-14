@@ -12,7 +12,6 @@ export class RecordService {
   public theForm: FormGroup;
   public isUpdating: boolean = false;
   public isUpdating$ = new Subject<boolean>();
-  public currentRecordId$ = new Subject<string>();
 
   constructor(private fs: FirebaseService, private fb: FormBuilder, private dataService: DataService) { }
 
@@ -32,8 +31,11 @@ export class RecordService {
     this.isUpdating$.next(true);
     // Get the id of the document being edited so we know 
     // which doc to update in the submitHandler method
-    this.currentRecordId$.next(record.realId);
-    // Populate the form with record being edited
+    //this.currentRecordId$.next(record.realId); No need to do this.  Current record already set by more-menu - passed to data.service
+    // So in record-entry, subscribe to currentRecord$ from dataService and get the realId from there.
+    
+    // Populate the form with record being edited.  
+    // Pass record into this method and avoid another subscription to dataService.currentRecord$
     this.theForm.patchValue({
       surname: record.surname,
       address: record.address,
