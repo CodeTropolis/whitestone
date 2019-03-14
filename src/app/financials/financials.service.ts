@@ -67,7 +67,7 @@ export class FinancialsService {
           })
     
         }else{ // Non-admin so retrieve only.
-          // console.log( console.log('setupFinancialDoc() User is non-admin:', user))
+         //console.log('setupFinancialDoc() User is non-admin:', user)
           this.firebaseService.financialsCollection.doc(student.id).ref.get() 
             .then(doc => {
               if(doc.data()){
