@@ -259,11 +259,6 @@ export class RecordEntryComponent implements OnInit {
     this.authService.logOut();
   }
 
-  openModal(id: string, formDirective) {
-    this.rs.isUpdating$.next(false);
-    this.resetForm(formDirective);
-    this.modalService.open(id);
-  }
 
   closeModal(id: string) {
     this.modalService.close(id);

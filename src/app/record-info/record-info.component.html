@@ -1,0 +1,35 @@
+
+<jw-modal id="record-info-modal">
+	<!-- <div *ngIf="currentRecord">
+
+		<mat-card>
+
+			<mat-card-header>
+				<mat-card-title>Contact Information For: {{currentRecord.surname}}</mat-card-title>
+				<mat-card-subtitle>{{currentRecord.address}} {{currentRecord.city}}, {{
+					currentRecord.state}} {{currentRecord.zip}}</mat-card-subtitle>
+				<mat-card-subtitle>School District: {{currentRecord.district}}</mat-card-subtitle>
+				<mat-card-subtitle>Is Catholic: {{currentRecord.catholic}}</mat-card-subtitle>
+			</mat-card-header>
+
+			<mat-card-header>
+				<mat-card-title>Father/Guardian: {{currentRecord.fatherFname}}
+					{{currentRecord.fatherLname}}</mat-card-title>
+				<mat-card-subtitle>{{currentRecord.fatherEmail}}</mat-card-subtitle>
+				<mat-card-subtitle *ngFor="let fPhone of currentRecord.fatherPhones |
+					mapToIterable">{{fPhone['val'].number}} | {{fPhone['val'].type}}</mat-card-subtitle>
+			</mat-card-header>
+
+			<mat-card-header>
+				<mat-card-title>Mother/Guardian: {{currentRecord.motherFname}}
+					{{currentRecord.motherLname}}</mat-card-title>
+				<mat-card-subtitle>{{currentRecord.motherEmail}}</mat-card-subtitle>
+				<mat-card-subtitle *ngFor="let mPhone of currentRecord.motherPhones |
+					mapToIterable">{{mPhone['val'].number}} | {{mPhone['val'].type}}</mat-card-subtitle>
+			</mat-card-header>
+
+		</mat-card>
+
+	</div> -->
+	<button class="close-modal" mat-flat-button color="basic" (click)="closeModal('record-info-modal');">Close</button>
+</jw-modal>

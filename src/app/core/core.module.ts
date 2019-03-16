@@ -19,6 +19,7 @@ import { environment } from '../../environments/environment';
 import { RouterModule } from '@angular/router';
 import { ModalComponent } from '../modal/modal.component';
 import { RecordEntryComponent } from '../record-entry/record-entry.component';
+import { RecordInfoComponent } from '../record-info/record-info.component';
 
 @NgModule({
   imports: [
@@ -41,7 +42,8 @@ import { RecordEntryComponent } from '../record-entry/record-entry.component';
     HeaderComponent,
     MapToIterablePipe,
     ModalComponent,
-    RecordEntryComponent
+    RecordEntryComponent,
+    RecordInfoComponent
   ],
   exports:[
     CommonModule,
@@ -49,6 +51,7 @@ import { RecordEntryComponent } from '../record-entry/record-entry.component';
     HeaderComponent,
     ModalComponent,
     RecordEntryComponent,
+    RecordInfoComponent,
     MapToIterablePipe,
     MaterialModule,
     ReactiveFormsModule,

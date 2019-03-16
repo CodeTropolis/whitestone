@@ -1,3 +1,4 @@
+<app-record-info></app-record-info>
 <app-record-entry></app-record-entry>
 
 <mat-card>
@@ -25,7 +26,7 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-modal')">Family Contact
+            <button [disabled]="isUpdating" mat-menu-item (click)="openModal('record-info-modal')">Family Contact
               Info</button>
             <button [disabled]="isUpdating" mat-menu-item (click)="prepFormToUpdate()">Update Family
               Record</button>

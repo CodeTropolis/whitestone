@@ -177,17 +177,12 @@ export class RecordListComponent implements OnInit {
     this.showForm = !this.showForm;
   }
 
-  // Family Record Modal
   openModal(id: string) {
     // this.currentRecord = record;
     this.modalService.open(id);
     if(id === 'record-entry-modal'){
       this.res.isUpdating$.next(false);
     }
-  }
-
-  closeModal(id: string) {
-    this.modalService.close(id);
   }
 
   ngOnDestroy() {

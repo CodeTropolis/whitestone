@@ -125,8 +125,8 @@ export class StudentCategoryComponent implements OnInit {
     this.modalService.open(id);
   }
 
-  closeModal(id: string) {
-    this.modalService.close(id);
-  }
+  // closeModal(id: string) {
+  //   this.modalService.close(id);
+  // }
 
 }
