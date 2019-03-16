@@ -11,6 +11,11 @@ button.student {
     width: 140px;
 }
 
+button.more-menu {
+    margin-top: -10px;
+    margin-left: -5px;
+}
+
 button.student {margin-top: 0.5em;}
 
 .mat-card-avatar {width: 120px;}

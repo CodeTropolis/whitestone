@@ -34,6 +34,8 @@ button.close-modal {
     display: block;
     margin: 1em auto;
 }
+/* Prevent select boxes from appearing behind modal */
+.cdk-overlay-container { z-index: 9999!important; }
 
 .legal {
     color: var(--ws-light-grey);

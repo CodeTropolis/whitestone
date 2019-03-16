@@ -21,7 +21,7 @@
         <div class="student-name-menu">
           <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}}
             {{currentFinancialDoc.data().childLastName}}</h5>
-          <button mat-icon-button [matMenuTriggerFor]="menu">
+          <button class="more-menu" mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">

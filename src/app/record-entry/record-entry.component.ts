@@ -118,7 +118,7 @@ export class RecordEntryComponent implements OnInit {
 
     // Get the id of the current record which is set by the more-menu on the record-list.component
     this.dataService.currentRecord$.subscribe(currentRecord =>{
-      console.log(currentRecord)
+      //console.log(currentRecord)
       if (currentRecord){
         this.currentRecordId = currentRecord.realId;
       }
