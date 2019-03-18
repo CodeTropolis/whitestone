@@ -42,20 +42,21 @@ export class FinancialsService {
         this.currentFinancialDoc$.next(null); 
 
         if (user.roles.admin){ 
-          //console.log('setupFinancialDoc() User is admin:', user)
-          
+          console.log('setupFinancialDoc() User is admin:', user)
+          console.log(`grade: ${currentRecord.children[student.id].grade}`),
           // This will either create (.set({...}) )the financial doc or, because of merge: true, this will update the
           // financial doc with the given properties from this.dataService.currentRecord.<property>
           this.firebaseService.financialsCollection.doc(student.id)
           .set({
             recordId: currentRecord.realId,
-            // In the beginning, email properties did not exist on the financial doc. 
-            // This will ensure that email properties from the currentRecord are copied over and stay in sync.
+            // In the beginning, email properties and child's grade level did not exist on the financial doc. 
+            // This will ensure that these properties from the currentRecord are copied over and stay in sync.
             fatherEmail: currentRecord.fatherEmail, 
             motherEmail: currentRecord.motherEmail,
-
-            childFirstName: student.fname, // Create / sync child's name as well admin may have corrected a misspelling.
+            // Create / sync other child info.  Note: grade property added on 3/18/19.
+            childFirstName: student.fname,
             childLastName: student.lname,
+            grade: currentRecord.children[student.id].grade,
           },  { merge: true })
           .then(_ => { 
             // Now that doc has been written or updated, 
@@ -67,7 +68,6 @@ export class FinancialsService {
           })
     
         }else{ // Non-admin so retrieve only.
-         //console.log('setupFinancialDoc() User is non-admin:', user)
           this.firebaseService.financialsCollection.doc(student.id).ref.get() 
             .then(doc => {
               if(doc.data()){

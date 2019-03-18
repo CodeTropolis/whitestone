@@ -22,6 +22,7 @@ export class StudentCategoryComponent implements OnInit {
   public currentStudent$: BehaviorSubject<any>;
   public enableCatButtons: boolean;
   public user: any;
+  //public viewHasInit: boolean;
 
   private subscriptions: any[] = [];
 
@@ -61,18 +62,7 @@ export class StudentCategoryComponent implements OnInit {
     //   console.log("There is an issue obtaining the current record");
     // }
 
-    this.dataService.currentRecord$.subscribe(record =>{
-      if (record){
-        //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
-        this.currentRecord = record;
-        this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
-        if(this.studentsOfRecord.length === 1){
-          this.setFinancialDoc(this.studentsOfRecord[0])
-        }
-      }else{
-        console.log("There is an issue obtaining the current record");
-      }
-    })
+
 
     // // This component can update the currentRecord.
     // // Listen for changes on the currentRecord in order to update view.
@@ -103,6 +93,31 @@ export class StudentCategoryComponent implements OnInit {
     // showHistory may still be set to true when entering back into this component.
     //  Set to false to avoid null history.
     this.financialsService.showHistory$.next(false);
+  }
+
+  ngAfterViewInit(){ 
+    // Placed the following in afterViewInit to prevent setFinancialDoc from triggering upon click of 'more menu' on 
+    // record-list.component when there is only one child.
+    // Although this issue doesn't causing any breaking, it may cause an 
+    // additional write (write counts on merge when nothing actually changes?).
+
+    // https://blog.angular-university.io/angular-debugging/
+    setTimeout(() =>{
+      this.subscriptions.push(
+        this.dataService.currentRecord$.subscribe(record =>{
+          if (record){
+            //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
+            this.currentRecord = record;
+            this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
+            if(this.studentsOfRecord.length === 1){
+              this.setFinancialDoc(this.studentsOfRecord[0])
+            }
+          }else{
+            console.log("There is an issue obtaining the current record");
+          }
+        })
+      )
+    })
   }
 
   public setFinancialDoc(student) {
