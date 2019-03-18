@@ -242,9 +242,8 @@ export class RecordEntryComponent implements OnInit {
   }
 
   public cancel(formDirective) {
-    this.rs.isUpdating$.next(false);
     this.resetForm(formDirective);
-    this.modalService.close('record-entry-modal');
+    this.closeModal('record-entry-modal');
   }
 
   private resetForm(formDirective) {
@@ -262,6 +261,7 @@ export class RecordEntryComponent implements OnInit {
 
   closeModal(id: string) {
     this.modalService.close(id);
+    this.rs.isUpdating$.next(false);
   }
 
   ngOnDestroy() {
