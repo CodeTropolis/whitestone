@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { ModalService } from "../../modal/modal.service";
 import { RecordService } from "../../core/services/record.service";
 import { FirebaseService } from "../../core/services/firebase.service";
+import { AuthService } from "../../core/services/auth.service";
 
 
 @Component({
@@ -20,6 +21,7 @@ export class StudentCategoryComponent implements OnInit {
   public categories: any[] = [];
   public currentStudent$: BehaviorSubject<any>;
   public enableCatButtons: boolean;
+  public user: any;
 
   private subscriptions: any[] = [];
 
@@ -28,7 +30,8 @@ export class StudentCategoryComponent implements OnInit {
     private financialsService: FinancialsService,
     private modalService: ModalService,
     private recordService: RecordService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit() {
@@ -39,6 +42,12 @@ export class StudentCategoryComponent implements OnInit {
     this.financialsService.currentCategory$.next(null);
 
     this.enableCatButtons = false;
+
+    this.subscriptions.push(
+      this.authService.user$.subscribe(user => {
+          this.user = user; // Custom user object.
+      })
+    );
 
     // currentRecord set by the 'more' menu on available records or if non-admin, Financial button
     // this.currentRecord = this.dataService.currentRecord;

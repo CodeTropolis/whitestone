@@ -12,7 +12,9 @@
 
 		<div *ngIf="user">
 			<mat-card>
-				<button class="btn-add-record" (click)="openModal('record-entry-modal', formDirective)" mat-flat-button color="basic"><i class="material-icons">add_circle</i>Family Record</button>
+				<button *ngIf="user.roles.admin" class="btn-add-record" (click)="openModal('record-entry-modal', formDirective)" mat-flat-button color="basic">
+					<i class="material-icons">add_circle</i>Family Record
+				</button>
 
 				<mat-form-field *ngIf="user['roles'].admin">
 					<input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
@@ -108,5 +110,3 @@
 			inquiry. 618.233.3500</p>
 	</ng-template>
 </div>
-
-<!-- </ng-template> -->

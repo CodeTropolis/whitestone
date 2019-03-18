@@ -26,15 +26,9 @@ export class RecordListComponent implements OnInit {
   public showForm: boolean;
   public recordMatch: boolean;
 
-  // For modal
+
   public currentRecord: any;
-  public modalTableDataSource: MatTableDataSource<any>;
-  public displayedColumnsModal = [
-    "fatherEmail",
-    "motherEmail",
-    "address",
-    "catholic"
-  ];
+ 
 
   private subscriptions: any[] = [];
 

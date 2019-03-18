@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from "../core/services/data.service";
+import { MatPaginator, MatSort, MatTableDataSource } from "@angular/material";
 import { ModalService } from "../modal/modal.service";
 
 @Component({
@@ -7,10 +9,21 @@ import { ModalService } from "../modal/modal.service";
   styleUrls: ['./record-info.component.css']
 })
 export class RecordInfoComponent implements OnInit {
+  public currentRecord: any;
+  public modalTableDataSource: MatTableDataSource<any>;
+  public displayedColumnsModal = [
+    "fatherEmail",
+    "motherEmail",
+    "address",
+    "catholic"
+  ];
 
-  constructor(private modalService: ModalService) { }
+  constructor(private dataService: DataService, private modalService: ModalService) { }
 
   ngOnInit() {
+    this.dataService.currentRecord$.subscribe(currentRecord => {
+      this.currentRecord = currentRecord;
+    })
   }
 
   closeModal(id: string) {
