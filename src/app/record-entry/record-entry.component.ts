@@ -1,16 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { FirebaseService } from '../core/services/firebase.service';
-import { RecordService } from '../core/services/record.service';
+import { RecordFormService } from '../core/services/record-form.service';
 import { DataService } from '../core/services/data.service';
-
 import { AuthService } from '../core/services/auth.service';
 import { Observable } from 'rxjs';
-import { switchMap, map, take } from 'rxjs/operators';
-
-// import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFirestore} from '@angular/fire/firestore';
-
 import { ModalService } from '../modal/modal.service';
 
 
@@ -75,7 +70,7 @@ export class RecordEntryComponent implements OnInit {
   ]
 
   constructor(
-    private rs: RecordService,
+    private rfs: RecordFormService,
     private fs: FirebaseService,
     private fb: FormBuilder,
     private authService: AuthService,
@@ -105,20 +100,12 @@ export class RecordEntryComponent implements OnInit {
     })
     // Get a reference to this form so that operations can 
     // be performed on the form in the record-entry.service
-    this.rs.theForm = this.myForm;
+    this.rfs.theForm = this.myForm;
     // State of isUpdated set by the service
-    this.subscriptions.push(this.rs.isUpdating$.subscribe(x => this.isUpdating = x));
-
-    // Subscribe to the currentId$ subject so that it is available to submit handler
-    // this.subscriptions.push(this.rs.currentRecordId$
-    //   .subscribe(x => {this.currentRecordId = x;},
-    //   err => console.log(err),
-    //   () => console.log('currentRecordId$ subscribe complete')
-    //   ));
+    this.subscriptions.push(this.rfs.isUpdating$.subscribe(x => this.isUpdating = x));
 
     // Get the id of the current record which is set by the more-menu on the record-list.component
     this.dataService.currentRecord$.subscribe(currentRecord =>{
-      //console.log(currentRecord)
       if (currentRecord){
         this.currentRecordId = currentRecord.realId;
       }
@@ -216,12 +203,19 @@ export class RecordEntryComponent implements OnInit {
       try {
         // Update current record
         this.fs.recordCollection.doc(this.currentRecordId).update(data).then(() => {
-          this.rs.isUpdating$.next(false);
+          this.rfs.isUpdating$.next(false);
           this.resetForm(formDirective);
           this.modalService.close('record-entry-modal');
+
           // Set the current record to the updated values so the student-category view will pick up on the changes when
           // the current record is updated from the student-category.component.
-            this.dataService.setCurrentRecord({realId:this.currentRecordId, ...data})
+          
+          // Issue: upon updating record from student-category, and then doing another update, 
+          // the DoB fields in form are blank...
+
+          // Reason: Here, the date is formated as a date, not a timestamp
+          //this.dataService.setCurrentRecord({realId:this.currentRecordId, ...data})
+         // console.log('TCL: submitHandler -> data', data)
 
         });
       } catch (err) {
@@ -286,7 +280,7 @@ export class RecordEntryComponent implements OnInit {
 
   closeModal(id: string) {
     this.modalService.close(id);
-    this.rs.isUpdating$.next(false);
+    this.rfs.isUpdating$.next(false);
   }
 
   ngOnDestroy() {

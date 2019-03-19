@@ -7,7 +7,7 @@ import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class RecordService {
+export class RecordFormService {
 
   public theForm: FormGroup;
   public isUpdating: boolean = false;

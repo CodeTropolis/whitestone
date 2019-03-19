@@ -3,7 +3,7 @@ import { DataService } from "../../core/services/data.service";
 import { FinancialsService } from "../financials.service";
 import { BehaviorSubject } from "rxjs";
 import { ModalService } from "../../modal/modal.service";
-import { RecordService } from "../../core/services/record.service";
+import { RecordFormService } from "../../core/services/record-form.service";
 import { FirebaseService } from "../../core/services/firebase.service";
 import { AuthService } from "../../core/services/auth.service";
 
@@ -31,7 +31,7 @@ export class StudentCategoryComponent implements OnInit {
     private dataService: DataService,
     private financialsService: FinancialsService,
     private modalService: ModalService,
-    private recordService: RecordService,
+    private recordFormService: RecordFormService,
     private firebaseService: FirebaseService,
     private authService: AuthService,
   ) {}
@@ -50,6 +50,21 @@ export class StudentCategoryComponent implements OnInit {
           this.user = user; // Custom user object.
       })
     );
+
+    this.subscriptions.push(
+      this.dataService.currentRecord$.subscribe(record =>{
+        if (record){
+          //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
+          this.currentRecord = record;
+          this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
+          if(this.studentsOfRecord.length === 1){
+            this.setFinancialDoc(this.studentsOfRecord[0])
+          }
+        }else{
+          console.log("There is an issue obtaining the current record");
+        }
+      })
+    )
 
     // Listen for the currentFinancialDoc.
     this.subscriptions.push(
@@ -74,30 +89,30 @@ export class StudentCategoryComponent implements OnInit {
     this.financialsService.showHistory$.next(false);
   }
 
-  ngAfterViewInit(){ 
-    // Placed the following in afterViewInit to prevent setFinancialDoc from triggering upon click of 'more menu' on 
-    // record-list.component when there is only one child.
-    // Although this issue doesn't causing any breaking, it may cause an 
-    // additional write (write counts on merge when nothing actually changes?).
+  // ngAfterViewInit(){ 
+  //   // Placed the following in afterViewInit to prevent setFinancialDoc from triggering upon click of 'more menu' on 
+  //   // record-list.component when there is only one child.
+  //   // Although this issue doesn't causing any breaking, it may cause an 
+  //   // additional write (write counts on merge when nothing actually changes?).
 
-    // https://blog.angular-university.io/angular-debugging/
-    setTimeout(() =>{
-      this.subscriptions.push(
-        this.dataService.currentRecord$.subscribe(record =>{
-          if (record){
-            //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
-            this.currentRecord = record;
-            this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
-            if(this.studentsOfRecord.length === 1){
-              this.setFinancialDoc(this.studentsOfRecord[0])
-            }
-          }else{
-            console.log("There is an issue obtaining the current record");
-          }
-        })
-      )
-    })
-  }
+  //   // https://blog.angular-university.io/angular-debugging/
+  //   setTimeout(() =>{
+  //     this.subscriptions.push(
+  //       this.dataService.currentRecord$.subscribe(record =>{
+  //         if (record){
+  //           //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
+  //           this.currentRecord = record;
+  //           this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
+  //           if(this.studentsOfRecord.length === 1){
+  //             this.setFinancialDoc(this.studentsOfRecord[0])
+  //           }
+  //         }else{
+  //           console.log("There is an issue obtaining the current record");
+  //         }
+  //       })
+  //     )
+  //   })
+  // }
 
   public setFinancialDoc(student) {
     this.currentStudent = student;
@@ -122,12 +137,17 @@ export class StudentCategoryComponent implements OnInit {
 
   public prepFormToUpdate() {
     this.modalService.open('record-entry-modal');
-    setTimeout(() => this.recordService.prepFormToUpdate(this.currentRecord), 250); // Give form a chance to load prior to populating
+    this.recordFormService.prepFormToUpdate(this.currentRecord);
   }
 
   openModal(id: string) {
     this.modalService.open(id);
   }
 
+    ngOnDestroy(){
+      this.subscriptions.forEach(sub => {
+        sub.unsubscribe();
+      });
+    }
 
 }
