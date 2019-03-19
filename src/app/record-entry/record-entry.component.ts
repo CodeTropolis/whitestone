@@ -204,8 +204,7 @@ export class RecordEntryComponent implements OnInit {
     if (!this.isUpdating) {
       try {
         // Add a new record
-        this.fs.recordCollection.add(data)
-          .then(() => {
+        this.fs.recordCollection.add(data).then(() => {
             this.resetForm(formDirective);
             this.modalService.close('record-entry-modal');
           });
@@ -229,6 +228,7 @@ export class RecordEntryComponent implements OnInit {
         console.log(err);
       }
     }
+    this.syncFinancialDocs(data, this.currentRecordId);
   }
 
   private convertArrayToMapWithUUid(arr: any[]) {
@@ -239,6 +239,31 @@ export class RecordEntryComponent implements OnInit {
       map[`${uuid}`] = obj;
     })
     return map
+  }
+
+
+  private syncFinancialDocs(record, currentRecordId){ 
+
+    const children = this.dataService.convertMapToArray(record.children);
+
+    children.forEach(child => {
+      //console.log('TCL: publicsyncFinancialRecord -> child', child)
+      this.fs.financialsCollection.doc(child.id)
+        .set({
+          recordId: currentRecordId,
+          // In the beginning, email properties and child's grade level did not exist on the financial doc. 
+          // This will ensure that these properties from the currentRecord are copied over and stay in sync.
+          fatherEmail: record.fatherEmail, 
+          motherEmail: record.motherEmail,
+          // Create / sync other child info.  Note: grade property added on 3/18/19.
+          childFirstName: child.fname,
+          childLastName: child.lname,
+          grade: record.children[child.id].grade,
+        },  { merge: true })
+          .then(_ => {})
+      
+    })
+
   }
 
   public cancel(formDirective) {

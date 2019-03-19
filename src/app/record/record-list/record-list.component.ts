@@ -10,6 +10,7 @@ import { Observable, combineLatest, of } from "rxjs"; // combineLatest works wit
 import { map, switchMap } from "rxjs/operators";
 
 
+
 @Component({
   selector: "app-record-list",
   templateUrl: "./record-list.component.html",
@@ -105,6 +106,9 @@ export class RecordListComponent implements OnInit {
           dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
           return dataStr.indexOf(filter) != -1;
         };
+
+        records.forEach(record => this.syncFinancialDocs(record));
+
       })
     );
   }
@@ -177,6 +181,30 @@ export class RecordListComponent implements OnInit {
     if(id === 'record-entry-modal'){
       this.res.isUpdating$.next(false);
     }
+  }
+
+  private syncFinancialDocs(record){ // Run once here in prod.  Sync is now active in record-entry.
+
+    const children = this.dataService.convertMapToArray(record.children);
+
+    children.forEach(child => {
+      //console.log('TCL: publicsyncFinancialRecord -> child', child)
+      this.fs.financialsCollection.doc(child.id)
+        .set({
+          recordId: record.realId,
+          // In the beginning, email properties and child's grade level did not exist on the financial doc. 
+          // This will ensure that these properties from the currentRecord are copied over and stay in sync.
+          fatherEmail: record.fatherEmail, 
+          motherEmail: record.motherEmail,
+          // Create / sync other child info.  Note: grade property added on 3/18/19.
+          childFirstName: child.fname,
+          childLastName: child.lname,
+          grade: record.children[child.id].grade,
+        },  { merge: true })
+          .then(_ => {})
+      
+    })
+
   }
 
   ngOnDestroy() {

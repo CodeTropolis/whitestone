@@ -11,7 +11,7 @@
           <div *ngFor="let student of studentsOfRecord">
             <button class="student" mat-flat-button color="primary" (click)="setFinancialDoc(student)">
               {{student.fname}}
-              {{student.lname}}</button>
+              {{student.lname}} | Grade: {{student.grade}}</button>
           </div>
         </div>
         <button class="make-payment" mat-flat-button type="button" color="financial"
@@ -20,8 +20,7 @@
 
       <div *ngIf="currentFinancialDoc" class="categories">
         <div class="student-name-menu">
-          <h5 [class.student-name]="enableCatButtons">Financial status for {{currentFinancialDoc.data().childFirstName}}
-            {{currentFinancialDoc.data().childLastName}}</h5>
+          <h5 [class.student-name]="enableCatButtons">Financial status for {{currentStudent.fname}} {{currentStudent.lname}}</h5>
           <button *ngIf="user.roles.admin" class="more-menu" mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon>more_vert</mat-icon>
           </button>

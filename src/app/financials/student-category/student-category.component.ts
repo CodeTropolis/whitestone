@@ -18,6 +18,7 @@ export class StudentCategoryComponent implements OnInit {
   public currentRecordId: string;
   public currentFinancialDoc: any;
   public studentsOfRecord: any[] = [];
+  public currentStudent: any;
   public categories: any[] = [];
   public currentStudent$: BehaviorSubject<any>;
   public enableCatButtons: boolean;
@@ -49,28 +50,6 @@ export class StudentCategoryComponent implements OnInit {
           this.user = user; // Custom user object.
       })
     );
-
-    // currentRecord set by the 'more' menu on available records or if non-admin, Financial button
-    // this.currentRecord = this.dataService.currentRecord;
-    // if (this.currentRecord) {
-    //   // Get all the children of the currentRecord.
-    //   this.studentsOfRecord = this.dataService.convertMapToArray(this.currentRecord.children);
-    //   if(this.studentsOfRecord.length === 1){
-    //     this.setFinancialDoc(this.studentsOfRecord[0])
-    //   }
-    // } else {
-    //   console.log("There is an issue obtaining the current record");
-    // }
-
-
-
-    // // This component can update the currentRecord.
-    // // Listen for changes on the currentRecord in order to update view.
-    // this.firebaseService.recordCollection.doc(this.currentRecord.realId).snapshotChanges()
-    //   .subscribe(doc => {
-    //    // console.log(doc);
-    //     //this.dataService.setCurrentRecord({realId: doc.payload.id, ...doc.payload.data()})
-    //   })
 
     // Listen for the currentFinancialDoc.
     this.subscriptions.push(
@@ -121,7 +100,8 @@ export class StudentCategoryComponent implements OnInit {
   }
 
   public setFinancialDoc(student) {
-    this.financialsService.setupFinancialDoc(student, this.currentRecord);
+    this.currentStudent = student;
+    this.financialsService.setFinancialDoc(student);
     // Set currentCategory$ to null to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
     // Do not show history from previously selected student after clicking on another student
@@ -149,8 +129,5 @@ export class StudentCategoryComponent implements OnInit {
     this.modalService.open(id);
   }
 
-  // closeModal(id: string) {
-  //   this.modalService.close(id);
-  // }
 
 }
