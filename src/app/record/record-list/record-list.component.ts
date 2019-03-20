@@ -106,9 +106,6 @@ export class RecordListComponent implements OnInit {
           dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
           return dataStr.indexOf(filter) != -1;
         };
-        
-        // Run once here in prod.  Sync is now active in record-entry.
-        //records.forEach(record => this.syncFinancialDocs(record));
 
       })
     );
@@ -151,9 +148,7 @@ export class RecordListComponent implements OnInit {
   }
 
   public prepFormToUpdate(record) {
-		console.log('TCL: publicprepFormToUpdate -> record', record)
     this.modalService.open('record-entry-modal');
-    //setTimeout(() => this.res.prepFormToUpdate(record), 250); // Give form a chance to load prior to populating
     this.rfs.prepFormToUpdate(record);
   }
 
@@ -166,7 +161,6 @@ export class RecordListComponent implements OnInit {
   }
 
   public setCurrentRecord(record) { 
-		console.log('TCL: publicsetCurrentRecord -> record', record)
     this.dataService.setCurrentRecord(record);// set current record for consumption by another component i.e. Financials
     this.currentRecord = record; // For Family Contact modal
   }
@@ -180,36 +174,12 @@ export class RecordListComponent implements OnInit {
   }
 
   openModal(id: string) {
-    // this.currentRecord = record;
     this.modalService.open(id);
     if(id === 'record-entry-modal'){
       this.rfs.isUpdating$.next(false);
     }
   }
 
-  // private syncFinancialDocs(record){ 
-
-  //   const children = this.dataService.convertMapToArray(record.children);
-
-  //   children.forEach(child => {
-  //     //console.log('TCL: publicsyncFinancialRecord -> child', child)
-  //     this.fs.financialsCollection.doc(child.id)
-  //       .set({
-  //         recordId: record.realId,
-  //         // In the beginning, email properties and child's grade level did not exist on the financial doc. 
-  //         // This will ensure that these properties from the currentRecord are copied over and stay in sync.
-  //         fatherEmail: record.fatherEmail, 
-  //         motherEmail: record.motherEmail,
-  //         // Create / sync other child info.  Note: grade property added on 3/18/19.
-  //         childFirstName: child.fname,
-  //         childLastName: child.lname,
-  //         grade: record.children[child.id].grade,
-  //       },  { merge: true })
-  //         .then(_ => {})
-      
-  //   })
-
-  // }
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
