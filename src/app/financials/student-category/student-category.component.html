@@ -20,7 +20,12 @@
 
       <div *ngIf="currentFinancialDoc" class="categories">
         <div class="student-name-menu">
-          <h5 [class.student-name]="enableCatButtons">Financial status for {{currentStudent.fname}} {{currentStudent.lname}}</h5>
+          <h5 *ngIf="studentsOfRecord.length > 1; else showGrade" [class.student-name]="enableCatButtons">
+            Financial status for {{currentStudent.fname}} {{currentStudent.lname}}
+          </h5>
+         <ng-template #showGrade>
+           <h5 [class.student-name]="enableCatButtons">Financial status for {{currentStudent.fname}} {{currentStudent.lname}} | Grade: {{currentStudent.grade}}</h5>
+          </ng-template>
           <button *ngIf="user.roles.admin" class="more-menu" mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon>more_vert</mat-icon>
           </button>
