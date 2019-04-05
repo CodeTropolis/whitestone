@@ -238,6 +238,7 @@ export class EntryComponent implements OnInit {
   }
 
   private processTransaction(formDirective) {
+    
     let collection;
 
     this.isEnteringPayment
@@ -256,7 +257,7 @@ export class EntryComponent implements OnInit {
     // NOTE: Wrap formula in () and set input to type number or else + will concat.
     this.isEnteringPayment
       ? (this.runningBalance -= this.formValue.amount)
-      : (this.runningBalance = this.runningBalance + this.formValue.amount);
+      : (this.runningBalance += this.formValue.amount);
     this.currentFinancialDoc.ref
       .set({ [this.runningBalanceKey]: this.runningBalance }, { merge: true })
       .then(_ => {

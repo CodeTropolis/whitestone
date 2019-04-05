@@ -3,41 +3,79 @@
 </div>
 <ng-template #display>
   <mat-card>
-    <p class="info"><strong>{{currentChild}}'s</strong> Transaction History for <strong>{{currentCategory}}</strong></p>
-    <mat-table [dataSource]="tableData" matSort matSortActive="date" matSortDirection="desc">
-      <ng-container matColumnDef="amount">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <span [class.deduction]="row.type === 'Deduction'"> {{row.amount | currency}}</span>
-        </mat-cell>
-      </ng-container>
+      <p class="info"><strong>{{currentChild}}'s</strong> Transaction History for <strong>{{currentCategory}}</strong></p>
 
-      <ng-container matColumnDef="type">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{row.type}}</mat-cell>
-      </ng-container>
+      <mat-table [dataSource]="tableData" matSort matSortActive="date" matSortDirection="desc">
+        <ng-container matColumnDef="amount">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
+          <mat-cell *matCellDef="let row">
 
-      <ng-container matColumnDef="date">
-        <mat-header-cell *matHeaderCellDef mat-sort-header="date">Date</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.date | date:"longDate"}} </mat-cell>
-      </ng-container>
+            <span *ngIf="!isEditing[row.id]" [class.deduction]="row.type === 'Deduction'"> {{row.amount | currency}}</span>
+          
+            <form *ngIf="isEditing[row.id]" [formGroup]="formGroup[row.id]" #formDirective="ngForm">
+              <mat-form-field>
+                <input matInput type=number step=0.01 formControlName="amount">
+              </mat-form-field>
+            </form>
 
-      <ng-container matColumnDef="memo">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Memo</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.memo}} </mat-cell>
-      </ng-container>
+          </mat-cell>
+        </ng-container>
 
-      <ng-container *ngIf="user['roles'].admin" matColumnDef="delete">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Delete Transaction</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <button [disabled]="disableDelete[row.id]"
-            (click)="deleteTransaction(row.id, row.type, row.amount)">Delete</button>
-          <!-- ToDo: Add confirm delete -->
-        </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="type">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.type}}
+            <!-- <span *ngIf="!isEditing[row.id]"> {{row.type}}</span>
+            <form *ngIf="isEditing[row.id]" [formGroup]="formGroup[row.id]" #formDirective="ngForm">
+              <mat-select placeholder="Type" formControlName="transactionType">
+                <mat-option *ngFor="let type of transactionTypes" [value]="type.value">{{ type.display }}</mat-option>
+              </mat-select>
+            </form> -->
+          </mat-cell>
+        </ng-container>
 
-      <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
-    </mat-table>
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef mat-sort-header="date">Date</mat-header-cell>
+          <mat-cell *matCellDef="let row"> 
+            <span *ngIf="!isEditing[row.id]"> {{row.date | date:"longDate"}}</span>
+            <form *ngIf="isEditing[row.id]" [formGroup]="formGroup[row.id]" #formDirective="ngForm">
+              <input class="date" matInput [matDatepicker]="transactionDatePicker" formControlName="date">
+              <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #transactionDatePicker></mat-datepicker>
+            </form>
+
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="memo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Memo</mat-header-cell>
+          <!-- <mat-cell *matCellDef="let row"> {{row.memo}} </mat-cell> -->
+          <mat-cell *matCellDef="let row">
+            <span *ngIf="!isEditing[row.id]">{{row.memo}}</span>
+            
+            <form *ngIf="isEditing[row.id]" [formGroup]="formGroup[row.id]" #formDirective="ngForm">
+              <mat-form-field>
+                <input matInput type=text formControlName="memo">
+              </mat-form-field>
+            </form>
+          </mat-cell>
+
+        </ng-container>
+
+        <ng-container *ngIf="user['roles'].admin" matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <!-- <button [disabled]="disableDelete[row.id]" (click)="deleteTransaction(row.id, row.type, row.amount)">Delete</button> -->
+            <button *ngIf="!isEditing[row.id]" (click)="editTransaction(row)">Edit</button>
+            <div *ngIf="isEditing[row.id]">
+              <button (click)="submitHandler(formDirective, row)">Save</button>
+              <button (click)="isEditing[row.id] = !isEditing[row.id]">Cancel</button>
+            </div>
+            <!-- ToDo: Add confirm delete -->
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+      </mat-table>
   </mat-card>
 </ng-template>

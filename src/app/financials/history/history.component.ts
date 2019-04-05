@@ -3,6 +3,7 @@ import { FinancialsService } from "../financials.service";
 import { BehaviorSubject } from "rxjs";
 import { MatSort, MatTableDataSource } from "@angular/material";
 import { AuthService } from "../../core/services/auth.service";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 //import { delay } from "rxjs/operators";
 
 @Component({
@@ -24,14 +25,24 @@ export class HistoryComponent implements OnInit {
   public disableDelete: boolean[] = [];
   public user: any;
 
+  public isEditing: boolean[] = [];
+  public formGroup: FormGroup[] = [];
+  public formValue: any;
+
   private runningBalance: number;
   private updatedBalance: number;
   private chargesCollection: string;
   private paymentsCollection: string;
 
+  public transactionTypes: any[] = [
+    { value: 'payment', display: 'Payment' },
+    { value: 'charge', display: 'Charge' },
+  ]
+
   constructor(
     private financialsService: FinancialsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private fb: FormBuilder,
   ) { }
 
   ngOnInit() {
@@ -42,7 +53,7 @@ export class HistoryComponent implements OnInit {
           if (user) {
             this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
             if (this.user["roles"].admin) {
-              this.tableColumns = ["amount", "type", "date", "memo", "delete"];
+              this.tableColumns = ["amount", "type", "date", "memo", "actions"];
             } else {
               this.tableColumns = ["amount", "type", "date", "memo"];
             }
@@ -125,7 +136,23 @@ export class HistoryComponent implements OnInit {
     );
   }
 
+  public editTransaction(row) { 
+    //console.log('TCL: HistoryComponent -> publiceditTransaction -> row', row)
+
+    this.isEditing[row.id] = true;
+
+    this.formGroup[row.id] = this.fb.group({
+      amount: [row.amount, Validators.required],
+      // transactionType: [row.amount, Validators.required],
+      date: [row.date, Validators.required],
+      memo: [row.memo, Validators.required]
+    });
+
+    
+  }
+
   public deleteTransaction(id: string, type: string, amount: number) {
+
     this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
 
     type === "Payment"
@@ -154,6 +181,44 @@ export class HistoryComponent implements OnInit {
             // Update history table data.
             this.setupHistory();
           });
+      });
+  }
+
+  public submitHandler(formDirective, row) {
+
+    const existingAmount = row.amount;
+		//console.log(`MD: publicsubmitHandler -> existingAmount`, existingAmount);
+		
+    this.formValue = this.formGroup[row.id].value;
+		//console.log(`MD: publicsubmitHandler -> row.id`, row.id);
+    
+    let collection: string;
+    row.type === "Payment" ? (collection = this.paymentsCollection) : (collection = this.chargesCollection);
+	
+    this.currentFinancialDoc.ref.collection(collection).doc(row.id)
+      .set({amount: this.formValue.amount, 
+            date: this.formValue.date, 
+            memo: this.formValue.memo
+            }, { merge: true })
+      .then(_ => {
+
+        // Update the running balance on the entry.component
+        // Get the difference between the existing payment or change and that of the form value and apply it to balance accordingly.
+        const difference = existingAmount - this.formValue.amount;
+				//console.log(`MD: publicsubmitHandler -> difference`, difference);
+
+        row.type === "Payment" ? 
+        (this.updatedBalance = this.runningBalance + difference) : 
+        (this.updatedBalance = this.runningBalance - difference);
+      //	console.log('TCL: HistoryComponent -> publicsubmitHandler -> this.updatedBalance', this.updatedBalance)
+      
+        this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
+
+        // Update history table data.
+        this.setupHistory();
+
+        // Take user out of editing mode.
+        this.isEditing[row.id] = false;
       });
   }
 

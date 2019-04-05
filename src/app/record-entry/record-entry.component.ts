@@ -237,7 +237,9 @@ export class RecordEntryComponent implements OnInit {
 
 
   private syncFinancialDocs(record, currentRecordId){ 
-
+    
+    console.log(`MD: privatesyncFinancialDocs -> record`, record)
+    
     const children = this.dataService.convertMapToArray(record.children);
 
     children.forEach(child => {

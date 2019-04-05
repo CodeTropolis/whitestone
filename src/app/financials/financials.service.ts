@@ -34,16 +34,18 @@ export class FinancialsService {
         this.currentFinancialDoc$.next(null); 
         this.firebaseService.financialsCollection.doc(student.id).ref.get() 
           .then(doc => {
-            if(doc.data()){
+            if(doc.exists){
                 this.currentFinancialDoc$.next(doc); 
             }else{ 
-              console.log('No financial data for this student!'); 
+              // A corresponding financial doc will be created when a record is added or the record form update button is clicked.
+              // If user receives this log, have them go into the family record and update.
+              console.log('No financial data for this student!');
             } 
           })
       }
     });
-
   }
+
 
   public getTransactions(currentFinancialDoc, collection){
       // Get transactions (amounts from <cat.key>payments | charges collections)

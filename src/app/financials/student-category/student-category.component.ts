@@ -115,6 +115,8 @@ export class StudentCategoryComponent implements OnInit {
   // }
 
   public setFinancialDoc(student) {
+		// console.log(`MD: StudentCategoryComponent -> publicsetFinancialDoc -> student`, student)
+    
     this.currentStudent = student;
     this.financialsService.setFinancialDoc(student);
     // Set currentCategory$ to null to prevent previously selected student's category entry form from showing
