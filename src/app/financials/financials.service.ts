@@ -28,20 +28,19 @@ export class FinancialsService {
   }
 
   public setFinancialDoc(student) {
-
     this.authService.user$.subscribe(user =>{
       if (user){
         this.currentFinancialDoc$.next(null); 
-        this.firebaseService.financialsCollection.doc(student.id).ref.get() 
+        this.firebaseService.financialsCollection.doc(student.id).ref.get()
           .then(doc => {
-            if(doc.exists){
+            if(doc.exists) {
                 this.currentFinancialDoc$.next(doc); 
-            }else{ 
-              // A corresponding financial doc will be created when a record is added or the record form update button is clicked.
-              // If user receives this log, have them go into the family record and update.
-              console.log('No financial data for this student!');
-            } 
-          })
+            } else {
+              alert(`The financial document for this ${student.fname + ' ' + student.lname} does not exist. \n` +
+              `To create a starting financial doc, go to the applicable record in 'Record List', click` +
+              `'Update Family Record' and click the 'Update' button.`);
+            }
+          });
       }
     });
   }

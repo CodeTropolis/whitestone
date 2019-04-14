@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { FinancialsService } from "../financials.service";
 import { BehaviorSubject } from "rxjs";
 import { MatSort, MatTableDataSource } from "@angular/material";
@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
   templateUrl: "./history.component.html",
   styleUrls: ["./history.component.css"]
 })
-export class HistoryComponent implements OnInit {
+export class HistoryComponent implements OnInit, OnDestroy {
   private subscriptions: any[] = [];
 
   public currentFinancialDoc: any;
@@ -22,7 +22,9 @@ export class HistoryComponent implements OnInit {
   public tableData: MatTableDataSource<any>;
   public tableColumns;
   @ViewChild(MatSort) sort: MatSort;
-  public disableDelete: boolean[] = [];
+  public isDeleting: boolean[] = [];
+  public hasDeleted: boolean[] = [];
+  public disableEdit: boolean[] = [];
   public user: any;
 
   public isEditing: boolean[] = [];
@@ -52,7 +54,7 @@ export class HistoryComponent implements OnInit {
         .subscribe(user => {
           if (user) {
             this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
-            if (this.user["roles"].admin) {
+            if (this.user.roles.admin) {
               this.tableColumns = ["amount", "type", "date", "memo", "actions"];
             } else {
               this.tableColumns = ["amount", "type", "date", "memo"];
@@ -67,9 +69,7 @@ export class HistoryComponent implements OnInit {
         if (doc) {
           this.currentFinancialDoc = doc;
           this.currentChild =
-            this.currentFinancialDoc.data().childFirstName +
-            " " +
-            this.currentFinancialDoc.data().childLastName;
+            this.currentFinancialDoc.data().childFirstName + ' ' + this.currentFinancialDoc.data().childLastName;
         }
       })
     );
@@ -136,26 +136,23 @@ export class HistoryComponent implements OnInit {
     );
   }
 
-  public editTransaction(row) { 
-    //console.log('TCL: HistoryComponent -> publiceditTransaction -> row', row)
-
+  public editTransaction(row) {
     this.isEditing[row.id] = true;
-
     this.formGroup[row.id] = this.fb.group({
       amount: [row.amount, Validators.required],
       // transactionType: [row.amount, Validators.required],
       date: [row.date, Validators.required],
       memo: [row.memo, Validators.required]
     });
-
-    
   }
 
   public deleteTransaction(id: string, type: string, amount: number) {
 
-    this.disableDelete[id] = true; // Prevent user from entering delete multiple times for a row.
+    // Prevent user from triggering delete multiple times for a row in the event of multiple clicks.
+    this.isDeleting[id] = true;
+    // this.disableEdit[id] = true;
 
-    type === "Payment"
+    type === 'Payment'
       ? (this.updatedBalance = this.runningBalance + amount)
       : (this.updatedBalance = this.runningBalance - amount);
 
@@ -163,14 +160,13 @@ export class HistoryComponent implements OnInit {
     this.currentFinancialDoc.ref
       .set({ [this.runningBalanceKey]: this.updatedBalance }, { merge: true })
       .then(_ => {
-        this.financialsService.runningBalanceForCurrentCategory$.next(
-          this.updatedBalance
-        ); // For entry.component to show Running Balance
+        // For entry.component to show Running Balance
+        this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
 
         // Delete the sub-collection that is the payment or charge being deleted.
         let collection: string;
         // Determine sub-collection.
-        type === "Payment"
+        type === 'Payment'
           ? (collection = this.paymentsCollection)
           : (collection = this.chargesCollection);
         this.currentFinancialDoc.ref
@@ -180,43 +176,46 @@ export class HistoryComponent implements OnInit {
           .then(_ => {
             // Update history table data.
             this.setupHistory();
+            this.hasDeleted[id] = true;
           });
       });
   }
 
-  public submitHandler(formDirective, row) {
+  public save(row) {
 
     const existingAmount = row.amount;
-		//console.log(`MD: publicsubmitHandler -> existingAmount`, existingAmount);
-		
+
     this.formValue = this.formGroup[row.id].value;
-		//console.log(`MD: publicsubmitHandler -> row.id`, row.id);
-    
+
     let collection: string;
-    row.type === "Payment" ? (collection = this.paymentsCollection) : (collection = this.chargesCollection);
-	
+    row.type === 'Payment' ? (collection = this.paymentsCollection) : (collection = this.chargesCollection);
+
+    // Update the payment or charge entry
     this.currentFinancialDoc.ref.collection(collection).doc(row.id)
-      .set({amount: this.formValue.amount, 
-            date: this.formValue.date, 
+      .set({amount: this.formValue.amount,
+            date: this.formValue.date,
             memo: this.formValue.memo
             }, { merge: true })
       .then(_ => {
 
-        // Update the running balance on the entry.component
-        // Get the difference between the existing payment or change and that of the form value and apply it to balance accordingly.
+        // Update the running balance
+
+        // Get the difference between the existing payment or change and that of the
+        // form value and apply it to balance accordingly.
         const difference = existingAmount - this.formValue.amount;
-				//console.log(`MD: publicsubmitHandler -> difference`, difference);
 
-        row.type === "Payment" ? 
-        (this.updatedBalance = this.runningBalance + difference) : 
+        row.type === 'Payment' ? (this.updatedBalance = this.runningBalance + difference) :
         (this.updatedBalance = this.runningBalance - difference);
-      //	console.log('TCL: HistoryComponent -> publicsubmitHandler -> this.updatedBalance', this.updatedBalance)
-      
-        this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
 
-        // Update history table data.
-        this.setupHistory();
-
+       // Update the balance in the DB:
+        this.currentFinancialDoc.ref
+        .set({ [this.runningBalanceKey]: this.updatedBalance }, { merge: true })
+          .then(_ => {
+            // Update the displayed balance on the entry-component
+            this.financialsService.runningBalanceForCurrentCategory$.next(this.updatedBalance);
+            // Update history table data.
+            this.setupHistory();
+          })
         // Take user out of editing mode.
         this.isEditing[row.id] = false;
       });

@@ -61,16 +61,24 @@
 
         </ng-container>
 
-        <ng-container *ngIf="user['roles'].admin" matColumnDef="actions">
+        <ng-container *ngIf="user.roles.admin" matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Actions</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <!-- <button [disabled]="disableDelete[row.id]" (click)="deleteTransaction(row.id, row.type, row.amount)">Delete</button> -->
-            <button *ngIf="!isEditing[row.id]" (click)="editTransaction(row)">Edit</button>
+            <ng-container  *ngIf="!isEditing[row.id]">
+              <button [disabled] = "isDeleting[row.id]" mat-icon-button (click)="editTransaction(row)">
+                <i class="material-icons">edit</i>
+              </button>
+              <button *ngIf="!isDeleting[row.id]; else confirm" mat-icon-button (click) = "isDeleting[row.id] = !isDeleting[row.id]">
+                  <i class="material-icons">delete_forever</i>
+              </button>
+              <ng-template #confirm>
+                <button [disabled] = "hasDeleted[row.id]" (click)="deleteTransaction(row.id, row.type, row.amount)">Confirm Deletion</button>
+              </ng-template>
+            </ng-container>
             <div *ngIf="isEditing[row.id]">
-              <button (click)="submitHandler(formDirective, row)">Save</button>
+              <button (click)="save(row)">Save</button>
               <button (click)="isEditing[row.id] = !isEditing[row.id]">Cancel</button>
             </div>
-            <!-- ToDo: Add confirm delete -->
           </mat-cell>
         </ng-container>
 
