@@ -33,7 +33,7 @@
             
     <p *ngIf="currentCategory && !user['roles'].admin && showStartingBalanceInput">Financial data for {{currentCategory.val}} is pending.</p>
 
-    <mat-card *ngIf="currentCategory && user['roles'].admin">
+    <mat-card *ngIf="currentCategory && user.roles.admin">
 
         <form [formGroup]="formGroup" #formDirective="ngForm" (ngSubmit)="submitHandler(formDirective)">
 
@@ -61,7 +61,7 @@
 
                 <!-- Ideally, tuition required monthly payment would only be entered upon enter a starting balance for a student, however, 
                 this needs to be done for students with starting balance already present. -->
-                    <mat-form-field *ngIf="currentCategory.key === 'tuition' && !tuitionRequiredMonthlyPayment && (isEnteringPayment || isEnteringCharge)">
+                <mat-form-field *ngIf="currentCategory.key === 'tuition' && !tuitionRequiredMonthlyPayment && (isEnteringPayment || isEnteringCharge)">
                     <input matInput type=number step=0.01 placeholder="Required Monthly Pymt." formControlName="tuitionRequiredMonthlyPayment">
                 </mat-form-field>
 
