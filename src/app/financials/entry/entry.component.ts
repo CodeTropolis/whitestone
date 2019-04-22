@@ -1,12 +1,12 @@
-import { Component, OnInit } from "@angular/core";
-import { FinancialsService } from "../financials.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { AuthService } from "../../core/services/auth.service";
+import { Component, OnInit } from '@angular/core';
+import { FinancialsService } from '../financials.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: "app-entry",
-  templateUrl: "./entry.component.html",
-  styleUrls: ["./entry.component.css"]
+  selector: 'app-entry',
+  templateUrl: './entry.component.html',
+  styleUrls: ['./entry.component.css']
 })
 export class EntryComponent implements OnInit {
   public currentCategory: any;
@@ -57,7 +57,6 @@ export class EntryComponent implements OnInit {
   ngOnInit() {
     this.subscriptions.push(
       this.authService.user$.subscribe(user => {
-        //console.log('TCL: EntryComponent -> ngOnInit -> user', user)
         if (user) {
           this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
         }
@@ -73,7 +72,7 @@ export class EntryComponent implements OnInit {
       })
     );
 
-    this.tuitionMonthlyPaymentKey = "tuitionRequiredMonthlyPayment";
+    this.tuitionMonthlyPaymentKey = 'tuitionRequiredMonthlyPayment';
 
     // Listen for current financial doc set in student-category.component
     this.subscriptions.push(
@@ -93,19 +92,21 @@ export class EntryComponent implements OnInit {
         this.isEnteringPayment = false;
         this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
         if (cat) {
-          this.startingBalanceKey = cat.key + "StartingBalance";
-          this.startingBalanceDateKey = cat.key + "StartingBalanceDate";
-          this.startingBalanceMemoKey = cat.key + "StartingBalanceMemo";
-          this.runningBalanceKey = cat.key + "Balance"; // Do not change key strings.  Keys already present in DB.
-          this.chargesCollection = cat.key + "Charges";
-          this.paymentsCollection = cat.key + "Payments";
+          console.log(`MD: EntryComponent -> ngOnInit -> cat.key`, cat.key);
+          this.startingBalanceKey = cat.key + 'StartingBalance';
+          this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
+          this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
+          this.runningBalanceKey = cat.key + 'Balance'; // Do not change key strings.  Keys already present in DB.
+          this.chargesCollection = cat.key + 'Charges';
+          this.paymentsCollection = cat.key + 'Payments';
           this.checkForBalance();
-          //  checkForTransactions - do this here as subcollecton may exist upon selecting cat and
-          //  do this after processing a transaction as the subcollecton will exist after a transaction
+          //  checkForTransactions - do this here as sub-collection may exist upon selecting cat and
+          //  do this after processing a transaction as the sub-collection will exist after a transaction
           this.checkForTransactions();
           this.getTuitionMonthlyPaymentAmount();
           this.showHistory = false;
-          this.financialsService.showHistory$.next(this.showHistory); // Do not show history from previously selected category after clicking on another category
+          // Do not show history from previously selected category after clicking on another category
+          this.financialsService.showHistory$.next(this.showHistory);
         }
       })
     );
@@ -193,16 +194,18 @@ export class EntryComponent implements OnInit {
 
   private setFormControls() {
     this.formGroup = this.fb.group({
-      tuitionRequiredMonthlyPayment: [""],
-      amount: ["", Validators.required],
-      date: ["", Validators.required],
-      memo: ["", Validators.required]
+      tuitionRequiredMonthlyPayment: [''],
+      taxDeductionEligible: [''],
+      amount: ['', Validators.required],
+      date: ['', Validators.required],
+      memo: ['', Validators.required]
     });
   }
 
   public submitHandler(formDirective) {
     this.formValue = this.formGroup.value;
-    this.disableSubmitButton = true; // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
+    // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
+    this.disableSubmitButton = true;
 
     if (this.formValue.tuitionRequiredMonthlyPayment) {
       this.currentFinancialDoc.ref.set(
@@ -229,35 +232,37 @@ export class EntryComponent implements OnInit {
           this.resetForm(formDirective);
           this.checkForBalance();
         });
-      // Now that a starting balance has been entered, check for balance in order to set startingBlance so that transactions form elements show.
+      // Now that a starting balance has been entered, check for
+      // balance in order to set startingBlance so that transactions form elements show.
     } else {
       this.processTransaction(formDirective);
-      console.log("process transaction");
     }
     this.getTuitionMonthlyPaymentAmount();
   }
 
   private processTransaction(formDirective) {
-    
+
     let collection;
 
-    this.isEnteringPayment
-      ? (collection = this.currentFinancialDoc.ref.collection(
-        this.paymentsCollection
-      ))
-      : (collection = this.currentFinancialDoc.ref.collection(
-        this.chargesCollection
-      ));
+    if (this.isEnteringPayment) {
+      collection = this.currentFinancialDoc.ref.collection(this.paymentsCollection);
+      this.runningBalance -= this.formValue.amount;
+      collection.doc().set({
+        amount: this.formValue.amount,
+        date: this.formValue.date,
+        memo: this.formValue.memo,
+        taxDeductible: this.formValue.taxDeductionEligible,
+      });
+    } else {
+      collection = this.currentFinancialDoc.ref.collection(this.chargesCollection);
+      this.runningBalance += this.formValue.amount;
+      collection.doc().set({
+        amount: this.formValue.amount,
+        date: this.formValue.date,
+        memo: this.formValue.memo,
+      });
+    }
 
-    collection.doc().set({
-      amount: this.formValue.amount,
-      date: this.formValue.date,
-      memo: this.formValue.memo
-    });
-    // NOTE: Wrap formula in () and set input to type number or else + will concat.
-    this.isEnteringPayment
-      ? (this.runningBalance -= this.formValue.amount)
-      : (this.runningBalance += this.formValue.amount);
     this.currentFinancialDoc.ref
       .set({ [this.runningBalanceKey]: this.runningBalance }, { merge: true })
       .then(_ => {
@@ -308,7 +313,7 @@ export class EntryComponent implements OnInit {
     this.financialsService.showHistory$.next(this.showHistory);
 
     setTimeout(_ => {
-      let el = document.getElementById("history");
+      let el = document.getElementById('history');
       if (el) {
         window.scrollBy(0, 300);
       }
@@ -316,7 +321,7 @@ export class EntryComponent implements OnInit {
   }
 
   public goToURL(url) {
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   }
 
   ngOnDestroy() {
