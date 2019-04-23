@@ -52,18 +52,18 @@ export class FinancialsService {
       currentFinancialDoc.ref.collection(collection).get()
       .then(snapshot => {
           snapshot.forEach(item => {
-            let date = item.data().date.toDate();
+            const date = item.data().date.toDate();
             const transactionObj = {
-              id: item.id, 
-              amount: item.data().amount, 
-              type: type, 
+              id: item.id,
+              amount: item.data().amount,
+              type: type,
               date: date,
-              memo: item.data().memo 
-            }
+              taxDeductible: item.data().taxDeductible,
+              memo: item.data().memo
+            };
             this.transactions.push(transactionObj);
             this.transactions$.next(this.transactions);
           });
       });
   }
- 
 }

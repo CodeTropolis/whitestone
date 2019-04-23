@@ -92,7 +92,7 @@ export class EntryComponent implements OnInit {
         this.isEnteringPayment = false;
         this.currentCategory = cat; // Allow currentCategory to be set to null (null passed from select student).
         if (cat) {
-          console.log(`MD: EntryComponent -> ngOnInit -> cat.key`, cat.key);
+          // console.log(`MD: EntryComponent -> ngOnInit -> cat.key`, cat.key);
           this.startingBalanceKey = cat.key + 'StartingBalance';
           this.startingBalanceDateKey = cat.key + 'StartingBalanceDate';
           this.startingBalanceMemoKey = cat.key + 'StartingBalanceMemo';
@@ -233,7 +233,7 @@ export class EntryComponent implements OnInit {
           this.checkForBalance();
         });
       // Now that a starting balance has been entered, check for
-      // balance in order to set startingBlance so that transactions form elements show.
+      // balance in order to set startingBalance so that transactions form elements show.
     } else {
       this.processTransaction(formDirective);
     }

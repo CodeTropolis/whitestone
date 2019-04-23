@@ -24,7 +24,7 @@ export class TaxFormsComponent implements OnInit {
   ngOnInit() {
 
     const date = new Date();
-    this.taxYear = date.getFullYear() -1;
+    this.taxYear = date.getFullYear() - 1;
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc => {
         if (doc) {
@@ -33,7 +33,7 @@ export class TaxFormsComponent implements OnInit {
       })
     );
 
-    // Get the subcollection for payments based on the current category.
+    // Get the subcollection name for payments based on the current category.
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
         if (cat) {
@@ -51,8 +51,9 @@ export class TaxFormsComponent implements OnInit {
         this.paymentTotal = null;
         if (transactions) {
           transactions.forEach(payment => {
-            if (payment.date.getFullYear() === this.taxYear) {
-            this.payments.push(payment); // an array of payment objects
+            // console.log(`MD: TaxFormsComponent -> ngOnInit -> payment`, payment);
+            if (payment.date.getFullYear() === this.taxYear && payment.taxDeductible) {
+              this.payments.push(payment); // an array of payment objects
             }
           });
           this.paymentTotal = 0;
@@ -74,7 +75,7 @@ export class TaxFormsComponent implements OnInit {
 
       this.modalService.open(id);
 
-      this.financialsService.transactions = []; //  wipe out anything that may have been populated by history.component.  
+      this.financialsService.transactions = []; //  wipe out anything that may have been populated by history.component.
       this.financialsService.transactions$.next(null);
 
       this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);

@@ -8,8 +8,10 @@ button {margin:1em 0.25em;}
 
 p {font-size: 1.25em;}
 
-mat-form-field {
-    float:left;
-    margin-right: 2em;
-}
+mat-checkbox {margin-top: 1.5em;}
+
+mat-form-field {margin-right: 2em;}
+
+mat-form-field,
+mat-checkbox {float:left;}
 
