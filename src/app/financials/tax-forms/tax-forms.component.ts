@@ -81,12 +81,12 @@ export class TaxFormsComponent implements OnInit {
       this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
 
     }
-  
+
     closeModal(id: string) {
       this.modalService.close(id);
     }
 
-    print(){
+    print() {
       window.print();
     }
 

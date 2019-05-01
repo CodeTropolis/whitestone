@@ -23,14 +23,7 @@
 
         <ng-container matColumnDef="type">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.type}}
-            <!-- <span *ngIf="!isEditing[row.id]"> {{row.type}}</span>
-            <form *ngIf="isEditing[row.id]" [formGroup]="formGroup[row.id]" #formDirective="ngForm">
-              <mat-select placeholder="Type" formControlName="transactionType">
-                <mat-option *ngFor="let type of transactionTypes" [value]="type.value">{{ type.display }}</mat-option>
-              </mat-select>
-            </form> -->
-          </mat-cell>
+          <mat-cell *matCellDef="let row"> {{row.type}}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="date">
@@ -48,7 +41,6 @@
 
         <ng-container matColumnDef="memo">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Memo</mat-header-cell>
-          <!-- <mat-cell *matCellDef="let row"> {{row.memo}} </mat-cell> -->
           <mat-cell *matCellDef="let row">
             <span *ngIf="!isEditing[row.id]">{{row.memo}}</span>
             
@@ -60,6 +52,17 @@
           </mat-cell>
 
         </ng-container>
+
+        <ng-container matColumnDef="taxDeductible">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Tax Deductible</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <!-- <span *ngIf="!isEditing[row.id]">{{row.memo}}</span> -->
+            <form *ngIf="isEditing[row.id]" [formGroup]="formGroup[row.id]" #formDirective="ngForm">
+              <mat-checkbox formControlName="taxDeductionEligible">Eligible</mat-checkbox> 
+            </form>
+          </mat-cell>
+        </ng-container>
+
 
         <ng-container *ngIf="user.roles.admin" matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Actions</mat-header-cell>

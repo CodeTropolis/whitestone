@@ -10,6 +10,7 @@ p {font-size: 1.25em;}
 
 mat-checkbox {margin-top: 1.5em;}
 
+mat-checkbox,
 mat-form-field {margin-right: 2em;}
 
 mat-form-field,

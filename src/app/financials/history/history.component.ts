@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
-import { FinancialsService } from "../financials.service";
-import { BehaviorSubject } from "rxjs";
-import { MatSort, MatTableDataSource } from "@angular/material";
-import { AuthService } from "../../core/services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { FinancialsService } from '../financials.service';
+import { BehaviorSubject } from 'rxjs';
+import { MatSort, MatTableDataSource } from '@angular/material';
+import { AuthService } from '../../core/services/auth.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 //import { delay } from "rxjs/operators";
 
 @Component({
-  selector: "app-history",
-  templateUrl: "./history.component.html",
-  styleUrls: ["./history.component.css"]
+  selector: 'app-history',
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.css']
 })
 export class HistoryComponent implements OnInit, OnDestroy {
   private subscriptions: any[] = [];
@@ -53,11 +53,11 @@ export class HistoryComponent implements OnInit, OnDestroy {
         //.pipe(delay(2000))
         .subscribe(user => {
           if (user) {
-            this.user = user; // For conditionals in view i.e. *ngIf="user['roles].admin"
+            this.user = user; 
             if (this.user.roles.admin) {
-              this.tableColumns = ["amount", "type", "date", "memo", "actions"];
+              this.tableColumns = ['amount', 'type', 'date', 'taxDeductible', 'memo', 'actions'];
             } else {
-              this.tableColumns = ["amount", "type", "date", "memo"];
+              this.tableColumns = ['amount', 'type', 'date', 'taxDeductible', 'memo'];
             }
           }
         })
@@ -78,9 +78,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
       this.financialsService.currentCategory$.subscribe(cat => {
         if (cat) {
           this.currentCategory = cat.val;
-          this.runningBalanceKey = cat.key + "Balance"; // ensure keys always match other components.  ToDo: Single source of truth.
-          this.chargesCollection = cat.key + "Charges";
-          this.paymentsCollection = cat.key + "Payments";
+          this.runningBalanceKey = cat.key + 'Balance'; // ensure keys always match other components.  ToDo: Single source of truth.
+          this.chargesCollection = cat.key + 'Charges';
+          this.paymentsCollection = cat.key + 'Payments';
 
           if (
             this.currentFinancialDoc &&
@@ -90,7 +90,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
             this.setupHistory();
           } else {
             console.log(
-              "Issue with setting currentFinancialDoc, and/or payments/charges collection strings"
+              'Issue with setting currentFinancialDoc, and/or payments/charges collection strings'
             );
           }
         }
@@ -137,12 +137,14 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   public editTransaction(row) {
+		console.log(`MD: publiceditTransaction -> row`, row);
     this.isEditing[row.id] = true;
     this.formGroup[row.id] = this.fb.group({
       amount: [row.amount, Validators.required],
       // transactionType: [row.amount, Validators.required],
       date: [row.date, Validators.required],
-      memo: [row.memo, Validators.required]
+      memo: [row.memo, Validators.required],
+      taxDeductible: [row.memo, Validators.required]
     });
   }
 
