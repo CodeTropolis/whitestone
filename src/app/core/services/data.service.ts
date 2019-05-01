@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -6,7 +7,8 @@ import { Injectable } from '@angular/core';
 
 export class DataService {
 
-  public currentRecord: any;
+ // public currentRecord: any;
+ public currentRecord$ = new BehaviorSubject<any>(null);
 
   constructor() { }
 
@@ -16,7 +18,8 @@ export class DataService {
   }
 
   public setCurrentRecord(record) {
-    this.currentRecord = record;
+		//console.log('TCL: publicsetCurrentRecord -> record', record)
+    this.currentRecord$.next(record)
   }
 
 }

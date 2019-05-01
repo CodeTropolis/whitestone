@@ -1,0 +1,67 @@
+
+
+button.cat {margin: 0.5em 0.5em 0 0;}
+
+button.make-payment {
+    margin-top:2em;
+}
+
+button.make-payment,
+button.student {
+    width: 220px;
+}
+
+button.more-menu {
+    margin-top: -10px;
+    margin-left: -5px;
+}
+
+button.student {margin-top: 0.5em;}
+
+.mat-card-avatar {width: 120px;}
+
+.flex-container {
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.categories {margin-left: 3em;}
+
+.student-name-menu {display: flex;}
+
+/* --- Animations --- */
+h5.student-name {
+    -webkit-animation-name: studentName; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 0.75s; /* Safari 4.0 - 8.0 */
+    animation-name: studentName;
+    animation-duration: 0.75s;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes studentName {
+    0% {transform: scale(1.0);  color: var(--ws-blue);}
+    25% {transform: scale(1.05); color: var(--ws-blue);}
+    100% {transform: scale(1.0); color: black;}
+}
+
+  /* Standard syntax */
+@keyframes studentName {
+    0% {transform: scale(1.0);  color: var(--ws-blue);}
+    25% {transform: scale(1.05); color: var(--ws-blue);}
+    100% {transform: scale(1.0); color: black;}
+}
+
+
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+
+    h5.financial-for {margin: 1em 0;}
+
+    .material-icons.account-circle {display:none;}
+
+    button {
+        margin: 0 0 0.5em 0;
+        width: 100%;
+    }
+}

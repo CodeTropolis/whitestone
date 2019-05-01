@@ -22,9 +22,14 @@ jw-modal {
         
         /* z-index must be higher than .jw-modal-background */
         z-index: 1000;
-         
+
         /* enables scrolling for tall modals */
         overflow: auto;
+
+        // Hide scrolbar UI.  Modal still scrolls per component basis i.e. record-entry.component.les
+        // https://stackoverflow.com/a/49278385
+        scrollbar-width: none; /* Firefox */ 
+        -ms-overflow-style: none;  /* IE 10+ */
  
         .jw-modal-body {
             padding: 20px;
@@ -33,6 +38,11 @@ jw-modal {
             /* margin exposes part of the modal background */
             margin: 40px;
         }
+    }
+    // Hide scrolbar https://stackoverflow.com/a/49278385
+    .jw-modal::-webkit-scrollbar { /* WebKit */
+        width: 0;
+        height: 0;
     }
  
     .jw-modal-background {
@@ -61,11 +71,11 @@ body.jw-modal-open {
   /* Small devices (landscape phones, less than 768px) */
   @media (max-width: 767.98px) { 
 
-  jw-modal {
-    .jw-modal {
-         width: 100% !important;
-         margin-left: -50% !important;
-     }
+    jw-modal {
+        .jw-modal {
+            width: 100% !important;
+            margin-left: -50% !important;
+        }
     }
-   
+
 }

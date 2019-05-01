@@ -1,33 +1,19 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { FirebaseService } from '../core/services/firebase.service';
-import { DataService } from '../core/services/data.service';
+import { FirebaseService } from './firebase.service';
+import { DataService } from './data.service';
 import { Subject } from 'rxjs';
 
-
-// See https://github.com/angular/angular-cli/issues/10170#issuecomment-380673276
-//  @stefanzvonar commented on Jun 19
-// However, if you want to provide a service in any feature module (not the root), then 
-// you are better off using the providers array in the feature module's decorators, otherwise
-//  you will be plagued with circular dependency warnings.
-
-// @Injectable({
-//   //providedIn: RecordModule
-// })
-
-@Injectable()
-export class RecordService {
+@Injectable({
+  providedIn: 'root'
+})
+export class RecordFormService {
 
   public theForm: FormGroup;
   public isUpdating: boolean = false;
   public isUpdating$ = new Subject<boolean>();
-  public currentRecordId$ = new Subject<string>();
 
   constructor(private fs: FirebaseService, private fb: FormBuilder, private dataService: DataService) { }
-
-  public setForm(form) {
-    this.theForm = form;
-  }
 
   get phoneFormsFather() {
     return this.theForm.get('fatherPhones') as FormArray;
@@ -42,12 +28,14 @@ export class RecordService {
   }
 
   public prepFormToUpdate(record) {
-    //console.log('TCL: RecordService -> publicprepFormToUpdate -> record', record);
     this.isUpdating$.next(true);
-    // Get the id of the document being editied so we know 
+    // Get the id of the document being edited so we know 
     // which doc to update in the submitHandler method
-    this.currentRecordId$.next(record.realId);
-    // Populate the form with record being edited
+    //this.currentRecordId$.next(record.realId); No need to do this.  Current record already set by more-menu - passed to data.service
+    // So in record-entry, subscribe to currentRecord$ from dataService and get the realId from there.
+    
+    // Populate the form with record being edited.  
+    // Pass record into this method and avoid another subscription to dataService.currentRecord$
     this.theForm.patchValue({
       surname: record.surname,
       address: record.address,
@@ -113,5 +101,5 @@ export class RecordService {
     this.fs.recordCollection.doc(record.realId).delete()
       .then(_ => console.log("removed from DB"));
   }
-
+  
 }

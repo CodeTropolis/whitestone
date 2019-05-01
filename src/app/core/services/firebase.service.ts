@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+// import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable, Subject} from 'rxjs';
 import { map, tap, shareReplay } from 'rxjs/operators';
 
@@ -14,6 +15,8 @@ export class FirebaseService {
   public financialsCollection: AngularFirestoreCollection<any[]>;
   public financials$: Observable<any[]>;
 
+  public studentsCollection: AngularFirestoreCollection<any[]>;
+
   // app.component sets this value to determine if show prog spinner.  See login component
   public loading = new Subject<boolean>();
 
@@ -25,6 +28,8 @@ export class FirebaseService {
     this.records$ = this.mapAndReplayCollection(this.recordCollection);
 
     this.financialsCollection = this.afs.collection<any[]>('financials');
+
+    this.studentsCollection = this.afs.collection<any[]>('students');
    
   }
 

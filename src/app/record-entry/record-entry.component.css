@@ -1,13 +1,23 @@
 
 button {margin: 1em 0.5em;}
 
+button.close-modal {
+    margin: 1em auto;
+    display: block;
+    /* transform: scale(0.75); */
+}
+
+.btn-add-record  {float: right;}
+
 .form {margin-bottom: 2em;}
 
 h4 {margin: 0.5em 0;}
 
 .mat-card {margin-bottom: 0.5em;}
 
-mat-form-field {margin-right: 2em;}
+mat-form-field { 
+    margin-right: 2em;
+}
 
 .phone {display: inline;}
 

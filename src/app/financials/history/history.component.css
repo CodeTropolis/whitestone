@@ -2,3 +2,9 @@ p.info {
     font-size: 1.25em;
     text-align: center;
 }
+
+mat-form-field,
+mat-form-field input, 
+mat-select {width: 100px;}
+
+input.date {width: 200px;}

@@ -1,140 +1,141 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FirebaseService } from '../../core/services/firebase.service';
-import { RecordService } from '../record.service';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
-import { DataService } from '../../core/services/data.service';
-import { AuthService } from '../../core/services/auth.service';
-import { User } from '../../core/user';
-import { ModalService } from '../../modal/modal.service';
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { FirebaseService } from "../../core/services/firebase.service";
+import { RecordFormService } from "../../core/services/record-form.service";
+import { MatPaginator, MatSort, MatTableDataSource } from "@angular/material";
+import { DataService } from "../../core/services/data.service";
+import { AuthService } from "../../core/services/auth.service";
+import { ModalService } from "../../modal/modal.service";
+import { AngularFirestore } from "@angular/fire/firestore";
+import { Observable, combineLatest, of } from "rxjs"; // combineLatest works with this import only.
+import { map, switchMap } from "rxjs/operators";
 
-import { AngularFirestore } from 'angularfire2/firestore';
-import { Observable, of, combineLatest } from 'rxjs'; // combineLatest works with this import only.
-import { switchMap } from 'rxjs/operators';
 
 
 @Component({
-  selector: 'app-record-list',
-  templateUrl: './record-list.component.html',
-  styleUrls: ['./record-list.component.css']
+  selector: "app-record-list",
+  templateUrl: "./record-list.component.html",
+  styleUrls: ["./record-list.component.css"]
 })
 export class RecordListComponent implements OnInit {
-
+  public user: any;
+  public records$: Observable<any[]>;
   public isUpdating: boolean;
   public ds: MatTableDataSource<any>;
   public displayedColumns;
   public showChildren: boolean[] = [];
   public isDeleting: boolean[] = [];
   public showForm: boolean;
-
-  // public user: User;
-  public userIsAdmin: boolean = false;  // for view
-  public userIsSubcriber: boolean = false;
   public recordMatch: boolean;
 
-  // For modal
+
   public currentRecord: any;
-  public modalTableDataSource: MatTableDataSource<any>;
-  public displayedColumnsModal = ['fatherEmail','motherEmail', 'address', 'catholic'];
+ 
 
   private subscriptions: any[] = [];
-  private matchingRecords: any[] = [];
 
+  //@ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
 
-  public records$: Observable<any[]>;
+  // Prevent sort from undefined
+  // https://stackoverflow.com/a/51084166
+  private sort;
+  @ViewChild(MatSort) set content(content: ElementRef) {
+    this.sort = content;
+    if (this.sort) {
+      this.ds.sort = this.sort;
+      this.ds.paginator = this.paginator;
+    }
+  }
 
   constructor(
     private fs: FirebaseService,
-    private res: RecordService,
-    private route: ActivatedRoute,
+    private rfs: RecordFormService,
     private dataService: DataService,
     private authService: AuthService,
     private modalService: ModalService,
     private afs: AngularFirestore
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.recordMatch = false;
 
-    // Why subscribe?  User is never changed once logged in.
-    // Because user data may be retrieved in time.
+    this.ds = null;
 
     this.subscriptions.push(
-      this.authService.userIsAdmin$.subscribe(x => {
-        this.userIsAdmin = x;
+      this.authService.user$.subscribe(user => {
+          this.user = user; // Custom user object.
+          if (user.roles.admin) {
+            this.getAllRecords();
+          } else {
+            this.getMatchingRecords();
+          }
       })
     );
 
+    // Get state from service for button state: disable upon edit.
     this.subscriptions.push(
-      this.authService.userIsSubcriber$.subscribe(x => {
-        this.userIsSubcriber = x;
+      this.rfs.isUpdating$.subscribe(x => (this.isUpdating = x))
+    );
+  }
+
+  private getAllRecords() {
+    this.displayedColumns = ["fatherLname", "motherLname", "actions"];
+
+    this.records$ = this.fs.records$;
+
+    this.subscriptions.push(
+      this.records$.subscribe(records => {
+        this.ds = new MatTableDataSource(records);
+
+        this.ds.filterPredicate = (data, filter) => {
+          let dataStr =
+            data.surname +
+            data.fatherFname +
+            data.fatherLname +
+            data.motherFname +
+            data.motherLname;
+          const children = this.dataService.convertMapToArray(data.children);
+          children.forEach(
+            child =>
+              (dataStr +=
+                child.fname +
+                child.lname +
+                child.gender +
+                child.grade +
+                child.race)
+          );
+          dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+          return dataStr.indexOf(filter) != -1;
+        };
+
       })
-    )
+    );
+  }
 
- //The admin will always have subscriber:true so filter out the admin user
-  if (this.userIsSubcriber && !this.userIsAdmin) {
+  private getMatchingRecords() {
 
-    this.displayedColumns = ['surname', 'actions'];
+    this.displayedColumns = ["surname", "actions"];
 
-    const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail","==", this.authService.user.email));
-		//console.log("​RecordListComponent -> ngOnInit -> matchFatherEmail", matchFatherEmail)
-    const matchMotherEmail = this.afs.collection("records", ref => ref.where("motherEmail","==", this.authService.user.email));
-		//console.log("​RecordListComponent -> ngOnInit -> matchMotherEmail", matchMotherEmail)
+      const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail", "==", this.user.email));
+      const matchMotherEmail = this.afs.collection("records", ref =>ref.where("motherEmail", "==", this.user.email));
 
-    this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
-      .pipe(switchMap(docs => {
-			//	console.log("​RecordListComponent -> ngOnInit -> docs", docs)
-        const [docsFatherEmail, docsMotherEmail] = docs;
-				// console.log("​RecordListComponent -> ngOnInit -> docsMotherEmail", docsMotherEmail)
-        // console.log("​RecordListComponent -> ngOnInit -> docsFatherEmail", docsFatherEmail)
-        if(docsFatherEmail.length == 0 && docsMotherEmail.length == 0){
-          this.recordMatch = false;
-        }else{
-          this.recordMatch = true;
-        }
-        const combined = docsFatherEmail.concat(docsMotherEmail);
-        return of(combined);
-      }));
-
-      //console.log("​RecordListComponent -> ngOnInit ->  this.records$",  this.records$)
+      this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
+      .pipe(map(([fathers, mothers]) => {
+          if(fathers.length || mothers.length != 0) {
+            this.recordMatch = true;
+            return [...fathers, ...mothers];
+          } else {
+            this.recordMatch = false;
+          }
+        })
+      );
 
       this.subscriptions.push(
-        this.records$.subscribe(records =>{
+        this.records$.subscribe(records => {
           this.ds = new MatTableDataSource(records);
           this.ds.paginator = this.paginator;
           this.ds.sort = this.sort;
         })
-      )
-
-  }else if(this.userIsAdmin){
-    this.displayedColumns = ['surname', 'father', 'mother', 'actions'];
-    this.subscriptions.push(
-        this.fs.records$.subscribe(x => {
-          this.matchingRecords = []; // prevent duplicate entries i.e. upon update record
-          x.forEach(record => {
-              this.matchingRecords.push(record);
-              this.ds = new MatTableDataSource(this.matchingRecords); // data source must be an array.
-              this.ds.paginator = this.paginator;
-              this.ds.sort = this.sort;
-          })
-
-            this.ds.filterPredicate = (data, filter) => {
-              let dataStr = data.surname + data.fatherFname + data.fatherLname + data.motherFname + data.motherLname;
-              const children = this.dataService.convertMapToArray(data.children);
-              children.forEach(child => dataStr += (child.fname + child.lname + child.gender + child.grade + child.race));
-              dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-              return dataStr.indexOf(filter) != -1;
-            }
-            
-       })
-    )
-    
-  }
-
-    // Get state from service for button state: disable upon edit.
-    this.subscriptions.push(this.res.isUpdating$.subscribe(x => this.isUpdating = x));
+      );
   }
 
   applyFilter(filterValue: string) {
@@ -147,8 +148,8 @@ export class RecordListComponent implements OnInit {
   }
 
   public prepFormToUpdate(record) {
-    this.showForm = true;
-    setTimeout(() => this.res.prepFormToUpdate(record), 250); // Give form a chance to load prior to populating
+    this.modalService.open('record-entry-modal');
+    this.rfs.prepFormToUpdate(record);
   }
 
   public aboutToDelete(row) {
@@ -156,12 +157,12 @@ export class RecordListComponent implements OnInit {
   }
 
   public deleteRecord(record) {
-    this.res.deleteRecord(record);
+    this.rfs.deleteRecord(record);
   }
 
-  public setCurrentRecord(record){
-    this.dataService.setCurrentRecord(record);
-    this.modalTableDataSource = new MatTableDataSource([record]); // data source must be an arrray.
+  public setCurrentRecord(record) { 
+    this.dataService.setCurrentRecord(record);// set current record for consumption by another component i.e. Financials
+    this.currentRecord = record; // For Family Contact modal
   }
 
   toggleChildTable(row) {
@@ -172,20 +173,17 @@ export class RecordListComponent implements OnInit {
     this.showForm = !this.showForm;
   }
 
+  openModal(id: string) {
+    this.modalService.open(id);
+    if(id === 'record-entry-modal'){
+      this.rfs.isUpdating$.next(false);
+    }
+  }
+
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });
   }
-
-  // Family Record Modal
-  openModal(id: string, record) {
-    this.currentRecord = record;
-    this.modalService.open(id);
-  }
-
-  closeModal(id: string) {
-    this.modalService.close(id);
-  }
-
 }

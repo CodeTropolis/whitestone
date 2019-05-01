@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FinancialsService } from '../financials.service';
-import { Observable, BehaviorSubject, pipe } from 'rxjs';
 import { ModalService } from '../../modal/modal.service';
-import { FirebaseService } from '../../core/services/firebase.service';
 
 @Component({
   selector: 'app-tax-forms',
@@ -21,46 +19,49 @@ export class TaxFormsComponent implements OnInit {
   private paymentsCollection: string;
   private subscriptions: any[] = [];
 
-  constructor(private financialsService: FinancialsService, private modalService: ModalService, private firebaseService: FirebaseService) { }
+  constructor(private financialsService: FinancialsService, private modalService: ModalService) { }
 
   ngOnInit() {
 
-    let date = new Date();
-    this.taxYear = date.getFullYear() -1;
-    //console.log(this.taxYear);
-
+    const date = new Date();
+    this.taxYear = date.getFullYear() - 1;
     this.subscriptions.push(
       this.financialsService.currentFinancialDoc$.subscribe(doc => {
-        if(doc){
+        if (doc) {
           this.currentFinancialDoc = doc;
         }
       })
     );
 
-    // Get the subcollection for payments based on the current category.
+    // Get the subcollection name for payments based on the current category.
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
-        if(cat){
-          //console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
+        if (cat) {
+          // console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
           this.currentCategory = cat.val;
           this.paymentsCollection = cat.key + 'Payments';
-          console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
+          // console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
         }
       })
     );
 
     this.subscriptions.push(
-      this.financialsService.transactions$.subscribe(transactions => { 
+      this.financialsService.transactions$.subscribe(transactions => {
         this.payments = [];
         this.paymentTotal = null;
-        if(transactions){
+        if (transactions) {
           transactions.forEach(payment => {
-            if(payment.date.getFullYear() === this.taxYear)
-            this.payments.push(payment); // an array of payment objects
+            // console.log(`MD: TaxFormsComponent -> ngOnInit -> payment`, payment);
+            if (payment.date.getFullYear() === this.taxYear && payment.taxDeductible) {
+              this.payments.push(payment); // an array of payment objects
+            }
           });
           this.paymentTotal = 0;
-          for (var key in this.payments){
-            this.paymentTotal += this.payments[key]['amount'];
+          for (const key in this.payments) {
+            // https://stackoverflow.com/a/40789394  Satisfies TS Lint complaint about for in statements must be filtered w/ if.
+            if (this.payments.hasOwnProperty(key)) {
+              this.paymentTotal += this.payments[key]['amount'];
+            }
           }
         }
       })
@@ -71,21 +72,21 @@ export class TaxFormsComponent implements OnInit {
     openModal(id: string) {
 
       this.financialsService.showHistory$.next(false);
- 
+
       this.modalService.open(id);
 
-      this.financialsService.transactions = []; //  wipe out anything that may have been populated by history.component.  
+      this.financialsService.transactions = []; //  wipe out anything that may have been populated by history.component.
       this.financialsService.transactions$.next(null);
 
       this.financialsService.getTransactions(this.currentFinancialDoc, this.paymentsCollection);
 
     }
-  
+
     closeModal(id: string) {
       this.modalService.close(id);
     }
 
-    print(){
+    print() {
       window.print();
     }
 

@@ -1,14 +1,11 @@
 <mat-toolbar color="{{color}}">
 	<div class="container">
 		<div class="row">
-
 			<span *ngIf="img" class="col-md"> <img src="assets/{{img}}"></span>
-
-
 			<span *ngIf="title" class="col-md title">{{title}}</span>
 			<span class="col-md info">
 				<div *ngIf="currentUser$ | async as user">
-					<span *ngIf="showUserEmail">{{user.email}} | </span> 
+					<div *ngIf="showUserEmail"><span>{{user.email}}</span> <br></div>
 					<span *ngIf="link"><a [routerLink]="link">{{linkName}}</a> | </span>
 					<a [routerLink]="" (click)="logOut()">Logout</a>
 				</div>
