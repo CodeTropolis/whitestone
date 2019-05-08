@@ -144,7 +144,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
       // transactionType: [row.amount, Validators.required],
       date: [row.date, Validators.required],
       memo: [row.memo, Validators.required],
-      taxDeductible: [row.memo, Validators.required]
+      taxDeductible: [row.taxDeductible, Validators.required]
     });
   }
 
@@ -196,7 +196,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.currentFinancialDoc.ref.collection(collection).doc(row.id)
       .set({amount: this.formValue.amount,
             date: this.formValue.date,
-            memo: this.formValue.memo
+            memo: this.formValue.memo,
+            taxDeductible: this.formValue.taxDeductible,
             }, { merge: true })
       .then(_ => {
 

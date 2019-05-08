@@ -1,4 +1,6 @@
-<div *ngIf="currentFinancialDoc && currentCategory == 'Tuition' || currentCategory == 'Extended Care'">
+<div *ngIf="currentFinancialDoc && currentCategory == 'Tuition' || 
+currentCategory == 'Extended Care' ||
+currentCategory == 'Misc'">
 
       <button class="tax-form" mat-flat-button color="financial" (click)="openModal('tax-form-modal');">{{taxYear}} Tax Form for {{currentCategory}}</button>
 

@@ -56,9 +56,12 @@
         <ng-container matColumnDef="taxDeductible">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Tax Deductible</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <!-- <span *ngIf="!isEditing[row.id]">{{row.memo}}</span> -->
+            <span *ngIf="!isEditing[row.id]">
+              <span *ngIf="row.taxDeductible; else no">Yes</span>
+              <ng-template #no>No</ng-template>
+            </span>
             <form *ngIf="isEditing[row.id]" [formGroup]="formGroup[row.id]" #formDirective="ngForm">
-              <mat-checkbox formControlName="taxDeductionEligible">Eligible</mat-checkbox> 
+              <mat-checkbox formControlName="taxDeductible" [checked]="row.taxDeductible">Eligible</mat-checkbox> 
             </form>
           </mat-cell>
         </ng-container>
