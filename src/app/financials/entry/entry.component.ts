@@ -48,6 +48,15 @@ export class EntryComponent implements OnInit {
 
   public showStartingBalanceInput: boolean;
 
+  public selectedYear: any;
+
+  years: any[] = [
+    { id: 18-19, name: '2018-2019' },
+    { id: 19-20, name: '2019-2020' },
+    { id: 20-21, name: '2020-2021' },
+    { id: 21-22, name: '2021-2022' },
+  ];
+
   constructor(
     private financialsService: FinancialsService,
     private fb: FormBuilder,
@@ -111,7 +120,7 @@ export class EntryComponent implements OnInit {
       })
     );
 
-    // Listen for balance update.  An update could come from the history.component.
+    // Listen for balance update.  An update could come from editing transactions in the history.component.
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(bal => {
       this.runningBalance = bal;
       if (Math.sign(this.runningBalance) === -1) {
@@ -200,6 +209,10 @@ export class EntryComponent implements OnInit {
       date: ['', Validators.required],
       memo: ['', Validators.required]
     });
+  }
+
+  public yearSelected($event) {
+    console.log($event);
   }
 
   public submitHandler(formDirective) {
