@@ -184,11 +184,18 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .then(records => {
         records.forEach(record => {
           this.iteratedRecord = record;
-          console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
+          // console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
           const children = this.dataService.convertMapToArray(record.data().children);
           children.forEach(child => {
             // Look into transactions. Provides completion or none at all if error.
-            this.iteratedRecord.ref.update({['children.child.id.foo'] : 'bar'});
+            const incrementedGrade = child.grade = parseInt(child.grade, 10) + 1;
+            const stringGrade = incrementedGrade.toString();
+            // console.log(`MD: RecordListComponent -> closeOutYear -> stringGrade`, stringGrade);
+            const childrenRef = this.iteratedRecord.get('children')
+						console.log(`MD: RecordListComponent -> closeOutYear -> childrenRef`, childrenRef);
+            console.log(`MD: RecordListComponent -> closeOutYear ->  childrenRef[child.id].grade: `, childrenRef[child.id].grade);
+            
+            //this.iteratedRecord.ref.update({"child.id.grade": stringGrade});
           });
         });
       });
