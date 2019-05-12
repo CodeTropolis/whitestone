@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.css']
 })
-export class EntryComponent implements OnInit {
+export class EntryComponent implements OnInit, OnDestroy {
   public currentCategory: any;
   public currentFinancialDoc: any;
 
@@ -64,7 +64,7 @@ export class EntryComponent implements OnInit {
     );
 
     // subscribe to get the current value of showHistory$ as another component i.e. tax-forms, may have changed it.
-    // Otherwise, when tax-form hides history, 'View History' ( which triggers toggleHistory method) button would need to be clicked twice in order for history to show.
+    // Otherwise, when tax-form hides history, 'View History' button would need to be clicked twice in order for history to show.
 
     this.subscriptions.push(
       this.financialsService.showHistory$.subscribe(x => {
@@ -80,7 +80,7 @@ export class EntryComponent implements OnInit {
         if (doc) {
           this.currentFinancialDoc = doc;
         } else {
-          //console.log('No financial data for this student.');
+          // console.log('No financial data for this student.');
         }
       })
     );
@@ -302,7 +302,7 @@ export class EntryComponent implements OnInit {
 
   private resetForm(formDirective?) {
     if (formDirective) {
-      formDirective.resetForm(); //See https://stackoverflow.com/a/48217303
+      formDirective.resetForm(); 
     }
     this.formGroup.reset();
     this.disableSubmitButton = false;
@@ -313,7 +313,7 @@ export class EntryComponent implements OnInit {
     this.financialsService.showHistory$.next(this.showHistory);
 
     setTimeout(_ => {
-      let el = document.getElementById('history');
+      const el = document.getElementById('history');
       if (el) {
         window.scrollBy(0, 300);
       }

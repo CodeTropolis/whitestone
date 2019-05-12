@@ -109,8 +109,7 @@ export class RecordEntryComponent implements OnInit {
       if (currentRecord){
         this.currentRecordId = currentRecord.realId;
       }
-      
-    })
+    });
 
     // Get the current user from the service and set to async in view
     this.currentUser$ = this.authService.authState;
@@ -209,7 +208,6 @@ export class RecordEntryComponent implements OnInit {
 
           // Set the current record to the updated values so the student-category view will pick up on the changes when
           // the current record is updated from the student-category.component.
-          
           // Issue: upon updating record from student-category, and then doing another update, 
           // the DoB fields in form are blank...
 
@@ -231,15 +229,14 @@ export class RecordEntryComponent implements OnInit {
       const uuid = obj.id || this.afs.createId();
       obj.id = uuid;
       map[`${uuid}`] = obj;
-    })
-    return map
+    });
+    return map;
   }
 
 
-  private syncFinancialDocs(record, currentRecordId){ 
-    
-    console.log(`MD: privatesyncFinancialDocs -> record`, record)
-    
+  private syncFinancialDocs(record, currentRecordId) {
+    console.log(`MD: privatesyncFinancialDocs -> record`, record);
+
     const children = this.dataService.convertMapToArray(record.children);
 
     children.forEach(child => {
@@ -256,9 +253,8 @@ export class RecordEntryComponent implements OnInit {
           childLastName: child.lname,
           grade: record.children[child.id].grade,
         },  { merge: true })
-          .then(_ => {})
-      
-    })
+          .then(_ => {});
+    });
 
   }
 

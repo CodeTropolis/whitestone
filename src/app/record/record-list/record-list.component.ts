@@ -1,22 +1,21 @@
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import { FirebaseService } from "../../core/services/firebase.service";
-import { RecordFormService } from "../../core/services/record-form.service";
-import { MatPaginator, MatSort, MatTableDataSource } from "@angular/material";
-import { DataService } from "../../core/services/data.service";
-import { AuthService } from "../../core/services/auth.service";
-import { ModalService } from "../../modal/modal.service";
-import { AngularFirestore } from "@angular/fire/firestore";
-import { Observable, combineLatest, of } from "rxjs"; // combineLatest works with this import only.
-import { map, switchMap } from "rxjs/operators";
-
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { FirebaseService } from '../../core/services/firebase.service';
+import { RecordFormService } from '../../core/services/record-form.service';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { DataService } from '../../core/services/data.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ModalService } from '../../modal/modal.service';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Observable, combineLatest, of } from 'rxjs'; // combineLatest works with this import only.
+import { map, switchMap } from 'rxjs/operators';
 
 
 @Component({
-  selector: "app-record-list",
-  templateUrl: "./record-list.component.html",
-  styleUrls: ["./record-list.component.css"]
+  selector: 'app-record-list',
+  templateUrl: './record-list.component.html',
+  styleUrls: ['./record-list.component.css']
 })
-export class RecordListComponent implements OnInit {
+export class RecordListComponent implements OnInit, OnDestroy {
   public user: any;
   public records$: Observable<any[]>;
   public isUpdating: boolean;
@@ -26,14 +25,11 @@ export class RecordListComponent implements OnInit {
   public isDeleting: boolean[] = [];
   public showForm: boolean;
   public recordMatch: boolean;
-
-
   public currentRecord: any;
- 
-
   private subscriptions: any[] = [];
+  private iteratedRecord: any;
+  private interatedChild: any;
 
-  //@ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   // Prevent sort from undefined
@@ -78,7 +74,7 @@ export class RecordListComponent implements OnInit {
   }
 
   private getAllRecords() {
-    this.displayedColumns = ["fatherLname", "motherLname", "actions"];
+    this.displayedColumns = ['fatherLname', 'motherLname', 'actions'];
 
     this.records$ = this.fs.records$;
 
@@ -104,7 +100,7 @@ export class RecordListComponent implements OnInit {
                 child.race)
           );
           dataStr = dataStr.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-          return dataStr.indexOf(filter) != -1;
+          return dataStr.indexOf(filter) !== -1;
         };
 
       })
@@ -113,14 +109,14 @@ export class RecordListComponent implements OnInit {
 
   private getMatchingRecords() {
 
-    this.displayedColumns = ["surname", "actions"];
+    this.displayedColumns = ['surname', 'actions'];
 
-      const matchFatherEmail = this.afs.collection("records", ref => ref.where("fatherEmail", "==", this.user.email));
-      const matchMotherEmail = this.afs.collection("records", ref =>ref.where("motherEmail", "==", this.user.email));
+      const matchFatherEmail = this.afs.collection('records', ref => ref.where('fatherEmail', '==', this.user.email));
+      const matchMotherEmail = this.afs.collection('records', ref => ref.where('motherEmail', '==', this.user.email));
 
       this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(map(([fathers, mothers]) => {
-          if(fathers.length || mothers.length != 0) {
+          if(fathers.length || mothers.length !== 0) {
             this.recordMatch = true;
             return [...fathers, ...mothers];
           } else {
@@ -160,7 +156,7 @@ export class RecordListComponent implements OnInit {
     this.rfs.deleteRecord(record);
   }
 
-  public setCurrentRecord(record) { 
+  public setCurrentRecord(record) {
     this.dataService.setCurrentRecord(record);// set current record for consumption by another component i.e. Financials
     this.currentRecord = record; // For Family Contact modal
   }
@@ -175,11 +171,28 @@ export class RecordListComponent implements OnInit {
 
   openModal(id: string) {
     this.modalService.open(id);
-    if(id === 'record-entry-modal'){
+    if(id === 'record-entry-modal') {
       this.rfs.isUpdating$.next(false);
     }
   }
 
+  closeOutYear() {
+    // Auto-increment grades for all students in both records and financials collections.
+    // For each financial doc, change starting balance to value of running balance
+    // Allow users to change school year on history table.
+    this.fs.recordCollection.ref.get()
+      .then(records => {
+        records.forEach(record => {
+          this.iteratedRecord = record;
+          console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
+          const children = this.dataService.convertMapToArray(record.data().children);
+          children.forEach(child => {
+            // Look into transactions. Provides completion or none at all if error.
+            this.iteratedRecord.ref.update({['children.child.id.foo'] : 'bar'});
+          });
+        });
+      });
+  }
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
