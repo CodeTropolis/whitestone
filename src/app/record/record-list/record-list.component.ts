@@ -177,31 +177,60 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   closeOutYear() {
+   
     // Auto-increment grades for all students in both records and financials collections.
     // For each financial doc, change starting balance to value of running balance
     // Allow users to change school year on history table.
     this.fs.recordCollection.ref.get()
       .then(records => {
         records.forEach(record => {
-          this.iteratedRecord = record;
-          // console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
-          const children = this.dataService.convertMapToArray(record.data().children);
-          children.forEach(child => {
-            // Look into transactions. Provides completion or none at all if error.
-            const incrementedGrade = child.grade = parseInt(child.grade, 10) + 1;
-            const stringGrade = incrementedGrade.toString();
-            // console.log(`MD: RecordListComponent -> closeOutYear -> stringGrade`, stringGrade);
-            const childrenRef = this.iteratedRecord.get('children')
-						console.log(`MD: RecordListComponent -> closeOutYear -> childrenRef`, childrenRef);
-            console.log(`MD: RecordListComponent -> closeOutYear ->  childrenRef[child.id].grade: `, childrenRef[child.id].grade);
-            
-            //this.iteratedRecord.ref.update({"child.id.grade": stringGrade});
+
+          return this.afs.firestore.runTransaction(function(transaction) {
+            // This code may get re-run multiple times if there are conflicts.
+            return transaction.get(record.ref).then(function(sfDoc) {
+                if (!record.exists) {
+                    throw "Document does not exist!";
+                }
+
+            // console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
+              const children = this.dataService.convertMapToArray(record.data().children);
+              children.forEach(child => {
+                // Look into transactions. Provides completion or none at all if error.
+                const incrementedGrade = child.grade = parseInt(child.grade, 10) + 1;
+                const stringGrade = incrementedGrade.toString();
+                // console.log(`MD: RecordListComponent -> closeOutYear -> stringGrade`, stringGrade);
+                // const childrenRef = this.iteratedRecord.get('children')
+                // console.log(`MD: RecordListComponent -> closeOutYear -> childrenRef`, childrenRef);
+                // console.log(`MD: RecordListComponent -> closeOutYear ->  childrenRef[child.id].grade: `, childrenRef[child.id].grade);
+                //this.iteratedRecord.ref.update({"child.id.grade": stringGrade});
+                transaction.update(record.ref, { [`children.${child.id}`]: stringGrade });
+              });
+            });
+          }).then(function() {
+              console.log("Transaction successfully committed!");
+          }).catch(function(error) {
+              console.log("Transaction failed: ", error);
           });
+
+          // this.iteratedRecord = record;
+          // // console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
+          // const children = this.dataService.convertMapToArray(record.data().children);
+          // children.forEach(child => {
+          //   // Look into transactions. Provides completion or none at all if error.
+          //   const incrementedGrade = child.grade = parseInt(child.grade, 10) + 1;
+          //   const stringGrade = incrementedGrade.toString();
+          //   // console.log(`MD: RecordListComponent -> closeOutYear -> stringGrade`, stringGrade);
+          //   const childrenRef = this.iteratedRecord.get('children')
+					// 	// console.log(`MD: RecordListComponent -> closeOutYear -> childrenRef`, childrenRef);
+          //   // console.log(`MD: RecordListComponent -> closeOutYear ->  childrenRef[child.id].grade: `, childrenRef[child.id].grade);
+            
+          //   //this.iteratedRecord.ref.update({"child.id.grade": stringGrade});
+          // });
         });
       });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy() {``
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });
