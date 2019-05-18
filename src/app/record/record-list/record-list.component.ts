@@ -185,15 +185,14 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .then(records => {
         records.forEach(record => {
 
+          const children = this.dataService.convertMapToArray(record.data().children);
+
           return this.afs.firestore.runTransaction(function(transaction) {
             // This code may get re-run multiple times if there are conflicts.
             return transaction.get(record.ref).then(function(sfDoc) {
                 if (!record.exists) {
                     throw "Document does not exist!";
-                }
-
-            // console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
-              const children = this.dataService.convertMapToArray(record.data().children);
+                }             
               children.forEach(child => {
                 // Look into transactions. Provides completion or none at all if error.
                 const incrementedGrade = child.grade = parseInt(child.grade, 10) + 1;
