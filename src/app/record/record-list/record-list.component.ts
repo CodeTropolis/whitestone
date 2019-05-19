@@ -177,7 +177,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   closeOutYear() {
-   
     // Auto-increment grades for all students in both records and financials collections.
     // ToDo: For each financial doc, change starting balance to value of running balance
     // Allow users to change school year on history table.
@@ -185,22 +184,33 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .then(records => {
         records.forEach(record => {
           const children = this.dataService.convertMapToArray(record.data().children);
-          return this.afs.firestore.runTransaction(function(transaction) {
+          let incrementedGrade: any;
+          let newGrade: string;
+          return this.afs.firestore.runTransaction(transaction =>  {
             // This code may get re-run multiple times if there are conflicts.
-            return transaction.get(record.ref).then(function(record) {
+            return transaction.get(record.ref).then(record => {
                 if (!record.exists) {
                     throw "Document does not exist!";
                 }             
               children.forEach(child => {
-                const incrementedGrade = child.grade = parseInt(child.grade, 10) + 1;
-                const stringGrade = incrementedGrade.toString();
+								console.log(`MD: RecordListComponent -> closeOutYear -> child.grade`, child.grade);
+                if (child.grade === 'PK3'){
+                   newGrade = 'PK4'
+                }else if (child.grade === 'PK4'){
+                   newGrade = 'K';
+                } else if (child.grade === 'K') {
+                  newGrade = '1'
+                } else {
+                   incrementedGrade = parseInt(child.grade, 10) + 1;
+                   newGrade = incrementedGrade.toString();
+                } 
 							//	console.log(`MD: RecordListComponent -> closeOutYear -> stringGrade`, stringGrade);
-                transaction.update(record.ref, { [`children.${child.id}.grade`]: stringGrade });
+                transaction.update(record.ref, { [`children.${child.id}.grade`]: newGrade });
               });
             });
-          }).then(function() {
+          }).then(() => {
               console.log("Transaction successfully committed!");
-          }).catch(function(error) {
+          }).catch(error =>{
               console.log("Transaction failed: ", error);
           });
 
