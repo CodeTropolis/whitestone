@@ -124,7 +124,7 @@ export class FirebaseService {
 
             //const nToday = mm + '/' + dd + '/' + currentYear;
             // Save date as time stamp
-            const formattedToday = month+' '+dd+', '+currentYear
+            // const formattedToday = month+' '+dd+', '+currentYear
             
             transaction.update(doc.ref, { 
               grade: newGrade, 
@@ -132,10 +132,11 @@ export class FirebaseService {
               // tuition2018-2019StartingBalance: XXXX
               [`tuition${lastYear}-${currentYear}StartingBalance`]: doc.data().tuitionStartingBalance,
               // Whatever date as used as the tuitionStatartingBalance date will become the historical date i.e.
-              // tuition2018-2019StartingBalanceDate
+              // tuition2018-2019StartingBalanceDate: June 1, 2018
               [`tuition${lastYear}-${currentYear}StartingBalanceDate`]: doc.data().tuitionStartingBalanceDate,
-              tuitionStartingBalance: doc.data().tuitionBalance, // The stating balance changes to the current (running) balance.
-              tuitionStartingBalanceDate: formattedToday, 
+               // The stating balance changes to the current (running) balance.
+              tuitionStartingBalance: doc.data().tuitionBalance,
+              tuitionStartingBalanceDate: Date.now(), 
             });
             console.log('Processing financial doc id: ', doc.ref.id)
               
