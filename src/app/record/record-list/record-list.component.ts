@@ -8,6 +8,7 @@ import { ModalService } from '../../modal/modal.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable, combineLatest, of } from 'rxjs'; // combineLatest works with this import only.
 import { map, switchMap } from 'rxjs/operators';
+import { RecordRoutingModule } from '../record-routing.module';
 
 
 @Component({
@@ -180,59 +181,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
     // Auto-increment grades for all students in both records and financials collections.
     // ToDo: For each financial doc, change starting balance to value of running balance
     // Allow users to change school year on history table.
-    this.fs.recordCollection.ref.get()
-      .then(records => {
-        records.forEach(record => {
-          const children = this.dataService.convertMapToArray(record.data().children);
-          let incrementedGrade: any;
-          let newGrade: string;
-          return this.afs.firestore.runTransaction(transaction =>  {
-            // This code may get re-run multiple times if there are conflicts.
-            return transaction.get(record.ref).then(record => {
-                if (!record.exists) {
-                    throw "Document does not exist!";
-                }             
-              children.forEach(child => {
-								console.log(`MD: RecordListComponent -> closeOutYear -> child.grade`, child.grade);
-                if (child.grade === 'PK3'){
-                   newGrade = 'PK4'
-                }else if (child.grade === 'PK4'){
-                   newGrade = 'K';
-                } else if (child.grade === 'K') {
-                  newGrade = '1'
-                } else {
-                   incrementedGrade = parseInt(child.grade, 10) + 1;
-                   newGrade = incrementedGrade.toString();
-                } 
-							//	console.log(`MD: RecordListComponent -> closeOutYear -> stringGrade`, stringGrade);
-                transaction.update(record.ref, { [`children.${child.id}.grade`]: newGrade });
-              });
-            });
-          }).then(() => {
-              console.log("Transaction successfully committed!");
-          }).catch(error =>{
-              console.log("Transaction failed: ", error);
-          });
-
-          // this.iteratedRecord = record;
-          // // console.log(`MD: RecordListComponent -> closeOutYear -> this.iteratedRecord`, this.iteratedRecord);
-          // const children = this.dataService.convertMapToArray(record.data().children);
-          // children.forEach(child => {
-          //   // Look into transactions. Provides completion or none at all if error.
-          //   const incrementedGrade = child.grade = parseInt(child.grade, 10) + 1;
-          //   const stringGrade = incrementedGrade.toString();
-          //   // console.log(`MD: RecordListComponent -> closeOutYear -> stringGrade`, stringGrade);
-          //   const childrenRef = this.iteratedRecord.get('children')
-					// 	// console.log(`MD: RecordListComponent -> closeOutYear -> childrenRef`, childrenRef);
-          //   // console.log(`MD: RecordListComponent -> closeOutYear ->  childrenRef[child.id].grade: `, childrenRef[child.id].grade);
-            
-          //   //this.iteratedRecord.ref.update({"child.id.grade": stringGrade});
-          // });
-        });
-      });
+    this.fs.closeOutYear();
   }
 
-  ngOnDestroy() {``
+  ngOnDestroy() {
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });
