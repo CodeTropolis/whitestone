@@ -115,20 +115,15 @@ export class FirebaseService {
             } 
 
             const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            //const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-            const month = today.toLocaleString('en-us', { month: 'long' });
+            // const dd = String(today.getDate()).padStart(2, '0');
+            // //const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            // const month = today.toLocaleString('en-us', { month: 'long' });
             const currentYear = today.getFullYear();
             const lastYear = today.getFullYear() -1 ;
-            // const nextYear = today.getFullYear() + 1;
-
-            //const nToday = mm + '/' + dd + '/' + currentYear;
-            // Save date as time stamp
-            // const formattedToday = month+' '+dd+', '+currentYear
-            
+       
             transaction.update(doc.ref, { 
               grade: newGrade, 
-              // Make a record of the current tuition balance, for example,
+              // Create a historical record of the current tuition balance, for example,
               // tuition2018-2019StartingBalance: XXXX
               [`tuition${lastYear}-${currentYear}StartingBalance`]: doc.data().tuitionStartingBalance,
               // Whatever date as used as the tuitionStatartingBalance date will become the historical date i.e.
@@ -136,7 +131,7 @@ export class FirebaseService {
               [`tuition${lastYear}-${currentYear}StartingBalanceDate`]: doc.data().tuitionStartingBalanceDate,
                // The stating balance changes to the current (running) balance.
               tuitionStartingBalance: doc.data().tuitionBalance,
-              tuitionStartingBalanceDate: Date.now(), 
+              tuitionStartingBalanceDate: new Date(), 
             });
             console.log('Processing financial doc id: ', doc.ref.id)
               
