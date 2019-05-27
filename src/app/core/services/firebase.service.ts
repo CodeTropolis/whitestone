@@ -31,13 +31,8 @@ export class FirebaseService {
     this.financialsCollection = this.afs.collection<any[]>('financials');
 
     this.studentsCollection = this.afs.collection<any[]>('students');
-   
+
   }
-
-  // private updateGradeLevel(){
-  //   return this.afs.firestore.runTransaction()
-  // }
-
   private mapAndReplayCollection(collection: AngularFirestoreCollection<any[]>): any {
     return collection.snapshotChanges()
       .pipe(
@@ -45,10 +40,10 @@ export class FirebaseService {
         map(changes => {
           return changes.map(a => {
             return { realId: a.payload.doc.id, ...a.payload.doc.data() }
-          })
+          });
         }),
        shareReplay(1) // Apparently a bug with shareReplay() causes <observable>$ to not unsubscribe despite unsubscribing.
-      )
+      );
   }
 
   public closeOutYear () {
@@ -56,93 +51,75 @@ export class FirebaseService {
       .then(records => {
         records.forEach(record => {
           const children = this.dataService.convertMapToArray(record.data().children);
-          let incrementedGrade: any;
-          let newGrade: string;
-          return this.afs.firestore.runTransaction(transaction =>  {
+          let newGrade = '';
+          return this.afs.firestore.runTransaction(async transaction =>  {
             // This code may get re-run multiple times if there are conflicts.
-            return transaction.get(record.ref).then(record => {
-              if (!record.exists) {
-                  throw "Document does not exist!";
-              }             
-              children.forEach(child => {
-                if (child.grade === 'PK3'){
-                   newGrade = 'PK4'
-                }else if (child.grade === 'PK4'){
-                   newGrade = 'K';
-                } else if (child.grade === 'K') {
-                  newGrade = '1'
-                } else {
-                   incrementedGrade = parseInt(child.grade, 10) + 1;
-                   newGrade = incrementedGrade.toString();
-                } 
-                transaction.update(record.ref, { [`children.${child.id}.grade`]: newGrade });
-                console.log('Running transaction. Processing record id: ', record.ref.id)
-              });
+            const r = await transaction.get(record.ref);
+            if (!r.exists) {
+              throw new Error('Document does not exist!');
+            }
+            children.forEach(child => {
+              newGrade = this.processGradeLevel(child);
+              transaction.update(record.ref, { [`children.${child.id}.grade`]: newGrade });
+              console.log('Running transaction. Processing record id: ', record.ref.id);
             });
           }).then(() => {
               console.log(`Transaction for ${record.ref.id} successfully committed!`);
-          }).catch(error =>{
-              console.log("Transaction failed: ", error);
+          }).catch(error => {
+              console.log(`Transaction failed for record ${record.ref.id}: ${error}`);
           });
         });
       });
-
-      // ---- Update grade level in each doc in financials collection ---
+      // ----Financials Collection ---
+      // console.log(`MD: FirebaseService -> closeOutYear ->  this.financialsCollection.ref`,  this.financialsCollection.ref);
       this.financialsCollection.ref.get()
       .then(docs => {
         docs.forEach(doc => {
-          // const children = this.dataService.convertMapToArray(record.data().children);
-          let incrementedGrade: any;
-          let newGrade: string;
-          return this.afs.firestore.runTransaction(transaction =>  {
+          let newGrade = '';
+          return this.afs.firestore.runTransaction(async transaction =>  {
             // This code may get re-run multiple times if there are conflicts.
-            return transaction.get(doc.ref).then(doc => {
-              if (!doc.exists) {
-                  throw "Document does not exist!";
-              } 
-              
-            const docGrade = doc.data().grade;
-              
-            if (docGrade === 'PK3'){
-                newGrade = 'PK4'
-            }else if (docGrade === 'PK4'){
-                newGrade = 'K';
-            } else if (docGrade === 'K') {
-              newGrade = '1'
-            } else {
-                incrementedGrade = parseInt(docGrade, 10) + 1;
-                newGrade = incrementedGrade.toString();
-            } 
-
+            const d = await transaction.get(doc.ref);
+            if (!d.exists) {
+              throw new Error('Document does not exist!');
+            }
+            newGrade = this.processGradeLevel(doc.data());
             const today = new Date();
-            // const dd = String(today.getDate()).padStart(2, '0');
-            // //const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-            // const month = today.toLocaleString('en-us', { month: 'long' });
             const currentYear = today.getFullYear();
-            const lastYear = today.getFullYear() -1 ;
-       
-            transaction.update(doc.ref, { 
-              grade: newGrade, 
+            const lastYear = today.getFullYear() - 1;
+            transaction.update(doc.ref, {
+              grade: newGrade,
               // Create a historical record of the current tuition balance, for example,
               // tuition2018-2019StartingBalance: XXXX
               [`tuition${lastYear}-${currentYear}StartingBalance`]: doc.data().tuitionStartingBalance,
-              // Whatever date as used as the tuitionStatartingBalance date will become the historical date i.e.
-              // tuition2018-2019StartingBalanceDate: June 1, 2018
+              // Whatever date as used as the tuitionStatartingBalance date will become the historical date.
               [`tuition${lastYear}-${currentYear}StartingBalanceDate`]: doc.data().tuitionStartingBalanceDate,
-               // The stating balance changes to the current (running) balance.
+              // The stating balance changes to the current (running) balance.
               tuitionStartingBalance: doc.data().tuitionBalance,
-              tuitionStartingBalanceDate: new Date(), 
-            });
-            console.log('Processing financial doc id: ', doc.ref.id)
-              
+              tuitionStartingBalanceDate: new Date(),
             });
           }).then(() => {
               console.log(`Transaction for financial doc ${doc.ref.id} successfully committed!`);
-          }).catch(error =>{
-              console.log("Transaction failed: ", error);
+          }).catch(error => {
+              console.log(`Transaction failed for financial doc ${doc.ref.id}: ${error}`);
           });
         });
       });
+  }
+
+  private processGradeLevel (item): string {
+    let newGrade = '';
+    let incrementedGrade: number;
+    if (item.grade === 'PK3') {
+      newGrade = 'PK4';
+   } else if (item.grade === 'PK4') {
+      newGrade = 'K';
+   } else if (item.grade === 'K') {
+     newGrade = '1';
+   } else {
+      incrementedGrade = parseInt(item.grade, 10) + 1;
+      newGrade = incrementedGrade.toString();
+   }
+    return newGrade;
   }
 
 }
