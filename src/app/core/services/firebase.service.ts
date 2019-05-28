@@ -4,6 +4,8 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable, Subject} from 'rxjs';
 import { map, tap, shareReplay } from 'rxjs/operators';
 import { DataService } from './data.service';
+import { ClassField } from '@angular/compiler';
+import * as firebase from 'firebase/app';
 
 @Injectable({
   providedIn: 'root'
@@ -60,18 +62,20 @@ export class FirebaseService {
             }
             children.forEach(child => {
               newGrade = this.processGradeLevel(child);
+              if ( ![`children.${child.id}.grade`]) {throw new Error();}
               transaction.update(record.ref, { [`children.${child.id}.grade`]: newGrade });
               console.log('Running transaction. Processing record id: ', record.ref.id);
             });
           }).then(() => {
-              console.log(`Transaction for ${record.ref.id} successfully committed!`);
+              console.log(`Transaction ${record.ref.id} in record collection successfully committed!`);
+              record.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
           }).catch(error => {
-              console.log(`Transaction failed for record ${record.ref.id}: ${error}`);
+              console.log(`Transaction failed for record ${record.data().childFirstName} ${record.data().childLastName}: ${error}`);
+              record.ref.update({closeOutError: `${error}`});
           });
         });
       });
       // ----Financials Collection ---
-      // console.log(`MD: FirebaseService -> closeOutYear ->  this.financialsCollection.ref`,  this.financialsCollection.ref);
       this.financialsCollection.ref.get()
       .then(docs => {
         docs.forEach(doc => {
@@ -99,8 +103,9 @@ export class FirebaseService {
             });
           }).then(() => {
               console.log(`Transaction for financial doc ${doc.ref.id} successfully committed!`);
+              doc.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
           }).catch(error => {
-              console.log(`Transaction failed for financial doc ${doc.ref.id}: ${error}`);
+               doc.ref.update({closeOutError: `${error}`});
           });
         });
       });
