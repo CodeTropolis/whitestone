@@ -4,8 +4,12 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable, Subject} from 'rxjs';
 import { map, tap, shareReplay } from 'rxjs/operators';
 import { DataService } from './data.service';
-import { ClassField } from '@angular/compiler';
-import * as firebase from 'firebase/app';
+//import * as firebase from 'firebase/app';
+
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+
+// import * as functions from "../../../../functions/src/index";
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +53,17 @@ export class FirebaseService {
   }
 
   public closeOutYear () {
+    const message = { message: 'Hello.' };
+
+    firebase.functions().httpsCallable('myFunction')(message)
+      .then(result => {
+				console.log(`MD: FirebaseService -> publiccloseOutYear -> result`, result);
+        // Do something //
+      })
+      .catch(error => {
+        // Error handler //
+      });
+
     this.recordCollection.ref.get()
       .then(records => {
         records.forEach(record => {
