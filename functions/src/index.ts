@@ -20,5 +20,6 @@ exports.sendNotifications = functions.firestore.document('records/{recordId}')
     });
 
 exports.myFunction = functions.https.onCall((data, context) => {
-	console.log(`MD: cloud function myFunction -> data`, data);
-});
+	console.log(`MD: cloud function myFunction ->data`, data);
+    // Do something
+    });

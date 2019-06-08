@@ -53,20 +53,32 @@ export class FirebaseService {
   }
 
   public closeOutYear () {
-    const message = { message: 'Hello.' };
+    // const message = { message: 'Hello.' };
 
-    firebase.functions().httpsCallable('myFunction')(message)
-      .then(result => {
-				console.log(`MD: FirebaseService -> publiccloseOutYear -> result`, result);
-        // Do something //
-      })
-      .catch(error => {
-        // Error handler //
-      });
+    // firebase.functions().httpsCallable('myFunction')(message)
+    //   .then(result => {
+		// 		console.log(`MD: FirebaseService -> publiccloseOutYear -> result`, result);
+    //     // Do something //
+    //   })
+    //   .catch(error => {
+    //     // Error handler //
+    //   });
 
     this.recordCollection.ref.get()
       .then(records => {
         records.forEach(record => {
+
+
+          // firebase.functions().httpsCallable('myFunction')(record, this.afs)
+          //   .then(result => {
+          //     console.log(`MD: FirebaseService -> httpsCallable('myFunction') -> result`, result);
+          //     // Do something //
+          //   })
+          //   .catch(error => {
+          //     // Error handler //
+          //   });
+
+          // ToDo: Add flag to doc on DB indicating close out year performed for 2018-2019 school year (dynamic)
           const children = this.dataService.convertMapToArray(record.data().children);
           let newGrade = '';
           return this.afs.firestore.runTransaction(async transaction =>  {
@@ -105,17 +117,37 @@ export class FirebaseService {
             const today = new Date();
             const currentYear = today.getFullYear();
             const lastYear = today.getFullYear() - 1;
+
             transaction.update(doc.ref, {
               grade: newGrade,
-              // Create a historical record of the current tuition balance, for example,
-              // tuition2018-2019StartingBalance: XXXX
-              [`tuition${lastYear}-${currentYear}StartingBalance`]: doc.data().tuitionStartingBalance,
-              // Whatever date as used as the tuitionStatartingBalance date will become the historical date.
-              [`tuition${lastYear}-${currentYear}StartingBalanceDate`]: doc.data().tuitionStartingBalanceDate,
-              // The stating balance changes to the current (running) balance.
-              tuitionStartingBalance: doc.data().tuitionBalance,
-              tuitionStartingBalanceDate: new Date(),
             });
+
+            const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
+            arr.forEach(element => {
+              //console.log(element);
+              transaction.update(doc.ref, {
+                // Create a historical record of the iterated category balance, for example,
+                // tuition2018-2019StartingBalance: XXXX
+                [`${element}${lastYear}-${currentYear}StartingBalance`]: doc.data().tuitionStartingBalance,
+                // Whatever date as used as the tuitionStatartingBalance date will become the historical date.
+                [`${element}${lastYear}-${currentYear}StartingBalanceDate`]: doc.data().tuitionStartingBalanceDate,
+                // The stating balance changes to the current (running) balance.
+                // and the starting balance gets the date of when this function is executed.
+                [`${element}StartingBalance`]: doc.data()[`${element}Balance`],
+                [`${element}StartingBalanceDate`]: new Date(),
+              });
+            });
+            // transaction.update(doc.ref, {
+            //   grade: newGrade,
+            //   // Create a historical record of the current tuition balance, for example,
+            //   // tuition2018-2019StartingBalance: XXXX
+            //   [`tuition${lastYear}-${currentYear}StartingBalance`]: doc.data().tuitionStartingBalance,
+            //   // Whatever date as used as the tuitionStatartingBalance date will become the historical date.
+            //   [`tuition${lastYear}-${currentYear}StartingBalanceDate`]: doc.data().tuitionStartingBalanceDate,
+            //   // The stating balance changes to the current (running) balance.
+            //   tuitionStartingBalance: doc.data().tuitionBalance,
+            //   tuitionStartingBalanceDate: new Date(),
+            // });
           }).then(() => {
               console.log(`Transaction for financial doc ${doc.ref.id} successfully committed!`);
               doc.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
