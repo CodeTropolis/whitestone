@@ -178,9 +178,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   closeOutYear() {
-    // Auto-increment grades for all students in both records and financials collections.
-    // ToDo: For each financial doc, change starting balance to value of running balance
-    // Allow users to change school year on history table.
     this.fs.closeOutYear();
   }
 

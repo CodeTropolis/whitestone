@@ -20,6 +20,13 @@ import * as functions from 'firebase-functions';
 //     });
 
 exports.updateDoc = functions.https.onCall((data, context) => {
-	console.log(`MD: cloud function updateDoc ->data`, data);
+    console.log(`MD: cloud function updateDoc ->data`, data);
+
+    const promise = new Promise(function(resolve, reject) {
+        setTimeout(function() {
+          resolve('foo');
+        }, 300);
+      });;
+      return promise;
     // Do something
 });

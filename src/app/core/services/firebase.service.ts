@@ -67,14 +67,14 @@ export class FirebaseService {
     this.recordCollection.ref.get()
       .then(records => {
         records.forEach(record => {
-          firebase.functions().httpsCallable('updateDoc')(record)
-            .then(result => {
-              console.log(`MD: FirebaseService -> httpsCallable('updateDoc') -> result`, result);
-              // Do something //
-            })
-            .catch(error => {
-              // Error handler //
-            });
+          // firebase.functions().httpsCallable('updateDoc')(record)
+          //   .then(result => {
+          //     console.log(`MD: FirebaseService -> httpsCallable('updateDoc') -> result`, result);
+          //     // Do something //
+          //   })
+          //   .catch(error => {
+          //     // Error handler //
+          //   });
           const children = this.dataService.convertMapToArray(record.data().children);
           let newGrade = '';
           return this.afs.firestore.runTransaction(async transaction =>  {
