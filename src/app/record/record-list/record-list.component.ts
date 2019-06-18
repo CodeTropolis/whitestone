@@ -182,14 +182,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   closeOutYear() {
-    // const message = `Warning; Closing out the school year assumes all students progress to the next grade.\n
-    // If a student is held back or skips a grade, you may change their grade level by updating the record.\n
-    // If a starting balance exists for a financial category, the current running balance for that category will \n
-    // become the new starting balance and a historical reference will be created for the previous year's starting balance.\n
-    // The revised balances cannot be undone.\n Do you want to continue?`;
-    //if (window.confirm(message)) { 
-      this.fs.closeOutYear();
-    //}
+    this.fs.closeOutYear();
+    this.closeModal('warning');
   }
 
   ngOnDestroy() {
