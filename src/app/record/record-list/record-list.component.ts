@@ -177,11 +177,13 @@ export class RecordListComponent implements OnInit, OnDestroy {
     }
   }
 
+  closeModal(id: string) {
+    this.modalService.close(id);
+  }
+
   closeOutYear() {
-    // Auto-increment grades for all students in both records and financials collections.
-    // ToDo: For each financial doc, change starting balance to value of running balance
-    // Allow users to change school year on history table.
     this.fs.closeOutYear();
+    this.closeModal('warning');
   }
 
   ngOnDestroy() {

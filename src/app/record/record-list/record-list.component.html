@@ -10,7 +10,7 @@
 	<div *ngIf="recordMatch || user.roles.admin; else noRecords">
 		<div *ngIf="user">
 			<mat-card>
-				<!-- <button *ngIf="user.roles.admin" (click)="closeOutYear();">Close Out Year</button> -->
+				<button *ngIf="user.roles.admin" (click)="openModal('warning');">Close Out Year</button>
 				<button *ngIf="user.roles.admin" class="btn-add-record" (click)="openModal('record-entry-modal', formDirective)" mat-flat-button color="basic">
 					<i class="material-icons">add_circle</i>Family Record
 				</button>
@@ -21,8 +21,6 @@
 
 				<mat-table [dataSource]="ds" matSort>
 					<div *ngIf="user['roles'].admin; else viewForParents">
-
-
 						<ng-container matColumnDef="fatherLname">
 							<mat-header-cell *matHeaderCellDef mat-sort-header> Father / Guardian</mat-header-cell>
 							<mat-cell *matCellDef="let row">{{row.fatherLname}}, {{row.fatherFname}}</mat-cell>
@@ -109,3 +107,18 @@
 			inquiry. 618.233.3500</p>
 	</ng-template>
 </div>
+<jw-modal id="warning">
+	<div class="warning">
+		<i class="material-icons">warning</i><p>Attention!</p>
+	</div>	
+	<p>Closing out the school year assumes all students progress to the next grade.
+    <p>If a student is held back or skips a grade, you may change their grade level by updating the family record.</p>
+    <p>If a starting balance exists for a financial category, the current running balance for that category will 
+    become the new starting balance and a historical reference will be created for the previous year's starting balance.
+	The revised balances cannot be undone.</p> 
+	<p>Do you want to continue?</p>
+	<div class="buttons">
+		<button (click)="closeModal('warning');">Cancel</button>
+		<button (click)="closeOutYear();">Close Out Year</button>
+	</div>
+</jw-modal>

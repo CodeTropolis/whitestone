@@ -4,8 +4,12 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable, Subject} from 'rxjs';
 import { map, tap, shareReplay } from 'rxjs/operators';
 import { DataService } from './data.service';
-import { ClassField } from '@angular/compiler';
-import * as firebase from 'firebase/app';
+//import * as firebase from 'firebase/app';
+
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+
+// import * as functions from "../../../../functions/src/index";
 
 @Injectable({
   providedIn: 'root'
@@ -49,9 +53,35 @@ export class FirebaseService {
   }
 
   public closeOutYear () {
+    const today = new Date();
+    // const currentYear = today.getFullYear();
+    const currentYear = today.getFullYear();
+    const lastYear = today.getFullYear() - 1;
+    // Close out for previous year should always be executed one year ahead.
+    // For example, closing out the 2018 school year should only occur in 2019.
+    const closeOutErrKey = [`closeOut${lastYear}Errors`]; 
+    // const message = { message: 'Hello.' };
+
+    // firebase.functions().httpsCallable('myFunction')(message)
+    //   .then(result => {
+		// 		console.log(`MD: FirebaseService -> publiccloseOutYear -> result`, result);
+    //     // Do something //
+    //   })
+    //   .catch(error => {
+    //     // Error handler //
+    //   });
+
     this.recordCollection.ref.get()
       .then(records => {
         records.forEach(record => {
+          // firebase.functions().httpsCallable('updateDoc')(record)
+          //   .then(result => {
+          //     console.log(`MD: FirebaseService -> httpsCallable('updateDoc') -> result`, result);
+          //     // Do something //
+          //   })
+          //   .catch(error => {
+          //     // Error handler //
+          //   });
           const children = this.dataService.convertMapToArray(record.data().children);
           let newGrade = '';
           return this.afs.firestore.runTransaction(async transaction =>  {
@@ -63,15 +93,15 @@ export class FirebaseService {
             children.forEach(child => {
               newGrade = this.processGradeLevel(child);
               if ( ![`children.${child.id}.grade`]) {throw new Error();}
-              transaction.update(record.ref, { [`children.${child.id}.grade`]: newGrade });
+              transaction.update(record.ref, {[`children.${child.id}.grade`]: newGrade });
               console.log('Running transaction. Processing record id: ', record.ref.id);
             });
           }).then(() => {
               console.log(`Transaction ${record.ref.id} in record collection successfully committed!`);
-              record.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
+              record.ref.update({[`${closeOutErrKey}`]: firebase.firestore.FieldValue.delete()});
           }).catch(error => {
               console.log(`Transaction failed for record ${record.data().childFirstName} ${record.data().childLastName}: ${error}`);
-              record.ref.update({closeOutError: `${error}`});
+              record.ref.update({[`${closeOutErrKey}`]: `${error}`});
           });
         });
       });
@@ -82,30 +112,46 @@ export class FirebaseService {
           let newGrade = '';
           return this.afs.firestore.runTransaction(async transaction =>  {
             // This code may get re-run multiple times if there are conflicts.
+            // Transactions are supposed rerun if a doc changes via another user during execution.
             const d = await transaction.get(doc.ref);
             if (!d.exists) {
               throw new Error('Document does not exist!');
             }
             newGrade = this.processGradeLevel(doc.data());
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const lastYear = today.getFullYear() - 1;
+
             transaction.update(doc.ref, {
               grade: newGrade,
-              // Create a historical record of the current tuition balance, for example,
-              // tuition2018-2019StartingBalance: XXXX
-              [`tuition${lastYear}-${currentYear}StartingBalance`]: doc.data().tuitionStartingBalance,
-              // Whatever date as used as the tuitionStatartingBalance date will become the historical date.
-              [`tuition${lastYear}-${currentYear}StartingBalanceDate`]: doc.data().tuitionStartingBalanceDate,
-              // The stating balance changes to the current (running) balance.
-              tuitionStartingBalance: doc.data().tuitionBalance,
-              tuitionStartingBalanceDate: new Date(),
+            });
+
+            const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
+            const errArr: any[] = [];
+            arr.forEach(element => {
+              if (doc.data()[`${element}StartingBalance`]) {
+                transaction.update(doc.ref, {
+                  // Create a historical record of the iterated category balance, for example,
+                  // tuition2018StartingBalance: XXXX
+                  [`${element}${lastYear}StartingBalance`]: doc.data()[`${element}StartingBalance`],
+                  // Whatever date as used as the original <category>StatartingBalance date will become the historical date.
+                  [`${element}${lastYear}StartingBalanceDate`]: doc.data()[`${element}StartingBalanceDate`],
+                  // The stating balance changes to the current (running) balance.
+                  // The starting balance receives the date of when this function is executed.
+                  [`${element}StartingBalance`]: doc.data()[`${element}Balance`],
+                  [`${element}StartingBalanceDate`]: today,
+                });
+              }else{
+                errArr.push([`${element}StartingBalance not present`]);
+                const errObj = Object.assign({}, errArr);
+                transaction.update(doc.ref, {[`${closeOutErrKey}`]: errObj})
+                // console.log(`MD: FirebaseService -> closeOutYear -> doc.data()`, doc.data());
+                // doc.ref.update({closeOutError: `${element}StartingBalance not present`});
+              }
             });
           }).then(() => {
-              console.log(`Transaction for financial doc ${doc.ref.id} successfully committed!`);
-              doc.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
-          }).catch(error => {
-               doc.ref.update({closeOutError: `${error}`});
+              // console.log(`Transaction for financial doc ${doc.ref.id} successfully committed!`);
+              // doc.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
+          })
+          .catch(error => {
+               doc.ref.update({closeOutErrKey: `${error}`});
           });
         });
       });
