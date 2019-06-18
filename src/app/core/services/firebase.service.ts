@@ -53,6 +53,13 @@ export class FirebaseService {
   }
 
   public closeOutYear () {
+    const today = new Date();
+    // const currentYear = today.getFullYear();
+    const currentYear = today.getFullYear();
+    const lastYear = today.getFullYear() - 1;
+    // Close out for previous year should always be executed one year ahead.
+    // For example, closing out the 2018 school year should only occur in 2019.
+    const closeOutErrKey = [`closeOut${lastYear}Errors`]; 
     // const message = { message: 'Hello.' };
 
     // firebase.functions().httpsCallable('myFunction')(message)
@@ -86,15 +93,15 @@ export class FirebaseService {
             children.forEach(child => {
               newGrade = this.processGradeLevel(child);
               if ( ![`children.${child.id}.grade`]) {throw new Error();}
-              transaction.update(record.ref, { [`children.${child.id}.grade`]: newGrade });
+              transaction.update(record.ref, {[`children.${child.id}.grade`]: newGrade });
               console.log('Running transaction. Processing record id: ', record.ref.id);
             });
           }).then(() => {
               console.log(`Transaction ${record.ref.id} in record collection successfully committed!`);
-              record.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
+              record.ref.update({[`${closeOutErrKey}`]: firebase.firestore.FieldValue.delete()});
           }).catch(error => {
               console.log(`Transaction failed for record ${record.data().childFirstName} ${record.data().childLastName}: ${error}`);
-              record.ref.update({closeOutError: `${error}`});
+              record.ref.update({[`${closeOutErrKey}`]: `${error}`});
           });
         });
       });
@@ -111,9 +118,6 @@ export class FirebaseService {
               throw new Error('Document does not exist!');
             }
             newGrade = this.processGradeLevel(doc.data());
-            const today = new Date();
-            // const currentYear = today.getFullYear();
-            const lastYear = today.getFullYear() - 1;
 
             transaction.update(doc.ref, {
               grade: newGrade,
@@ -137,8 +141,8 @@ export class FirebaseService {
               }else{
                 errArr.push([`${element}StartingBalance not present`]);
                 const errObj = Object.assign({}, errArr);
-                transaction.update(doc.ref, {closeOutErrors: errObj})
-                console.log(`MD: FirebaseService -> closeOutYear -> doc.data()`, doc.data());
+                transaction.update(doc.ref, {[`${closeOutErrKey}`]: errObj})
+                // console.log(`MD: FirebaseService -> closeOutYear -> doc.data()`, doc.data());
                 // doc.ref.update({closeOutError: `${element}StartingBalance not present`});
               }
             });
@@ -147,7 +151,7 @@ export class FirebaseService {
               // doc.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
           })
           .catch(error => {
-               doc.ref.update({closeOutError: `${error}`});
+               doc.ref.update({closeOutErrKey: `${error}`});
           });
         });
       });
