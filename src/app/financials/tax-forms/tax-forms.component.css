@@ -1,15 +1,18 @@
+
+
 button.tax-form {margin-top: 1em;}
 
 .buttons {
+  position: relative;
     margin: 0 auto !important;
     width: 120px !important;
+    z-index: 999;
 }
 
 .payment-list {font-size: 0.85em;}
 
 p.total {margin-top: 1em;}
 
-/* jw-modal #address {margin: 1em 0;} */
 
   /* Small devices (landscape phones, less than 768px) */
   @media (max-width: 767.98px) { 

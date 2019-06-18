@@ -2,11 +2,12 @@
 currentCategory == 'Extended Care' ||
 currentCategory == 'Misc'">
 
-      <button class="tax-form" mat-flat-button color="financial" (click)="openModal('tax-form-modal');">{{taxYear}} Tax Form for {{currentCategory}}</button>
+    <button class="tax-form" mat-flat-button color="financial" (click)="openModal('tax-form-modal');">{{taxYear}} Tax Form for {{currentCategory}}</button>
 
     <jw-modal id="tax-form-modal">
          
       <div id="print-content">
+        <div class="logo"></div>
 
         <p> TAX CREDIT INFORMATION for <strong>{{currentFinancialDoc.data().childFirstName}} {{currentFinancialDoc.data().childLastName}}</strong> </p>
 

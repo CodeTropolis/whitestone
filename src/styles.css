@@ -51,6 +51,21 @@ input:-webkit-autofill {
 
 /* jw-modal#tax-form-modal mat-card * {font-size: 1.06em;} */
 
+jw-modal#tax-form-modal .jw-modal-body {position: relative;}
+
+jw-modal#tax-form-modal .jw-modal-body:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: url('/assets/taxFormBG.png') center center no-repeat;
+    opacity: 0.1;
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) { 
     .mobile {display:none;}
@@ -89,6 +104,14 @@ input:-webkit-autofill {
     }
 
     #print-content {
+        /* position: relative; */
         font-size: 1.25em;
+    }
+
+    #print-content .logo {
+        background: url('/assets/taxFormBG.png') center center no-repeat;
+        width: 388px;
+        height: 320px;
+        margin: 0 auto;
     }
 }
