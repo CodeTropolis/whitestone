@@ -30,6 +30,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
   private subscriptions: any[] = [];
   private iteratedRecord: any;
   private interatedChild: any;
+  public confirmCOY = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -172,18 +173,22 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   openModal(id: string) {
     this.modalService.open(id);
-    if(id === 'record-entry-modal') {
+    if (id === 'record-entry-modal') {
       this.rfs.isUpdating$.next(false);
     }
   }
 
   closeModal(id: string) {
     this.modalService.close(id);
+    if (id === 'warning') {
+      this.confirmCOY = false;
+    }
   }
 
   closeOutYear() {
     this.fs.closeOutYear();
     this.closeModal('warning');
+    this.confirmCOY = false;
   }
 
   ngOnDestroy() {

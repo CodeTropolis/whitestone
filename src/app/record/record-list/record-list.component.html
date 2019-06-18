@@ -104,7 +104,7 @@
 	<ng-template #noRecords>
 		<p>No records found for this user.</p>
 		<p>Please contact the St. Teresa School Administration office for further
-			inquiry. 618.233.3500</p>
+			inquiry: 618.233.3500</p>
 	</ng-template>
 </div>
 <jw-modal id="warning">
@@ -119,6 +119,7 @@
 	<p>Do you want to continue?</p>
 	<div class="buttons">
 		<button (click)="closeModal('warning');">Cancel</button>
-		<button (click)="closeOutYear();">Close Out Year</button>
+		<button *ngIf="!confirmCOY" class="coy" (click)="confirmCOY = !confirmCOY;">Close Out Year</button>
+		<button *ngIf="confirmCOY" class="coy" (click)="closeOutYear();">Confirm Close Out Year</button>
 	</div>
 </jw-modal>
