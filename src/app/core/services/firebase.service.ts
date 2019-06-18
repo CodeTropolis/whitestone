@@ -27,9 +27,12 @@ export class FirebaseService {
   // app.component sets this value to determine if show prog spinner.  See login component
   public loading = new Subject<boolean>();
 
+  public closeOutYearRunning$ = new Subject<boolean>();
+
   constructor(private afs: AngularFirestore, private dataService: DataService) {
 
     this.loading.next(false);
+    this.closeOutYearRunning$.next(false);
 
     this.recordCollection = this.afs.collection<any[]>('records');
     this.records$ = this.mapAndReplayCollection(this.recordCollection);
@@ -53,23 +56,14 @@ export class FirebaseService {
   }
 
   public closeOutYear () {
+    this.closeOutYearRunning$.next(true);
     const today = new Date();
     // const currentYear = today.getFullYear();
     const currentYear = today.getFullYear();
     const lastYear = today.getFullYear() - 1;
     // Close out for previous year should always be executed one year ahead.
     // For example, closing out the 2018 school year should only occur in 2019.
-    const closeOutErrKey = [`closeOut${lastYear}Errors`]; 
-    // const message = { message: 'Hello.' };
-
-    // firebase.functions().httpsCallable('myFunction')(message)
-    //   .then(result => {
-		// 		console.log(`MD: FirebaseService -> publiccloseOutYear -> result`, result);
-    //     // Do something //
-    //   })
-    //   .catch(error => {
-    //     // Error handler //
-    //   });
+    const closeOutErrKey = [`closeOut${lastYear}Errors`];
 
     this.recordCollection.ref.get()
       .then(records => {
@@ -138,10 +132,10 @@ export class FirebaseService {
                   [`${element}StartingBalance`]: doc.data()[`${element}Balance`],
                   [`${element}StartingBalanceDate`]: today,
                 });
-              }else{
+              } else {
                 errArr.push([`${element}StartingBalance not present`]);
                 const errObj = Object.assign({}, errArr);
-                transaction.update(doc.ref, {[`${closeOutErrKey}`]: errObj})
+                transaction.update(doc.ref, {[`${closeOutErrKey}`]: errObj});
                 // console.log(`MD: FirebaseService -> closeOutYear -> doc.data()`, doc.data());
                 // doc.ref.update({closeOutError: `${element}StartingBalance not present`});
               }
@@ -153,7 +147,9 @@ export class FirebaseService {
           .catch(error => {
                doc.ref.update({closeOutErrKey: `${error}`});
           });
-        });
+        })
+      }).then(_ => {
+        this.closeOutYearRunning$.next(false);
       });
   }
 

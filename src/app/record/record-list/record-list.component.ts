@@ -6,7 +6,7 @@ import { DataService } from '../../core/services/data.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ModalService } from '../../modal/modal.service';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Observable, combineLatest, of } from 'rxjs'; // combineLatest works with this import only.
+import { Observable, Subject, combineLatest, of } from 'rxjs'; // combineLatest works with this import only.
 import { map, switchMap } from 'rxjs/operators';
 import { RecordRoutingModule } from '../record-routing.module';
 
@@ -31,6 +31,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
   private iteratedRecord: any;
   private interatedChild: any;
   public confirmCOY = false;
+  public closeOutYearRunning: boolean;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -72,6 +73,14 @@ export class RecordListComponent implements OnInit, OnDestroy {
     // Get state from service for button state: disable upon edit.
     this.subscriptions.push(
       this.rfs.isUpdating$.subscribe(x => (this.isUpdating = x))
+    );
+    this.subscriptions.push(
+      this.fs.closeOutYearRunning$.subscribe(x => {
+        this.closeOutYearRunning = x;
+        if (!this.closeOutYearRunning) {
+          this.closeModal('warning');
+        }
+      })
     );
   }
 
@@ -118,7 +127,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
       this.records$ = combineLatest(matchFatherEmail.valueChanges(), matchMotherEmail.valueChanges())
       .pipe(map(([fathers, mothers]) => {
-          if(fathers.length || mothers.length !== 0) {
+          if (fathers.length || mothers.length !== 0) {
             this.recordMatch = true;
             return [...fathers, ...mothers];
           } else {
@@ -159,7 +168,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   public setCurrentRecord(record) {
-    this.dataService.setCurrentRecord(record);// set current record for consumption by another component i.e. Financials
+    this.dataService.setCurrentRecord(record); // set current record for consumption by another component i.e. Financials
     this.currentRecord = record; // For Family Contact modal
   }
 
@@ -187,7 +196,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   closeOutYear() {
     this.fs.closeOutYear();
-    this.closeModal('warning');
+    // this.closeModal('warning');
     this.confirmCOY = false;
   }
 

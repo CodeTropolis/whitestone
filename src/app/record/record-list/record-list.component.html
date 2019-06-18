@@ -108,18 +108,25 @@
 	</ng-template>
 </div>
 <jw-modal id="warning">
-	<div class="warning">
-		<i class="material-icons">warning</i><p>Attention!</p>
-	</div>	
-	<p>Closing out the school year assumes all students progress to the next grade.
-    <p>If a student is held back or skips a grade, you may change their grade level by updating the family record.</p>
-    <p>If a starting balance exists for a financial category, the current running balance for that category will 
-    become the new starting balance and a historical reference will be created for the previous year's starting balance.
-	The revised balances cannot be undone.</p> 
-	<p>Do you want to continue?</p>
-	<div class="buttons">
-		<button (click)="closeModal('warning');">Cancel</button>
-		<button *ngIf="!confirmCOY" class="coy" (click)="confirmCOY = !confirmCOY;">Close Out Year</button>
-		<button *ngIf="confirmCOY" class="coy" (click)="closeOutYear();">Confirm Close Out Year</button>
+	<h4>Close Out Year</h4>
+	<div *ngIf="!closeOutYearRunning else running">
+		<div class="warning">
+			<i class="material-icons">warning</i><p>Attention!</p>
+		</div>	
+		<p>Closing out the school year assumes all students progress to the next grade.
+		<p>If a student is held back or skips a grade, you may change their grade level by updating the family record.</p>
+		<p>If a starting balance exists for a financial category, the current running balance for that category will 
+		become the new starting balance and a historical reference will be created for the previous year's starting balance.
+		The revised balances cannot be undone.</p> 
+		<p>Do you want to continue?</p>
+		<div class="buttons">
+			<button (click)="closeModal('warning');">Cancel</button>
+			<button *ngIf="!confirmCOY" class="coy" (click)="confirmCOY = !confirmCOY;">Close Out Year</button>
+			<button *ngIf="confirmCOY" class="coy" (click)="closeOutYear();">Confirm Close Out Year</button>
+		</div>
 	</div>
+	<ng-template #running>
+		<h5>Updating Records...</h5>
+		<app-progress-spinner></app-progress-spinner>
+	</ng-template>
 </jw-modal>

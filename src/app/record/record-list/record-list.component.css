@@ -27,6 +27,9 @@ ng-container.admin {margin-bottom: 5em;}
 .delete-buttons {float:right;}
 .delete-buttons button {margin-left: 1em;}
 
+#warning h4, 
+#warning h5 { text-align: center;}
+
 #warning .buttons,
 #warning .warning {
   display: flex;
