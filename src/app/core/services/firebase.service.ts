@@ -48,7 +48,7 @@ export class FirebaseService {
         tap((arr => console.log(`${arr.length} reads on ${collection.ref.id} collection `))),
         map(changes => {
           return changes.map(a => {
-            return { realId: a.payload.doc.id, ...a.payload.doc.data() }
+            return { realId: a.payload.doc.id, ...a.payload.doc.data() };
           });
         }),
        shareReplay(1) // Apparently a bug with shareReplay() causes <observable>$ to not unsubscribe despite unsubscribing.
@@ -62,9 +62,11 @@ export class FirebaseService {
       records.forEach(record => {
         const children = this.dataService.convertMapToArray(record.data().children);
         children.forEach(child => {
-          const nDate = (new Date(child.dob._seconds * 1000)).toUTCString();
-          console.log(`Child: ${child.fname} ${child.lname}, DOB: ${nDate}`);
-          //record.ref.update({[`children.${child.id}.dob`]: nDate});
+          if (child.dob._seconds){
+            const nDate = (new Date(child.dob._seconds * 1000)).toUTCString();
+            console.log(`Child: ${child.fname} ${child.lname}, DOB: ${nDate}`);
+            //record.ref.update({[`children.${child.id}.dob`]: nDate});
+          }
         });
       });
     });
@@ -74,16 +76,17 @@ export class FirebaseService {
       docs.forEach(doc => {
         console.log(`MD: FirebaseService -> fixDate -> doc.data().dateCreated`, doc.data().dateCreated);
         if (doc.data().dateCreated) {
-          const dateCreated = (new Date(doc.data().dateCreated._seconds * 1000)).toUTCString();
-          console.log(`MD: FirebaseService -> fixDate -> dateCreated`, dateCreated);
-         // doc.ref.update({dateCreated: dateCreated});
+          // Why do we need dateCreated?
+          // const dateCreated = (new Date(doc.data().dateCreated._seconds * 1000)).toUTCString();
+          // console.log(`MD: FirebaseService -> fixDate -> dateCreated`, dateCreated);
+          // doc.ref.update({dateCreated: dateCreated});
+          doc.ref.update({dateCreated: firebase.firestore.FieldValue.delete()});
         }
 
         const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
-        const errArr: any[] = [];
         arr.forEach(element => {
           if ([`${element}StartingBalanceDate`]) {
-            console.log(`MD: FirebaseService -> fixDate -> ${element}StartingBalanceDate`);
+            doc.ref.update({[`${element}StartingBalanceDate`]: firebase.firestore.FieldValue.delete()});
             // const key = [`${element}StartingBalanceDate`];
             // const formatDate = (new Date([`${element}StartingBalanceDate`]._seconds * 1000)).toUTCString();
             // console.log(`MD: FirebaseService -> fixDate -> formatDate`, formatDate);
@@ -159,17 +162,21 @@ export class FirebaseService {
             const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
             const errArr: any[] = [];
             arr.forEach(element => {
-              if (doc.data()[`${element}StartingBalance`]) {
+              if (doc.data()[`${element}StartingBalance`] || doc.data()[`${element}StartingBalance`] === 0 ) {
                 transaction.update(doc.ref, {
                   // Create a historical record of the iterated category balance, for example,
                   // tuition2018StartingBalance: XXXX
                   [`${element}${lastYear}StartingBalance`]: doc.data()[`${element}StartingBalance`],
+
                   // Whatever date as used as the original <category>StatartingBalance date will become the historical date.
-                  [`${element}${lastYear}StartingBalanceDate`]: doc.data()[`${element}StartingBalanceDate`],
+                  // UPDATE: Should not need a specific date - just a historical ref to the original starting balance.
+                  // [`${element}${lastYear}StartingBalanceDate`]: doc.data()[`${element}StartingBalanceDate`],
+
                   // The stating balance changes to the current (running) balance.
-                  // The starting balance receives the date of when this function is executed.
                   [`${element}StartingBalance`]: doc.data()[`${element}Balance`],
-                  [`${element}StartingBalanceDate`]: today,
+
+                  // Should not need this.  When close out year is run in 2020, the starting balance for 2019 will get the historical ref.
+                  // [`${element}StartingBalanceDate`]: today,
                 });
               } else {
                 errArr.push([`${element}StartingBalance not present`]);
