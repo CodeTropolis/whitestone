@@ -207,6 +207,8 @@ export class EntryComponent implements OnInit, OnDestroy {
     // prevent entry from being calc'd multple times as a result of user rapidly pressing enter key multiple times.
     this.disableSubmitButton = true;
 
+    console.log(`MD: EntryComponent -> submitHandler ->  this.formValue.date`,  this.formValue.date);
+
     if (this.formValue.tuitionRequiredMonthlyPayment) {
       this.currentFinancialDoc.ref.set(
         {

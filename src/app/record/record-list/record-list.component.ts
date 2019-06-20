@@ -200,6 +200,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.confirmCOY = false;
   }
 
+  fixDate() {
+    this.fs.fixDate();
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();

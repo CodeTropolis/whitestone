@@ -55,6 +55,45 @@ export class FirebaseService {
       );
   }
 
+  // fixDate: Upon restoring database using firestore-migrate, date gets converted to nanoseconds and seconds.
+  public fixDate () {
+    this.recordCollection.ref.get()
+    .then(records => {
+      records.forEach(record => {
+        const children = this.dataService.convertMapToArray(record.data().children);
+        children.forEach(child => {
+          const nDate = (new Date(child.dob._seconds * 1000)).toUTCString();
+          console.log(`Child: ${child.fname} ${child.lname}, DOB: ${nDate}`);
+          //record.ref.update({[`children.${child.id}.dob`]: nDate});
+        });
+      });
+    });
+
+    this.financialsCollection.ref.get()
+    .then(docs => {
+      docs.forEach(doc => {
+        console.log(`MD: FirebaseService -> fixDate -> doc.data().dateCreated`, doc.data().dateCreated);
+        if (doc.data().dateCreated) {
+          const dateCreated = (new Date(doc.data().dateCreated._seconds * 1000)).toUTCString();
+          console.log(`MD: FirebaseService -> fixDate -> dateCreated`, dateCreated);
+         // doc.ref.update({dateCreated: dateCreated});
+        }
+
+        const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
+        const errArr: any[] = [];
+        arr.forEach(element => {
+          if ([`${element}StartingBalanceDate`]) {
+            console.log(`MD: FirebaseService -> fixDate -> ${element}StartingBalanceDate`);
+            // const key = [`${element}StartingBalanceDate`];
+            // const formatDate = (new Date([`${element}StartingBalanceDate`]._seconds * 1000)).toUTCString();
+            // console.log(`MD: FirebaseService -> fixDate -> formatDate`, formatDate);
+          }
+        });
+      });
+    });
+
+  }
+
   public closeOutYear () {
     this.closeOutYearRunning$.next(true);
     const today = new Date();
@@ -147,8 +186,8 @@ export class FirebaseService {
           .catch(error => {
                doc.ref.update({closeOutErrKey: `${error}`});
           });
-        })
-      }).then(_ => {
+        });
+      }).then( () => {
         this.closeOutYearRunning$.next(false);
       });
   }
