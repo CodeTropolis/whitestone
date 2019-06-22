@@ -37,10 +37,8 @@ export class TaxFormsComponent implements OnInit {
     this.subscriptions.push(
       this.financialsService.currentCategory$.subscribe(cat => {
         if (cat) {
-          // console.log('TCL: TaxFormsComponent -> ngOnInit -> cat', cat)
           this.currentCategory = cat.val;
           this.paymentsCollection = cat.key + 'Payments';
-          // console.log('TCL: TaxFormsComponent -> ngOnInit ->  this.paymentsCollection',  this.paymentsCollection);
         }
       })
     );
@@ -51,7 +49,6 @@ export class TaxFormsComponent implements OnInit {
         this.paymentTotal = null;
         if (transactions) {
           transactions.forEach(payment => {
-            console.log(`MD: TaxFormsComponent -> ngOnInit -> payment.date`, payment.date);
             if (payment.date.getFullYear() === this.taxYear && payment.taxDeductible) {
               this.payments.push(payment);
             }
