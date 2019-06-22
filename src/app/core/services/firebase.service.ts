@@ -70,7 +70,7 @@ export class FirebaseService {
             // const nDate = (new Date(child.dob._seconds * 1000)).toDateString();        // Sun Jan 08 2013
             const revDate = (new Date(child.dob._seconds * 1000)); // This will allow .getFullYear()
             // console.log(`Child: ${child.fname} ${child.lname}, DOB: ${revDate}`);
-            console.log(revDate.getFullYear()); // This works
+            // console.log(revDate.getFullYear()); // This works
             record.ref.update({[`children.${child.id}.dob`]: revDate});
           }
         });
