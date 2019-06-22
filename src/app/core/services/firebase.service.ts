@@ -55,17 +55,23 @@ export class FirebaseService {
       );
   }
 
-  // fixDate: Upon restoring database using firestore-migrate, date gets converted to nanoseconds and seconds.
+  // fixDate()
+  // Upon restoring database using firestore-migrate, date gets converted to nanoseconds and seconds.
   public fixDate () {
     this.recordCollection.ref.get()
     .then(records => {
       records.forEach(record => {
         const children = this.dataService.convertMapToArray(record.data().children);
         children.forEach(child => {
-          if (child.dob._seconds){
-            const nDate = (new Date(child.dob._seconds * 1000)).toUTCString();
-            console.log(`Child: ${child.fname} ${child.lname}, DOB: ${nDate}`);
-            //record.ref.update({[`children.${child.id}.dob`]: nDate});
+          if (child.dob._seconds) {
+            // const nDate = (new Date(child.dob._seconds * 1000)).toLocaleDateString();  // 5/22/2013
+            // const nDate = (new Date(child.dob._seconds * 1000)).toUTCString();         // Thu, 25 Apr 5:00:00 GMT
+            // const nDate = (new Date(child.dob._seconds * 1000)).toLocaleTimeString();  // 12:00:00 AM
+            // const nDate = (new Date(child.dob._seconds * 1000)).toDateString();        // Sun Jan 08 2013
+            const revDate = (new Date(child.dob._seconds * 1000)); // This will allow .getFullYear()
+            // console.log(`Child: ${child.fname} ${child.lname}, DOB: ${revDate}`);
+            console.log(revDate.getFullYear()); // This works
+            record.ref.update({[`children.${child.id}.dob`]: revDate});
           }
         });
       });
@@ -74,23 +80,34 @@ export class FirebaseService {
     this.financialsCollection.ref.get()
     .then(docs => {
       docs.forEach(doc => {
-        console.log(`MD: FirebaseService -> fixDate -> doc.data().dateCreated`, doc.data().dateCreated);
         if (doc.data().dateCreated) {
-          // Why do we need dateCreated?
-          // const dateCreated = (new Date(doc.data().dateCreated._seconds * 1000)).toUTCString();
-          // console.log(`MD: FirebaseService -> fixDate -> dateCreated`, dateCreated);
-          // doc.ref.update({dateCreated: dateCreated});
           doc.ref.update({dateCreated: firebase.firestore.FieldValue.delete()});
         }
-
         const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
         arr.forEach(element => {
           if ([`${element}StartingBalanceDate`]) {
             doc.ref.update({[`${element}StartingBalanceDate`]: firebase.firestore.FieldValue.delete()});
-            // const key = [`${element}StartingBalanceDate`];
-            // const formatDate = (new Date([`${element}StartingBalanceDate`]._seconds * 1000)).toUTCString();
-            // console.log(`MD: FirebaseService -> fixDate -> formatDate`, formatDate);
           }
+          // Fix the date in all the docs in the Charges and Payments subcollections
+          doc.ref.collection(`${element}Charges`).get()
+            .then(snapshot => {
+              snapshot.forEach(item => {
+                if (item.data().date._seconds) {
+                  const date = (new Date(item.data().date._seconds * 1000));
+                  // console.log(`MD: FirebaseService -> fixDate -> financialsCollection -> dategetFullYear()`, date.getFullYear());
+                  item.ref.update({date: date});
+                }
+              });
+            });
+            doc.ref.collection(`${element}Payments`).get()
+            .then(snapshot => {
+              snapshot.forEach(item => {
+                if (item.data().date._seconds) {
+                  const date = (new Date(item.data().date._seconds * 1000));
+                  item.ref.update({date: date});
+                }
+              });
+            });
         });
       });
     });
@@ -128,7 +145,7 @@ export class FirebaseService {
             }
             children.forEach(child => {
               newGrade = this.processGradeLevel(child);
-              if ( ![`children.${child.id}.grade`]) {throw new Error();}
+              if ( ![`children.${child.id}.grade`]) { throw new Error(); }
               transaction.update(record.ref, {[`children.${child.id}.grade`]: newGrade });
               console.log('Running transaction. Processing record id: ', record.ref.id);
             });
@@ -164,7 +181,7 @@ export class FirebaseService {
             arr.forEach(element => {
               if (doc.data()[`${element}StartingBalance`] || doc.data()[`${element}StartingBalance`] === 0 ) {
                 transaction.update(doc.ref, {
-                  // Create a historical record of the iterated category balance, for example,
+                  // Create a historical record of the iterated category's starting balance, for example,
                   // tuition2018StartingBalance: XXXX
                   [`${element}${lastYear}StartingBalance`]: doc.data()[`${element}StartingBalance`],
 

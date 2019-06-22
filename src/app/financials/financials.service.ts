@@ -33,7 +33,7 @@ export class FinancialsService {
         this.currentFinancialDoc$.next(null); 
         this.firebaseService.financialsCollection.doc(student.id).ref.get()
           .then(doc => {
-            if(doc.exists) {
+            if (doc.exists) {
                 this.currentFinancialDoc$.next(doc); 
             } else {
               alert(`The financial document for this ${student.fname + ' ' + student.lname} does not exist. \n` +
@@ -46,18 +46,22 @@ export class FinancialsService {
   }
 
 
-  public getTransactions(currentFinancialDoc, collection){
+  public getTransactions(currentFinancialDoc, collection) {
       // Get transactions (amounts from <cat.key>payments | charges collections)
       const type = collection.includes('Payment') ? 'Payment' : 'Charge';
       currentFinancialDoc.ref.collection(collection).get()
       .then(snapshot => {
           snapshot.forEach(item => {
-            const date = item.data().date.toDate();
+
+            // Need to do this when date is formatted in DB as Month DD, YYYY at 12:00:00:00 AM UTC-6
+           const date = item.data().date.toDate();
+
             const transactionObj = {
               id: item.id,
               amount: item.data().amount,
               type: type,
               date: date,
+              // date: item.date,
               taxDeductible: item.data().taxDeductible,
               memo: item.data().memo
             };

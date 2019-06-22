@@ -51,9 +51,9 @@ export class TaxFormsComponent implements OnInit {
         this.paymentTotal = null;
         if (transactions) {
           transactions.forEach(payment => {
-            // console.log(`MD: TaxFormsComponent -> ngOnInit -> payment`, payment);
+            console.log(`MD: TaxFormsComponent -> ngOnInit -> payment.date`, payment.date);
             if (payment.date.getFullYear() === this.taxYear && payment.taxDeductible) {
-              this.payments.push(payment); // an array of payment objects
+              this.payments.push(payment);
             }
           });
           this.paymentTotal = 0;

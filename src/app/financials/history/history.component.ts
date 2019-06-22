@@ -53,11 +53,13 @@ export class HistoryComponent implements OnInit, OnDestroy {
         //.pipe(delay(2000))
         .subscribe(user => {
           if (user) {
-            this.user = user; 
+            this.user = user;
             if (this.user.roles.admin) {
               this.tableColumns = ['amount', 'type', 'date', 'taxDeductible', 'memo', 'actions'];
+              // this.tableColumns = ['amount', 'type', 'taxDeductible', 'memo', 'actions'];
             } else {
               this.tableColumns = ['amount', 'type', 'date', 'taxDeductible', 'memo'];
+              // this.tableColumns = ['amount', 'type', 'taxDeductible', 'memo'];
             }
           }
         })
@@ -137,7 +139,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   public editTransaction(row) {
-		console.log(`MD: publiceditTransaction -> row`, row);
     this.isEditing[row.id] = true;
     this.formGroup[row.id] = this.fb.group({
       amount: [row.amount, Validators.required],
