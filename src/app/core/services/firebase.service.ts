@@ -69,8 +69,6 @@ export class FirebaseService {
             // const nDate = (new Date(child.dob._seconds * 1000)).toLocaleTimeString();  // 12:00:00 AM
             // const nDate = (new Date(child.dob._seconds * 1000)).toDateString();        // Sun Jan 08 2013
             const revDate = (new Date(child.dob._seconds * 1000)); // This will allow .getFullYear()
-            // console.log(`Child: ${child.fname} ${child.lname}, DOB: ${revDate}`);
-            // console.log(revDate.getFullYear()); // This works
             record.ref.update({[`children.${child.id}.dob`]: revDate});
           }
         });
@@ -88,14 +86,14 @@ export class FirebaseService {
           if ([`${element}StartingBalanceDate`]) {
             doc.ref.update({[`${element}StartingBalanceDate`]: firebase.firestore.FieldValue.delete()});
           }
-          // Fix the date in all the docs in the Charges and Payments subcollections
+           // Fix the date in all the docs in the Charges and Payments subcollections
           doc.ref.collection(`${element}Charges`).get()
             .then(snapshot => {
               snapshot.forEach(item => {
                 if (item.data().date._seconds) {
                   const date = (new Date(item.data().date._seconds * 1000));
-                  // console.log(`MD: FirebaseService -> fixDate -> financialsCollection -> dategetFullYear()`, date.getFullYear());
                   item.ref.update({date: date});
+                  console.log(`MD: FirebaseService -> fixDate -> doc.ref.id ${doc.ref.id} -> ${element}Charges`);
                 }
               });
             });
@@ -105,6 +103,7 @@ export class FirebaseService {
                 if (item.data().date._seconds) {
                   const date = (new Date(item.data().date._seconds * 1000));
                   item.ref.update({date: date});
+                  console.log(`MD: FirebaseService -> fixDate -> doc.ref.id ${doc.ref.id} -> ${element}Payments`);
                 }
               });
             });
@@ -150,7 +149,7 @@ export class FirebaseService {
               console.log('Running transaction. Processing record id: ', record.ref.id);
             });
           }).then(() => {
-              console.log(`Transaction ${record.ref.id} in record collection successfully committed!`);
+              console.log(`Transaction for record doc ${record.ref.id} successfully committed!`);
               record.ref.update({[`${closeOutErrKey}`]: firebase.firestore.FieldValue.delete()});
           }).catch(error => {
               console.log(`Transaction failed for record ${record.data().childFirstName} ${record.data().childLastName}: ${error}`);
@@ -204,7 +203,7 @@ export class FirebaseService {
               }
             });
           }).then(() => {
-              // console.log(`Transaction for financial doc ${doc.ref.id} successfully committed!`);
+              console.log(`Transaction for financial doc ${doc.ref.id} successfully committed!`);
               // doc.ref.update({closeOutError: firebase.firestore.FieldValue.delete()});
           })
           .catch(error => {
