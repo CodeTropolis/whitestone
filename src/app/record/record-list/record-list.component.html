@@ -10,8 +10,8 @@
 	<div *ngIf="recordMatch || user.roles.admin; else noRecords">
 		<div *ngIf="user">
 			<mat-card>
-				<button *ngIf="user.roles.admin" (click)="openModal('warning');">Close Out Year</button>
-				<button *ngIf="user.roles.admin" (click)="fixDate();">Fix Date</button>
+				<!-- <button *ngIf="user.roles.admin" (click)="openModal('warning');">Close Out Year</button>
+				<button *ngIf="user.roles.admin" (click)="fixDate();">Fix Date</button> -->
 				<button *ngIf="user.roles.admin" class="btn-add-record" (click)="openModal('record-entry-modal', formDirective)" mat-flat-button color="basic">
 					<i class="material-icons">add_circle</i>Family Record
 				</button>
