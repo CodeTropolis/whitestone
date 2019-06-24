@@ -58,58 +58,58 @@ export class FirebaseService {
   // fixDate()
   // Upon restoring database using firestore-migrate, date gets converted to nanoseconds and seconds.
   public fixDate () {
-    this.recordCollection.ref.get()
-    .then(records => {
-      records.forEach(record => {
-        const children = this.dataService.convertMapToArray(record.data().children);
-        children.forEach(child => {
-          if (child.dob._seconds) {
-            // const nDate = (new Date(child.dob._seconds * 1000)).toLocaleDateString();  // 5/22/2013
-            // const nDate = (new Date(child.dob._seconds * 1000)).toUTCString();         // Thu, 25 Apr 5:00:00 GMT
-            // const nDate = (new Date(child.dob._seconds * 1000)).toLocaleTimeString();  // 12:00:00 AM
-            // const nDate = (new Date(child.dob._seconds * 1000)).toDateString();        // Sun Jan 08 2013
-            const revDate = (new Date(child.dob._seconds * 1000)); // This will allow .getFullYear()
-            record.ref.update({[`children.${child.id}.dob`]: revDate});
-          }
-        });
-      });
-    });
+    // this.recordCollection.ref.get()
+    // .then(records => {
+    //   records.forEach(record => {
+    //     const children = this.dataService.convertMapToArray(record.data().children);
+    //     children.forEach(child => {
+    //       if (child.dob._seconds) {
+    //         // const nDate = (new Date(child.dob._seconds * 1000)).toLocaleDateString();  // 5/22/2013
+    //         // const nDate = (new Date(child.dob._seconds * 1000)).toUTCString();         // Thu, 25 Apr 5:00:00 GMT
+    //         // const nDate = (new Date(child.dob._seconds * 1000)).toLocaleTimeString();  // 12:00:00 AM
+    //         // const nDate = (new Date(child.dob._seconds * 1000)).toDateString();        // Sun Jan 08 2013
+    //         const revDate = (new Date(child.dob._seconds * 1000)); // This will allow .getFullYear()
+    //         record.ref.update({[`children.${child.id}.dob`]: revDate});
+    //       }
+    //     });
+    //   });
+    // });
 
-    this.financialsCollection.ref.get()
-    .then(docs => {
-      docs.forEach(doc => {
-        if (doc.data().dateCreated) {
-          doc.ref.update({dateCreated: firebase.firestore.FieldValue.delete()});
-        }
-        const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
-        arr.forEach(element => {
-          if ([`${element}StartingBalanceDate`]) {
-            doc.ref.update({[`${element}StartingBalanceDate`]: firebase.firestore.FieldValue.delete()});
-          }
-           // Fix the date in all the docs in the Charges and Payments subcollections
-          doc.ref.collection(`${element}Charges`).get()
-            .then(snapshot => {
-              snapshot.forEach(item => {
-                if (item.data().date._seconds) {
-                  const date = (new Date(item.data().date._seconds * 1000));
-                  item.ref.update({date: date});
-                  console.log(`MD: FirebaseService -> fixDate -> doc.ref.id ${doc.ref.id} -> ${element}Charges`);
-                }
-              });
-            });
-            doc.ref.collection(`${element}Payments`).get()
-            .then(snapshot => {
-              snapshot.forEach(item => {
-                if (item.data().date._seconds) {
-                  const date = (new Date(item.data().date._seconds * 1000));
-                  item.ref.update({date: date});
-                  console.log(`MD: FirebaseService -> fixDate -> doc.ref.id ${doc.ref.id} -> ${element}Payments`);
-                }
-              });
-            });
-        });
-      });
-    });
+    // this.financialsCollection.ref.get()
+    // .then(docs => {
+    //   docs.forEach(doc => {
+    //     if (doc.data().dateCreated) {
+    //       doc.ref.update({dateCreated: firebase.firestore.FieldValue.delete()});
+    //     }
+    //     const arr = ['tuition', 'lunch', 'extendedCare', 'misc'];
+    //     arr.forEach(element => {
+    //       if ([`${element}StartingBalanceDate`]) {
+    //         doc.ref.update({[`${element}StartingBalanceDate`]: firebase.firestore.FieldValue.delete()});
+    //       }
+    //        // Fix the date in all the docs in the Charges and Payments subcollections
+    //       doc.ref.collection(`${element}Charges`).get()
+    //         .then(snapshot => {
+    //           snapshot.forEach(item => {
+    //             if (item.data().date._seconds) {
+    //               const date = (new Date(item.data().date._seconds * 1000));
+    //               item.ref.update({date: date});
+    //               console.log(`MD: FirebaseService -> fixDate -> doc.ref.id ${doc.ref.id} -> ${element}Charges`);
+    //             }
+    //           });
+    //         });
+    //         doc.ref.collection(`${element}Payments`).get()
+    //         .then(snapshot => {
+    //           snapshot.forEach(item => {
+    //             if (item.data().date._seconds) {
+    //               const date = (new Date(item.data().date._seconds * 1000));
+    //               item.ref.update({date: date});
+    //               console.log(`MD: FirebaseService -> fixDate -> doc.ref.id ${doc.ref.id} -> ${element}Payments`);
+    //             }
+    //           });
+    //         });
+    //     });
+    //   });
+    // });
 
   }
 
