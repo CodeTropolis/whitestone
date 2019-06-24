@@ -56,10 +56,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
             this.user = user;
             if (this.user.roles.admin) {
               this.tableColumns = ['amount', 'type', 'date', 'taxDeductible', 'memo', 'actions'];
-              // this.tableColumns = ['amount', 'type', 'taxDeductible', 'memo', 'actions'];
             } else {
               this.tableColumns = ['amount', 'type', 'date', 'taxDeductible', 'memo'];
-              // this.tableColumns = ['amount', 'type', 'taxDeductible', 'memo'];
             }
           }
         })
@@ -103,7 +101,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     //  Trying to get it via this.currentFinancialDoc.data()[this.runningBalanceKey] sometimes returns as undefined
     this.financialsService.runningBalanceForCurrentCategory$.subscribe(
       runningBalance => {
-        //console.log(runningBalance);
+        console.log(runningBalance);
         this.runningBalance = runningBalance;
       }
     );
@@ -125,7 +123,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
           }
         })
     );
-
     this.financialsService.transactions = []; //  to prevent dup entries.
     this.financialsService.transactions$.next(null);
     this.financialsService.getTransactions(

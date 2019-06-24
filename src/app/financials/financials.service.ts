@@ -9,7 +9,7 @@ export class FinancialsService {
   public categories: any;
   public currentStudent$ = new BehaviorSubject<any>(null);
   public currentFinancialDoc$ = new BehaviorSubject<any>(null); // Each student has own financial doc
-  public currentCategory$ = new BehaviorSubject<any>(null); 
+  public currentCategory$ = new BehaviorSubject<any>(null);
   public runningBalanceForCurrentCategory$ = new BehaviorSubject<number>(null);
   public showHistory$ = new BehaviorSubject<boolean>(null);
   public transactions: any[] = [];
@@ -28,13 +28,13 @@ export class FinancialsService {
   }
 
   public setFinancialDoc(student) {
-    this.authService.user$.subscribe(user =>{
-      if (user){
-        this.currentFinancialDoc$.next(null); 
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.currentFinancialDoc$.next(null);
         this.firebaseService.financialsCollection.doc(student.id).ref.get()
           .then(doc => {
             if (doc.exists) {
-                this.currentFinancialDoc$.next(doc); 
+                this.currentFinancialDoc$.next(doc);
             } else {
               alert(`The financial document for this ${student.fname + ' ' + student.lname} does not exist. \n` +
               `To create a starting financial doc, go to the applicable record in 'Record List', click` +
