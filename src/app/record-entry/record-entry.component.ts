@@ -277,7 +277,7 @@ export class RecordEntryComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub =>{
+    this.subscriptions.forEach(sub => {
       sub.unsubscribe();
       //console.log('TCL: RecordEntryComponent -> ngOnDestroy -> sub', sub);
     });

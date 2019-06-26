@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FinancialsService } from '../financials.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-entry',
@@ -257,12 +258,31 @@ export class EntryComponent implements OnInit, OnDestroy {
       });
     } else {
       collection = this.currentFinancialDoc.ref.collection(this.chargesCollection);
+
       this.runningBalance += this.formValue.amount;
-      collection.doc().set({
-        amount: this.formValue.amount,
-        date: this.formValue.date,
-        memo: this.formValue.memo,
-      });
+
+     interface NDate { _d?: Date; }
+
+      // If charge is for tuition, divide up into 10 payments and record each as a charge.
+      if (this.chargesCollection === 'tuitionCharges') {
+        const payment: number = this.formValue.amount / 10;
+        const d = new Date();
+        for (let index = 0; index < 10; index++) {
+          const incremMonth: NDate =  moment(d).add(index + 1, 'months');
+          const newDate = new Date(incremMonth._d);
+          collection.doc().set({
+            amount: payment,
+            date: newDate,
+            memo: `Due: ${moment(newDate).format('MMMM, YYYY')} `,
+          });
+        }
+      } else {
+        collection.doc().set({
+          amount: this.formValue.amount,
+          date: this.formValue.date,
+          memo: this.formValue.memo,
+        });
+      }
     }
 
     this.currentFinancialDoc.ref
