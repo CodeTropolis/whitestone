@@ -6,13 +6,13 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyCFCWcqL1Qfcz0SHXm5SdeuXR9ia4eAm5M",
-    authDomain: "ws-local-angular.firebaseapp.com",
-    databaseURL: "https://ws-local-angular.firebaseio.com",
-    projectId: "ws-local-angular",
-    storageBucket: "ws-local-angular.appspot.com",
-    messagingSenderId: "617661305077",
-    appId: "1:617661305077:web:a3617df00a61ba27"
+    apiKey: "AIzaSyA7PK4dKbZPTTn7Hv3-771wj8lr4oWakqc",
+    authDomain: "ws-ionic-dev-569d3.firebaseapp.com",
+    databaseURL: "https://ws-ionic-dev-569d3.firebaseio.com",
+    projectId: "ws-ionic-dev-569d3",
+    storageBucket: "ws-ionic-dev-569d3.appspot.com",
+    messagingSenderId: "13283158467 2",
+    appId: "1:132831584672:web:0f76bbe4d7da5a44"
   }
 };
 

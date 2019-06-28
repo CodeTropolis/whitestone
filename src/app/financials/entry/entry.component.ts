@@ -265,15 +265,19 @@ export class EntryComponent implements OnInit, OnDestroy {
 
       // If charge is for tuition, divide up into 10 payments and record each as a charge.
       if (this.chargesCollection === 'tuitionCharges') {
-        const payment: number = this.formValue.amount / 10;
-        const d = new Date();
+        const _charge: number = this.formValue.amount / 10;
+        const _d = new Date();
         for (let index = 0; index < 10; index++) {
-          const incremMonth: NDate =  moment(d).add(index + 1, 'months');
-          const newDate = new Date(incremMonth._d);
+          const incremMonth =  moment(_d).add(index + 1, 'months');
+          // const newDate = new Date(incremMonth._d); 
+          const _pymtDate =  incremMonth;
+          console.log(`MD: EntryComponent -> processTransaction -> pymtDate`, _pymtDate.toDate());
+          const _dueDate =  _pymtDate.toDate();
           collection.doc().set({
-            amount: payment,
-            date: newDate,
-            memo: `Due: ${moment(newDate).format('MMMM, YYYY')} `,
+            amount: _charge,
+            date: _dueDate,
+            // memo: `Due: ${moment(_pymtDate).format('MMMM, YYYY')} `,
+            memo: `Due: ${_dueDate} `,
           });
         }
       } else {
