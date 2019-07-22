@@ -97,7 +97,7 @@ export class RecordEntryComponent implements OnInit {
       district: ['', Validators.required],
       catholic: ['', Validators.required],
       children: this.fb.array([]),
-    })
+    });
     // Get a reference to this form so that operations can 
     // be performed on the form in the record-entry.service
     this.rfs.theForm = this.myForm;
@@ -166,8 +166,8 @@ export class RecordEntryComponent implements OnInit {
       gender: ['', Validators.required],
       race: ['', Validators.required],
       id: ['']
-    })
-    this.childrenForm.push(child,);
+    });
+    this.childrenForm.push(child);
   }
 
   deleteChild(i) {
@@ -185,7 +185,7 @@ export class RecordEntryComponent implements OnInit {
       fatherPhones: this.convertArrayToMapWithUUid(formValue.fatherPhones),
       motherPhones: this.convertArrayToMapWithUUid(formValue.motherPhones),
       children: this.convertArrayToMapWithUUid(formValue.children)
-    }
+    };
 
     if (!this.isUpdating) {
       try {
