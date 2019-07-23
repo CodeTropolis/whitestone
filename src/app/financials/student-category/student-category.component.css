@@ -63,6 +63,7 @@ h5.student-name {
 
     button {
         margin: 0 0 0.5em 0;
-        width: 100%;
     }
+
+    button, button.make-payment { width: 100%;}
 }
