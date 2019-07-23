@@ -1,17 +1,17 @@
-import { Component, OnInit } from "@angular/core";
-import { DataService } from "../../core/services/data.service";
-import { FinancialsService } from "../financials.service";
-import { BehaviorSubject } from "rxjs";
-import { ModalService } from "../../modal/modal.service";
-import { RecordFormService } from "../../core/services/record-form.service";
-import { FirebaseService } from "../../core/services/firebase.service";
-import { AuthService } from "../../core/services/auth.service";
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../../core/services/data.service';
+import { FinancialsService } from '../financials.service';
+import { BehaviorSubject } from 'rxjs';
+import { ModalService } from '../../modal/modal.service';
+import { RecordFormService } from '../../core/services/record-form.service';
+import { FirebaseService } from '../../core/services/firebase.service';
+import { AuthService } from '../../core/services/auth.service';
 
 
 @Component({
-  selector: "app-student-category",
-  templateUrl: "./student-category.component.html",
-  styleUrls: ["./student-category.component.css"]
+  selector: 'app-student-category',
+  templateUrl: './student-category.component.html',
+  styleUrls: ['./student-category.component.css']
 })
 export class StudentCategoryComponent implements OnInit {
   public currentRecord: any;
@@ -23,7 +23,7 @@ export class StudentCategoryComponent implements OnInit {
   public currentStudent$: BehaviorSubject<any>;
   public enableCatButtons: boolean;
   public user: any;
-  //public viewHasInit: boolean;
+  public currentCategory: string;
 
   private subscriptions: any[] = [];
 
@@ -52,16 +52,15 @@ export class StudentCategoryComponent implements OnInit {
     );
 
     this.subscriptions.push(
-      this.dataService.currentRecord$.subscribe(record =>{
+      this.dataService.currentRecord$.subscribe(record => {
         if (record){
-          //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
           this.currentRecord = record;
           this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
-          if(this.studentsOfRecord.length === 1){
-            this.setFinancialDoc(this.studentsOfRecord[0])
+          if (this.studentsOfRecord.length === 1) {
+            this.setFinancialDoc(this.studentsOfRecord[0]);
           }
-        }else{
-          console.log("There is an issue obtaining the current record");
+        } else {
+          console.log('There is an issue obtaining the current record');
         }
       })
     )
@@ -74,7 +73,6 @@ export class StudentCategoryComponent implements OnInit {
           this.enableCatButtons = true;
         } else {
           this.enableCatButtons = false;
-          //console.log('financial doc null')
         }
       })
     );
@@ -89,44 +87,29 @@ export class StudentCategoryComponent implements OnInit {
     this.financialsService.showHistory$.next(false);
   }
 
-  // ngAfterViewInit(){ 
-  //   // Placed the following in afterViewInit to prevent setFinancialDoc from triggering upon click of 'more menu' on 
-  //   // record-list.component when there is only one child.
-  //   // Although this issue doesn't causing any breaking, it may cause an 
-  //   // additional write (write counts on merge when nothing actually changes?).
-
-  //   // https://blog.angular-university.io/angular-debugging/
-  //   setTimeout(() =>{
-  //     this.subscriptions.push(
-  //       this.dataService.currentRecord$.subscribe(record =>{
-  //         if (record){
-  //           //console.log('TCL: StudentCategoryComponent -> ngOnInit -> record', record)
-  //           this.currentRecord = record;
-  //           this.studentsOfRecord = this.dataService.convertMapToArray(record.children);
-  //           if(this.studentsOfRecord.length === 1){
-  //             this.setFinancialDoc(this.studentsOfRecord[0])
-  //           }
-  //         }else{
-  //           console.log("There is an issue obtaining the current record");
-  //         }
-  //       })
-  //     )
-  //   })
-  // }
-
   public setFinancialDoc(student) {
-		// console.log(`MD: StudentCategoryComponent -> publicsetFinancialDoc -> student`, student)
-    
     this.currentStudent = student;
     this.financialsService.setFinancialDoc(student);
     // Set currentCategory$ to null to prevent previously selected student's category entry form from showing
     this.financialsService.currentCategory$.next(null);
     // Do not show history from previously selected student after clicking on another student
-    this.financialsService.showHistory$.next(false); 
+    this.financialsService.showHistory$.next(false);
+
   }
 
   public setCategory(cat) {
     this.financialsService.currentCategory$.next(cat);
+
+    this.currentCategory = cat.val;
+    console.log(`MD: StudentCategoryComponent -> setCategory -> this.currentCategory`, this.currentCategory);
+
+    // this.financialsService.currentCategory$.subscribe(cat => {
+    //   if (cat) {
+    //     this.currentCategory = cat.val;
+    //     if (this.currentCategory === 'Tuition') { alert('tuition') }
+    //     console.log(`MD: StudentCategoryComponent -> ngOnInit -> this.currentCategory`, this.currentCategory);
+    //   }
+    // });
 
     setTimeout(_ => {
       window.scrollBy(0, 500);
@@ -134,7 +117,7 @@ export class StudentCategoryComponent implements OnInit {
   }
 
   public goToURL(url) {
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   }
 
   public prepFormToUpdate() {

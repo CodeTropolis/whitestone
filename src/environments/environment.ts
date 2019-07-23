@@ -6,13 +6,12 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyCisdEQ8lfkMvdO1dZoRkRMtzaeOWLHkRc",
-    authDomain: "wsdev7-22-19.firebaseapp.com",
-    databaseURL: "https://wsdev7-22-19.firebaseio.com",
-    projectId: "wsdev7-22-19",
-    storageBucket: "wsdev7-22-19.appspot.com",
-    messagingSenderId: "553849396064",
-    appId: "1:553849396064:web:cb9372a73aa147ed"
+    apiKey: "AIzaSyB5edtPdugpbEgUR0BltaWCa1FWdrFh3zc",
+    authDomain: "whitestone-5433a.firebaseapp.com",
+    databaseURL: "https://whitestone-5433a.firebaseio.com",
+    projectId: "whitestone-5433a",
+    storageBucket: "",
+    messagingSenderId: "512131240408"
   }
 };
 

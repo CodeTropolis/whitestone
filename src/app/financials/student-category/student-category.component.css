@@ -8,7 +8,8 @@ button.make-payment {
 
 button.make-payment,
 button.student {
-    width: 220px;
+    width: 250px;
+    display: block;
 }
 
 button.more-menu {
