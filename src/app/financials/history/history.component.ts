@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs';
 import { MatSort, MatTableDataSource } from '@angular/material';
 import { AuthService } from '../../core/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-//import { delay } from "rxjs/operators";
 
 @Component({
   selector: 'app-history',
@@ -39,7 +38,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   public transactionTypes: any[] = [
     { value: 'payment', display: 'Payment' },
     { value: 'charge', display: 'Charge' },
-  ]
+  ];
 
   constructor(
     private financialsService: FinancialsService,
@@ -50,7 +49,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.push(
       this.authService.user$
-        //.pipe(delay(2000))
         .subscribe(user => {
           if (user) {
             this.user = user;
@@ -119,7 +117,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
           if (data) {
             this.tableData = new MatTableDataSource(data);
             this.tableData.sort = this.sort;
-            //this.loading = false;
           }
         })
     );
