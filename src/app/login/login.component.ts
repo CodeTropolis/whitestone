@@ -1,14 +1,14 @@
-import { Component, OnInit } from "@angular/core";
-import { AuthService } from "../core/services/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { FirebaseService } from "../core/services/firebase.service";
-import { Subject, Observable } from "rxjs";
-import { Router } from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../core/services/auth.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FirebaseService } from '../core/services/firebase.service';
+import { Subject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: "app-login",
-  templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.css"]
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   public form: FormGroup;
@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
     // 'missing or insufficient perms...' upon first login.
     this.auth.userDataWritten$.subscribe(x => {
       if(x){
-        this.router.navigate(["record-list"]);
+        this.router.navigate(['record-list']);
       }
     })
 
@@ -61,12 +61,12 @@ export class LoginComponent implements OnInit {
     this.auth.isResettingPassword$.subscribe(x => {
       if (x) {
         this.form = this.fb.group({
-          email: ["", [Validators.required, Validators.email]]
+          email: ['', [Validators.required, Validators.email]]
         });
       } else {
         this.form = this.fb.group({
-          email: ["", [Validators.required, Validators.email]],
-          password: ["", Validators.required]
+          email: ['', [Validators.required, Validators.email]],
+          password: ['', Validators.required]
         });
       }
     });
@@ -79,8 +79,8 @@ export class LoginComponent implements OnInit {
   }
 
   public emailLogin(formDirective) {
-    this.auth.error$.next("");
-    this.auth.status$.next("");
+    this.auth.error$.next('');
+    this.auth.status$.next('');
     const e = this.form.value.email;
     const p = this.form.value.password;
     this.auth.emailLogin(e, p);
@@ -99,22 +99,22 @@ export class LoginComponent implements OnInit {
     this.auth.creatingAccount$.next(true);
     this.auth.disableLoginOrCreateButton$.next(false);
     // Clear out errors that occur if user attempted to login without first creating an account
-    this.auth.error$.next("");
-    this.auth.status$.next("");
+    this.auth.error$.next('');
+    this.auth.status$.next('');
   }
 
   public beginPasswordReset(formDirective) {
     // Clear out previously displayed errors or status
-    this.auth.error$.next("");
-    this.auth.status$.next("");
+    this.auth.error$.next('');
+    this.auth.status$.next('');
     this.auth.isResettingPassword$.next(true);
     this.resetForm(formDirective);
   }
 
   public cancelPasswordReset(formDirective) {
     // Clear out previously displayed errors or status
-    this.auth.error$.next("");
-    this.auth.status$.next("");
+    this.auth.error$.next('');
+    this.auth.status$.next('');
     this.auth.isResettingPassword$.next(false);
     this.resetForm(formDirective);
   }
