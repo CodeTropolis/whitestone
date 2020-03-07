@@ -3,7 +3,7 @@
 #RewriteCond %{HTTP_HOST} ^(whitestone\.)?stteresatigers\.org
 #RewriteRule ^(.*)$ https://whitestone.stteresatigers.org/$1 [R,L]
 
-# Prevents 4014 when clicking on direct link to component i.e. bookmark of whitestone.stteresatigers.org/record-list
+# Prevents 404 when clicking on direct link to component i.e. bookmark of whitestone.stteresatigers.org/record-list
 # See https://github.com/angular/angular-cli/issues/5113#issuecomment-368732977
 
 RewriteEngine On
